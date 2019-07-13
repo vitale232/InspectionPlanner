@@ -3,11 +3,6 @@ from django.db import models
 import django.contrib.gis.db.models as gis_models
 
 
-# The following tables were created by osm2pgrouting. The models
-# were generated using the Django admin command `python manage.py inspectdb`
-# which initially set `Meta.managed = False`. I've decided to allow Django
-# to create and destroy these tables now, since there won't be any new data
-# loaded in.
 class Configuration(models.Model):
     def __str__(self):
         return f'{self.tag_key}: {self.tag_value}'
@@ -113,6 +108,7 @@ class WaysVerticesPgr(models.Model):
 
     class Meta:
         db_table = 'ways_vertices_pgr'
+        managed = False
 
 
 class Ways(models.Model):
@@ -166,6 +162,7 @@ class Ways(models.Model):
 
     class Meta:
         db_table = 'ways'
+        managed = False
 
 class DriveTimeNode(models.Model):
     def __str__(self):

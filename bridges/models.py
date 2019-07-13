@@ -46,4 +46,7 @@ class NewYorkBridge(models.Model):
     permitted_1 = models.FloatField()
     carried_la = models.CharField(max_length=134)
 
+    created_time = models.DateTimeField(auto_now_add=True)
+    edited_time = models.DateTimeField(auto_now=True)
+
     the_geom = models.PointField(srid=4326)
