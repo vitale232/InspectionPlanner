@@ -3,6 +3,11 @@ from django.db import models
 import django.contrib.gis.db.models as gis_models
 
 
+# The following tables were created by osm2pgrouting. The models
+# were generated using the Django admin command `python manage.py inspectdb`
+# which initially set `Meta.managed = False`. I've decided to allow Django
+# to create and destroy these tables now, since there won't be any new data
+# loaded in.
 class Configuration(models.Model):
     def __str__(self):
         return f'{self.tag_key}: {self.tag_value}'
@@ -17,7 +22,6 @@ class Configuration(models.Model):
     force = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'configuration'
 
 
@@ -34,7 +38,6 @@ class OsmNodes(models.Model):
     the_geom = gis_models.GeometryField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'osm_nodes'
 
 
@@ -51,7 +54,6 @@ class OsmRelations(models.Model):
     name = models.TextField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'osm_relations'
 
 
@@ -69,7 +71,6 @@ class OsmWays(models.Model):
     the_geom = gis_models.GeometryField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'osm_ways'
 
 
@@ -93,7 +94,6 @@ class Pointsofinterest(models.Model):
     new_geom = gis_models.GeometryField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'pointsofinterest'
 
 
@@ -112,7 +112,6 @@ class WaysVerticesPgr(models.Model):
     the_geom = gis_models.GeometryField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'ways_vertices_pgr'
 
 
@@ -166,7 +165,6 @@ class Ways(models.Model):
     the_geom = gis_models.GeometryField(blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'ways'
 
 class DriveTimeNode(models.Model):
