@@ -23,8 +23,8 @@ class DriveTime:
     def to_models(self, drive_time_query=None):
         if not self.rows:
             raise AttributeError(
-                "'DriveTime' object requires 'execute' method invocation " +
-                "prior to calling 'to_models'"
+                "Attribute 'rows' of 'DriveTime' does not exist. " +
+                "Have you invoked the 'execute' method?"
             )
         models = [
             DriveTimeNode(**{
