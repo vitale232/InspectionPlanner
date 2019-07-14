@@ -183,7 +183,7 @@ class DriveTimeNode(models.Model):
 
     the_geom = gis_models.GeometryField()
 
-    query_id = models.ForeignKey('DriveTimeQuery', models.CASCADE)
+    query_id = models.ForeignKey('DriveTimeQuery', models.CASCADE, null=True)
 
 
 class DriveTimeQuery(models.Model):

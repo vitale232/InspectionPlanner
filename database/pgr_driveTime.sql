@@ -22,7 +22,5 @@ BEGIN
 SELECT w.id, w.osm_id, w.lon, w.lat, w.the_geom, d.seq, d.node, d.edge, d.cost, d.agg_cost
 FROM ways_vertices_pgr w, DD d
 WHERE w.id = d.node;
-
 END; $$ 
- 
 LANGUAGE 'plpgsql';
