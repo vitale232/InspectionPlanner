@@ -10,15 +10,14 @@ class DriveTime:
         self.rows = None
         self.models = None
     
-    def execute(self):
+    def execute_sql(self):
         with connection.cursor() as cursor:
             cursor.execute(
                 'SELECT * FROM pgr_driveTime(%s, %s);',
                 [self.node_id, self.max_drive_time]
             )
-            rows = cursor.fetchall()
-        self.rows = rows
-        return rows
+            self.rows = cursor.fetchall()
+        return self.rows
     
     def to_models(self, drive_time_query=None):
         if not self.rows:
@@ -26,7 +25,7 @@ class DriveTime:
                 "Attribute 'rows' of 'DriveTime' does not exist. " +
                 "Have you invoked the 'execute' method?"
             )
-        models = [
+        self.models = [
             DriveTimeNode(**{
                 'ways_vertex_pgr': WaysVerticesPgr(row[0]),
                 'osm_id': row[1],
@@ -41,5 +40,4 @@ class DriveTime:
                 'drive_time_query': drive_time_query,
             }) for row in self.rows
         ]
-        self.models = models
-        return models
+        return self.models
