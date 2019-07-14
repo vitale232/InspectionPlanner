@@ -1,5 +1,4 @@
 from django.db import connection
-from django.db.models import Value
 
 from routing.models import DriveTimeNode, WaysVerticesPgr
 
@@ -18,11 +17,10 @@ class DriveTime:
                 [self.node_id, self.max_drive_time]
             )
             rows = cursor.fetchall()
-
         self.rows = rows
         return rows
     
-    def to_models(self):
+    def to_models(self, drive_time_query=None):
         if not self.rows:
             raise AttributeError(
                 "'DriveTime' object requires 'execute' method invocation " +
@@ -40,6 +38,7 @@ class DriveTime:
                 'edge': row[7],
                 'cost': row[8],
                 'agg_cost': row[9],
+                'drive_time_query': drive_time_query,
             }) for row in self.rows
         ]
         self.models = models
