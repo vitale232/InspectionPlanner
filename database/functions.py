@@ -10,6 +10,9 @@ class DriveTime:
         self.rows = None
         self.models = None
     
+    def __str__(self):
+        return f'SELECT * FROM pgr_driveTime({self.node_id}, {self.max_drive_time});'
+    
     def execute_sql(self):
         with connection.cursor() as cursor:
             cursor.execute(
@@ -26,18 +29,18 @@ class DriveTime:
                 "Have you invoked the 'execute' method?"
             )
         self.models = [
-            DriveTimeNode(**{
-                'ways_vertex_pgr': WaysVerticesPgr(row[0]),
-                'osm_id': row[1],
-                'lon': row[2],
-                'lat': row[3],
-                'the_geom': row[4],
-                'seq': row[5],
-                'node': row[6],
-                'edge': row[7],
-                'cost': row[8],
-                'agg_cost': row[9],
-                'drive_time_query': drive_time_query,
-            }) for row in self.rows
+            DriveTimeNode(
+                ways_vertices_pgr=WaysVerticesPgr(row[0]),
+                osm_id=row[1],
+                lon=row[2],
+                lat=row[3],
+                the_geom=row[4],
+                seq=row[5],
+                node=row[6],
+                edge=row[7],
+                cost=row[8],
+                agg_cost=row[9],
+                drive_time_query=drive_time_query,
+            ) for row in self.rows
         ]
         return self.models
