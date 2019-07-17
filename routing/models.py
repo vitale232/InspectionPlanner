@@ -166,9 +166,9 @@ class Ways(models.Model):
 
 class DriveTimeNode(models.Model):
     def __str__(self):
-        return str(self.ways_vertex_pgr)
+        return str(self.ways_vertices_pgr)
 
-    ways_vertex_pgr = models.ForeignKey('WaysVerticesPgr', models.CASCADE)
+    ways_vertices_pgr = models.ForeignKey('WaysVerticesPgr', models.CASCADE)
     osm_id = models.BigIntegerField(blank=True, null=True)
     lon = models.FloatField(blank=True, null=True)
     lat = models.FloatField(blank=True, null=True)
