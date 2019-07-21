@@ -43,9 +43,17 @@ class RoutingApiTest(TestCase):
         found = resolve('/routing/drive-time-polygons/')
         self.assertEqual(found.func.view_class, views.DriveTimePolygonList)
     
+    def test_drive_time_polygon_detail_url(self):
+        found = resolve('/routing/drive-time-polygons/1/')
+        self.assertEqual(found.func.view_class, views.DriveTimePolygonDetail)
+    
     def test_drive_time_query_list_url(self):
         found = resolve('/routing/drive-time-queries/')
         self.assertEqual(found.func.view_class, views.DriveTimeQueryList)
+    
+    def test_drive_time_query_detail_url(self):
+        found = resolve('/routing/drive-time-queries/1/')
+        self.assertEqual(found.func.view_class, views.DriveTimeQueryDetail)
     
     def test_ways_list_url(self):
         found = resolve('/routing/ways/')
@@ -59,6 +67,11 @@ class RoutingApiTest(TestCase):
     def test_ways_vertices_pgr_list_url(self):
         found = resolve('/routing/ways-vertices-pgr/')
         self.assertEqual(found.func.view_class, views.WaysVerticesPgrList)
+    
+    def test_ways_vertices_pgr_detail_url(self):
+        ways_vertices_pgr = WaysVerticesPgr.objects.get(osm_id=212310248)
+        found = resolve(f'/routing/ways-vertices-pgr/{ways_vertices_pgr.pk}/')
+        self.assertEqual(found.func.view_class, views.WaysVerticesPgrDetail)
 
     WAYS_VERTICES_PGR_DATA = {
         "chk": 0,
