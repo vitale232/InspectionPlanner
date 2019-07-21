@@ -96,8 +96,12 @@ class QueryDriveTime(APIView):
                 **data,
                 ways_vertices_pgr_source=ways_vertices_pgr
             )
-            nodes = DriveTime(ways_vertices_pgr.id, 1).execute_sql()
-            print(nodes)
+            drive_time_query.save()
+            drive_time = DriveTime(ways_vertices_pgr.id, 1)
+            rows = drive_time.execute_sql()
+            models = drive_time.to_models(drive_time_query=drive_time_query)
+            DriveTimeNode.objects.bulk_create(models)
+            print(models)
             return Response(data, status=status.HTTP_200_OK)
 
         print(nominatim_request)
