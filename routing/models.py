@@ -108,7 +108,7 @@ class WaysVerticesPgr(models.Model):
 
     class Meta:
         db_table = 'ways_vertices_pgr'
-        managed = False
+        # managed = False
 
 
 class Ways(models.Model):
@@ -162,7 +162,7 @@ class Ways(models.Model):
 
     class Meta:
         db_table = 'ways'
-        managed = False
+        # managed = False
 
 class DriveTimeNode(models.Model):
     def __str__(self):
