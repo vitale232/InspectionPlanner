@@ -101,12 +101,6 @@ class DriveTimeQueryTests(APITestCase):
         if not type(data['ways_vertices_pgr_source']) is int:
             data['ways_vertices_pgr_source'] = self.drive_time_query_data['ways_vertices_pgr_source'].id
         response = self.client.post(url, data, format='json')
-        
-        print(data)
-        import json
-        print(json.dumps(data))
-        # print(DriveTimeQuery.objects.create(**data))
-        
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(DriveTimeQuery.objects.count(), start_count+1)
         self.assertEqual(DriveTimeQuery.objects.all().order_by('-created_time')[:1].get().osm_id, 126673617)

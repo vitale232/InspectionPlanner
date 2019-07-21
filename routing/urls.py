@@ -4,6 +4,7 @@ import routing.views as views
 
 
 urlpatterns = [
+    path('drive-time/', views.QueryDriveTime.as_view(), name='drive-time'),
     path('drive-time-nodes/', views.DriveTimeNodeList.as_view(), name='drive-time-node-list'),
     path('drive-time-nodes/<int:pk>/', views.DriveTimeNodeDetail.as_view(), name='drive-time-node-detail'),
     path('drive-time-polygons/', views.DriveTimePolygonList.as_view(), name='drive-time-polygon-list'),
