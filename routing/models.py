@@ -116,7 +116,7 @@ class Ways(models.Model):
         return str(self.osm_id)
 
     gid = models.BigAutoField(primary_key=True)
-    osm_id = models.BigIntegerField(blank=True, null=True)
+    osm_id = models.BigIntegerField(db_index=True, blank=True, null=True)
     length = models.FloatField(blank=True, null=True)
     length_m = models.FloatField(blank=True, null=True)
     name = models.TextField(blank=True, null=True)
@@ -206,7 +206,7 @@ class DriveTimeQuery(models.Model):
     edited_time = models.DateTimeField(auto_now=True)
 
     the_geom = gis_models.GeometryField()
-    ways_vertices_pgr_start_point = models.ForeignKey(
+    ways_vertices_pgr_source = models.ForeignKey(
         'WaysVerticesPgr', models.CASCADE
     )
 
