@@ -1,5 +1,7 @@
-from django.urls import resolve
+from django.urls import resolve, reverse
 from django.test import TestCase
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 import routing.views as views
 from routing.models import (
@@ -8,7 +10,36 @@ from routing.models import (
 )
 
 
-class RoutingApiTest(TestCase):
+class DriveTimeNodeTests(APITestCase):
+    def setUp(self):
+        ways_vertices_pgr = WaysVerticesPgr.objects.create(
+            **RoutingApiUrlTest.WAYS_VERTICES_PGR_DATA
+        )
+        self.drive_time_node_data = {
+            'agg_cost': 0.031669950271386,
+            'cost': 0.00307276130123879,
+            'created_time': '2019-07-14T11:00:00.868265Z',
+            'drive_time_query': None,
+            'edge': 476826,
+            'edited_time': '2019-07-14T11:00:00.868274Z',
+            'lat': 41.796805,
+            'lon': -74.740023,
+            'node': 433019,
+            'osm_id': 2344038654,
+            'seq': 100,
+            'the_geom': 'POINT(-74.740023 41.796805)',
+            'ways_vertices_pgr': ways_vertices_pgr.id,
+        }
+    def test_create_drive_time_node(self):
+        url = reverse('drive-time-node-list')
+        data = self.drive_time_node_data
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(DriveTimeNode.objects.count(), 1)
+        self.assertEqual(DriveTimeNode.objects.get().seq, 100)
+    
+
+class RoutingApiUrlTest(TestCase):
     def setUp(self):
         ways_vertices_pgr = WaysVerticesPgr.objects.create(
             **self.WAYS_VERTICES_PGR_DATA
@@ -28,7 +59,6 @@ class RoutingApiTest(TestCase):
             target_osm=ways_vertices_pgr,
             **self.WAYS_DATA
         )
-
 
     def test_drive_time_node_list_url(self):
         found = resolve('/routing/drive-time-nodes/')
