@@ -30,14 +30,40 @@ class DriveTimeNodeTests(APITestCase):
             'the_geom': 'POINT(-74.740023 41.796805)',
             'ways_vertices_pgr': ways_vertices_pgr.id,
         }
+        data = self.drive_time_node_data
+        data['ways_vertices_pgr'] = WaysVerticesPgr.objects.get(id=ways_vertices_pgr.id)
+        drive_time_node = DriveTimeNode.objects.create(
+            **data
+        )
+
     def test_create_drive_time_node(self):
+        start_count = DriveTimeNode.objects.count()
         url = reverse('drive-time-node-list')
         data = self.drive_time_node_data
+        if not type(data['ways_vertices_pgr']) is int:
+            data['ways_vertices_pgr'] = self.drive_time_node_data['ways_vertices_pgr'].id
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(DriveTimeNode.objects.count(), 1)
-        self.assertEqual(DriveTimeNode.objects.get().seq, 100)
+        self.assertEqual(DriveTimeNode.objects.count(), start_count+1)
+        self.assertEqual(DriveTimeNode.objects.all().order_by('-created_time')[:1].get().osm_id, 2344038654)
+
+    def test_get_drive_time_node(self):
+        start_count = DriveTimeNode.objects.count()
+        drive_time_node = DriveTimeNode.objects.all().order_by('-created_time')[:1].get()
+        url = reverse('drive-time-node-detail', kwargs={'pk': drive_time_node.pk})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['properties']['osm_id'], drive_time_node.osm_id)
+        self.assertEqual(DriveTimeNode.objects.count(), start_count)
     
+    def test_delete_drive_time_node(self):
+        start_count = DriveTimeNode.objects.count()
+        drive_time_node = DriveTimeNode.objects.all().order_by('-created_time')[:1].get()
+        url = reverse('drive-time-node-detail', kwargs={'pk': drive_time_node.pk})
+        response = self.client.delete(url, {'id': drive_time_node.id}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        self.assertEqual(DriveTimeNode.objects.count(), start_count-1)
+
 
 class RoutingApiUrlTest(TestCase):
     def setUp(self):
@@ -63,7 +89,7 @@ class RoutingApiUrlTest(TestCase):
     def test_drive_time_node_list_url(self):
         found = resolve('/routing/drive-time-nodes/')
         self.assertEqual(found.func.view_class, views.DriveTimeNodeList)
-    
+
     def test_drive_time_node_detail_url(self):
         drive_time_node = DriveTimeNode.objects.get(osm_id=2344038654)
         found = resolve(f'/routing/drive-time-nodes/{drive_time_node.pk}/')
@@ -72,32 +98,32 @@ class RoutingApiUrlTest(TestCase):
     def test_drive_time_polygon_list_url(self):
         found = resolve('/routing/drive-time-polygons/')
         self.assertEqual(found.func.view_class, views.DriveTimePolygonList)
-    
+
     def test_drive_time_polygon_detail_url(self):
         found = resolve('/routing/drive-time-polygons/1/')
         self.assertEqual(found.func.view_class, views.DriveTimePolygonDetail)
-    
+
     def test_drive_time_query_list_url(self):
         found = resolve('/routing/drive-time-queries/')
         self.assertEqual(found.func.view_class, views.DriveTimeQueryList)
-    
+
     def test_drive_time_query_detail_url(self):
         found = resolve('/routing/drive-time-queries/1/')
         self.assertEqual(found.func.view_class, views.DriveTimeQueryDetail)
-    
+
     def test_ways_list_url(self):
         found = resolve('/routing/ways/')
         self.assertEqual(found.func.view_class, views.WaysList)
-    
+
     def test_ways_detail_url(self):
         ways = Ways.objects.get(osm_id=5645519)
         found = resolve(f'/routing/ways/{ways.pk}/')
         self.assertEqual(found.func.view_class, views.WaysDetail)
-    
+
     def test_ways_vertices_pgr_list_url(self):
         found = resolve('/routing/ways-vertices-pgr/')
         self.assertEqual(found.func.view_class, views.WaysVerticesPgrList)
-    
+
     def test_ways_vertices_pgr_detail_url(self):
         ways_vertices_pgr = WaysVerticesPgr.objects.get(osm_id=212310248)
         found = resolve(f'/routing/ways-vertices-pgr/{ways_vertices_pgr.pk}/')
@@ -148,7 +174,7 @@ class RoutingApiUrlTest(TestCase):
         "x2": -73.97093,
         "y1": 42.7923714,
         "y2": 42.791878,
-        "the_geom": 
+        "the_geom":
             "LINESTRING(-73.9696465 42.7923714, -73.970528 42.792006, " +
             "-73.970601 42.791978, -73.97093 42.791878)"
     }
