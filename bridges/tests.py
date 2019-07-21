@@ -83,6 +83,7 @@ class NewYorkBridgeTests(APITestCase):
         response = self.client.delete(url, {'pk': new_york_bridge.pk})
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(NewYorkBridge.objects.count(), start_count-1)
+        self.assertIsNone(response.data)
 
 
 class BridgesApiTest(TestCase):

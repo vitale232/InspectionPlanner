@@ -63,6 +63,7 @@ class DriveTimeNodeTests(APITestCase):
         response = self.client.delete(url, {'id': drive_time_node.id}, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(DriveTimeNode.objects.count(), start_count-1)
+        self.assertIsNone(response.data)
 
 
 class RoutingApiUrlTest(TestCase):
