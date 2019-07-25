@@ -216,5 +216,6 @@ class DriveTimePolygon(models.Model):
         return str(self.id)
 
     drive_time_query = models.ForeignKey('DriveTimeQuery', models.CASCADE)
+    created_time = models.DateTimeField(auto_now_add=True)
 
     the_geom = gis_models.GeometryField()
