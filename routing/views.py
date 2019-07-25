@@ -122,7 +122,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                     drive_time_query=existing_drive_time_query
                 ).order_by(
                     '-created_time'
-                ).first()
+                )[:1].get()
                 drive_time_query = existing_drive_time_query
             except DriveTimePolygon.DoesNotExist:
                 existing_drive_time_query = None
@@ -136,7 +136,6 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 lat = data.get('lat', None)
                 data['the_geom'] = f'POINT({lon} {lat})'
                 osm_id = data.get('osm_id', None)
-
                 # Remove nominatim fields that are not modeled
                 allowed_fields = [field.name for field in DriveTimeQuery._meta.fields]
                 data = {key: value for key, value in data.items() if key in allowed_fields}
@@ -161,7 +160,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                         distance=Distance('the_geom', point)
                     ).order_by(
                         'distance'
-                    ).first()
+                    )[:1].get()
                     
                 ways_vertices_pgr = WaysVerticesPgr.objects.get(
                     id=way.source.pk
@@ -184,7 +183,6 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                     alpha=30,
                     drive_time_query=drive_time_query
                 )
-
             if not return_bridges:
                 serializer = DriveTimePolygonSerializer(drive_time_polygon)
             else:
