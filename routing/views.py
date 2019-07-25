@@ -96,8 +96,6 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             'country': country,
             'format': 'json',
         }
-        from pprint import pprint
-        pprint(nominatim_query_params)
 
         nominatim_request = requests.get(
             'https://nominatim.openstreetmap.org/search',
@@ -124,7 +122,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                     drive_time_query=existing_drive_time_query
                 )
                 drive_time_query = existing_drive_time_query
-            except DriveTimeQuery.DoesNotExist:
+            except DriveTimePolygon.DoesNotExist:
                 existing_drive_time_query = None
             
             if not existing_drive_time_query:
@@ -136,6 +134,10 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 lat = data.get('lat', None)
                 data['the_geom'] = f'POINT({lon} {lat})'
                 osm_id = data.get('osm_id', None)
+
+                # Remove nominatim fields that are not modeled
+                allowed_fields = [field.name for field in DriveTimeQuery._meta.fields]
+                data = {key: value for key, value in data.items() if key in allowed_fields}
 
                 # Query the Ways table with the osm_id returned by Nominatim API
                 # If it wasn't a way object, it won't exist. Instead use the lat/lon from
@@ -155,7 +157,9 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                         the_geom__intersects=point.buffer(0.005)
                     ).annotate(
                         distance=Distance('the_geom', point)
-                    ).order_by('distance').first()
+                    ).order_by(
+                        'distance'
+                    ).first()
                     
                 ways_vertices_pgr = WaysVerticesPgr.objects.get(
                     id=way.source.pk
@@ -184,6 +188,8 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             else:
                 bridges = NewYorkBridge.objects.filter(
                     the_geom__intersects=drive_time_polygon.the_geom
+                ).order_by(
+                    'bin'
                 )
                 paginated_bridges = self.paginate_queryset(bridges)
                 if paginated_bridges is not None:
