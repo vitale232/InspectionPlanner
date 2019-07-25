@@ -118,9 +118,11 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 ).order_by(
                     '-created_time'
                 ).first()
-                drive_time_polygon = DriveTimePolygon.objects.get(
+                drive_time_polygon = DriveTimePolygon.objects.filter(
                     drive_time_query=existing_drive_time_query
-                )
+                ).order_by(
+                    '-created_time'
+                ).first()
                 drive_time_query = existing_drive_time_query
             except DriveTimePolygon.DoesNotExist:
                 existing_drive_time_query = None
@@ -149,12 +151,12 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 # the least of our performace concerns, so not worth it yet
                 try:
                     way = Ways.objects.get(osm_id=osm_id)
-                except Ways.DoesNotExist as exc:
+                except (Ways.DoesNotExist, Ways.MultipleObjectsReturned) as exc:
                     if not lat or not lon:
                         raise exc
                     point = Point(float(lon), float(lat), srid=4326)
                     way = Ways.objects.filter(
-                        the_geom__intersects=point.buffer(0.005)
+                        the_geom__intersects=point.buffer(0.01)
                     ).annotate(
                         distance=Distance('the_geom', point)
                     ).order_by(

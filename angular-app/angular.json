@@ -24,7 +24,9 @@
               "src/assets"
             ],
             "styles": [
-              "src/theme.scss"
+              "src/styles.css",
+              "src/theme.scss",
+              "./node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": []
           },
