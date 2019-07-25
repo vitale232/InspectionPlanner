@@ -4,11 +4,13 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_gis.pagination import GeoJsonPagination
 import requests
 
 from database.functions import DriveTime
 from bridges.models import NewYorkBridge
 from bridges.serializers import NewYorkBridgeSerializer
+from routing.paginator import DriveTimePaginationMixin
 from routing.models import (
     DriveTimeNode, DriveTimePolygon, DriveTimeQuery,
     Ways, WaysVerticesPgr
@@ -59,7 +61,9 @@ class WaysVerticesPgrDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = WaysVerticesPgr.objects.all()
     serializer_class = WaysVerticesPgrSerializer
 
-class QueryDriveTime(APIView):
+class QueryDriveTime(APIView, DriveTimePaginationMixin):
+    pagination_class = GeoJsonPagination
+
     def get(self, request, format=None):
         return_bridges = request.query_params.get('return_bridges', 'false')
         if return_bridges == 'true' or return_bridges is True:
@@ -84,7 +88,7 @@ class QueryDriveTime(APIView):
 
         # If the desired drive time is not specified, default to 15 mins.
         drive_time_hours = request.query_params.get('drive_time', 0.25)
-        params = {
+        nominatim_query_params = {
             'q': query,
             'street': street,
             'city': city,
@@ -93,18 +97,18 @@ class QueryDriveTime(APIView):
             'format': 'json',
         }
         from pprint import pprint
-        pprint(params)
+        pprint(nominatim_query_params)
 
         nominatim_request = requests.get(
             'https://nominatim.openstreetmap.org/search',
-            params=params
+            params=nominatim_query_params
         )
         if nominatim_request.status_code == 200:
             try:
                 data = nominatim_request.json()[0]
             except IndexError:
                 return Response(
-                    {'msg': 'No results found for this address'},
+                    {'msg': 'No OSM results found for this address'},
                     status=status.HTTP_404_NOT_FOUND
                 )
 
@@ -115,7 +119,7 @@ class QueryDriveTime(APIView):
                     place_id=place_id
                 ).order_by(
                     '-created_time'
-                )[:1].get()
+                ).first()
                 drive_time_polygon = DriveTimePolygon.objects.get(
                     drive_time_query=existing_drive_time_query
                 )
@@ -167,13 +171,16 @@ class QueryDriveTime(APIView):
                 )
 
             if not return_bridges:
-                response_data = DriveTimePolygonSerializer(drive_time_polygon)
+                serializer = DriveTimePolygonSerializer(drive_time_polygon)
             else:
                 bridges = NewYorkBridge.objects.filter(
                     the_geom__intersects=drive_time_polygon.the_geom
                 )
-                response_data = NewYorkBridgeSerializer(bridges, many=True)
-            return Response(response_data.data, status=status.HTTP_200_OK)
+                paginated_bridges = self.paginate_queryset(bridges)
+                if paginated_bridges is not None:
+                    serializer = NewYorkBridgeSerializer(paginated_bridges, many=True)
+                    return self.get_paginated_response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         json_data = nominatim_request.json()
         return Response(json_data, status=status.HTTP_400_BAD_REQUEST)
