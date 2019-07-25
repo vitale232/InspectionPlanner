@@ -136,6 +136,15 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 lat = data.get('lat', None)
                 data['the_geom'] = f'POINT({lon} {lat})'
                 osm_id = data.get('osm_id', None)
+
+                # Query the Ways table with the osm_id returned by Nominatim API
+                # If it wasn't a way object, it won't exist. Instead use the lat/lon from
+                # the nominatim response to build a buffer polygon and capture the
+                # nearest Ways object. If the lat/lon is too far from a road
+                # or outside of the routable area, there will be a 500 error
+                # TODO: Use osm_class from nominatim to more efficiently handle osm_ids
+                # from OSM types relation and node, and don't return 500 errors. This is
+                # the least of our performace concerns, so not worth it yet
                 try:
                     way = Ways.objects.get(osm_id=osm_id)
                 except Ways.DoesNotExist as exc:
