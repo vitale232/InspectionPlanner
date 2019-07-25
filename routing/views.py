@@ -75,7 +75,7 @@ class QueryDriveTime(APIView):
             country = request.query_params.get('country', 'USA')
 
         # If the desired drive time is not specified, default to 15 mins.
-        drive_time = request.query_params.get('drive_time', 0.25)
+        drive_time_hours = request.query_params.get('drive_time', 0.25)
         params = {
             'q': query,
             'street': street,
@@ -127,10 +127,15 @@ class QueryDriveTime(APIView):
                 ways_vertices_pgr_source=ways_vertices_pgr
             )
             drive_time_query.save()
-            drive_time = DriveTime(ways_vertices_pgr.id, drive_time)
+
+            drive_time = DriveTime(
+                ways_vertices_pgr.id,
+                drive_time_hours
+            )
             rows = drive_time.execute_sql()
             models = drive_time.to_models(drive_time_query=drive_time_query)
             DriveTimeNode.objects.bulk_create(models)
+
             drive_time_polygon = drive_time.to_polygon(
                 alpha=30,
                 drive_time_query=drive_time_query
