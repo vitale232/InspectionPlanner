@@ -7,3 +7,8 @@ secrets.py
 *.pyc
 **/__pycache__
 
+/angular-app/dist
+/angular-app/tmp
+/angular-app/out-tsc
+
+/angular_app/node_modules
