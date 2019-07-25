@@ -7,6 +7,8 @@ from rest_framework.views import APIView
 import requests
 
 from database.functions import DriveTime
+from bridges.models import NewYorkBridge
+from bridges.serializers import NewYorkBridgeSerializer
 from routing.models import (
     DriveTimeNode, DriveTimePolygon, DriveTimeQuery,
     Ways, WaysVerticesPgr
@@ -59,6 +61,12 @@ class WaysVerticesPgrDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class QueryDriveTime(APIView):
     def get(self, request, format=None):
+        return_bridges = request.query_params.get('return_bridges', 'false')
+        if return_bridges == 'true' or return_bridges is True:
+            return_bridges = True
+        else:
+            return_bridges = False
+
         # If a general query string is provided, null out other search parameters
         # If detailed parameters are provided, null out the q param
         if request.query_params.get('q', None):
@@ -99,52 +107,73 @@ class QueryDriveTime(APIView):
                     {'msg': 'No results found for this address'},
                     status=status.HTTP_404_NOT_FOUND
                 )
-            data.pop('licence', None)
-            data['bounding_box'] = data.pop('boundingbox', None)
-            data['osm_class'] = data.pop('class', None)
-            data['osm_type'] = data.pop('type', None)
-            lon = data.get('lon', None)
-            lat = data.get('lat', None)
-            data['the_geom'] = f'POINT({lon} {lat})'
-            osm_id = data.get('osm_id', None)
+
+            # Check for previous searches on this address. If exists, reuse the objects
+            place_id = data['place_id']
             try:
-                way = Ways.objects.get(osm_id=osm_id)
-            except Ways.DoesNotExist as exc:
-                if not lat or not lon:
-                    raise exc
-                point = Point(float(lon), float(lat), srid=4326)
-                way = Ways.objects.filter(
-                    the_geom__intersects=point.buffer(0.005)
-                ).annotate(
-                    distance=Distance('the_geom', point)
-                ).order_by('distance').first()
-                
-            ways_vertices_pgr = WaysVerticesPgr.objects.get(
-                id=way.source.pk
-            )
-            drive_time_query = DriveTimeQuery.objects.create(
-                **data,
-                ways_vertices_pgr_source=ways_vertices_pgr
-            )
-            drive_time_query.save()
+                existing_drive_time_query = DriveTimeQuery.objects.filter(
+                    place_id=place_id
+                ).order_by(
+                    '-created_time'
+                )[:1].get()
+                drive_time_polygon = DriveTimePolygon.objects.get(
+                    drive_time_query=existing_drive_time_query
+                )
+                drive_time_query = existing_drive_time_query
+            except DriveTimeQuery.DoesNotExist:
+                existing_drive_time_query = None
+            
+            if not existing_drive_time_query:
+                data.pop('licence', None)
+                data['bounding_box'] = data.pop('boundingbox', None)
+                data['osm_class'] = data.pop('class', None)
+                data['osm_type'] = data.pop('type', None)
+                lon = data.get('lon', None)
+                lat = data.get('lat', None)
+                data['the_geom'] = f'POINT({lon} {lat})'
+                osm_id = data.get('osm_id', None)
+                try:
+                    way = Ways.objects.get(osm_id=osm_id)
+                except Ways.DoesNotExist as exc:
+                    if not lat or not lon:
+                        raise exc
+                    point = Point(float(lon), float(lat), srid=4326)
+                    way = Ways.objects.filter(
+                        the_geom__intersects=point.buffer(0.005)
+                    ).annotate(
+                        distance=Distance('the_geom', point)
+                    ).order_by('distance').first()
+                    
+                ways_vertices_pgr = WaysVerticesPgr.objects.get(
+                    id=way.source.pk
+                )
+                drive_time_query = DriveTimeQuery.objects.create(
+                    **data,
+                    ways_vertices_pgr_source=ways_vertices_pgr
+                )
+                drive_time_query.save()
 
-            drive_time = DriveTime(
-                ways_vertices_pgr.id,
-                drive_time_hours
-            )
-            rows = drive_time.execute_sql()
-            models = drive_time.to_models(drive_time_query=drive_time_query)
-            DriveTimeNode.objects.bulk_create(models)
+                drive_time = DriveTime(
+                    ways_vertices_pgr.id,
+                    drive_time_hours
+                )
+                rows = drive_time.execute_sql()
+                models = drive_time.to_models(drive_time_query=drive_time_query)
+                DriveTimeNode.objects.bulk_create(models)
 
-            drive_time_polygon = drive_time.to_polygon(
-                alpha=30,
-                drive_time_query=drive_time_query
-            )
-            response_data = DriveTimePolygonSerializer(drive_time_polygon)
+                drive_time_polygon = drive_time.to_polygon(
+                    alpha=30,
+                    drive_time_query=drive_time_query
+                )
+
+            if not return_bridges:
+                response_data = DriveTimePolygonSerializer(drive_time_polygon)
+            else:
+                bridges = NewYorkBridge.objects.filter(
+                    the_geom__intersects=drive_time_polygon.the_geom
+                )
+                response_data = NewYorkBridgeSerializer(bridges, many=True)
             return Response(response_data.data, status=status.HTTP_200_OK)
 
-        print(nominatim_request)
-        pprint(nominatim_request.json())
         json_data = nominatim_request.json()
-
         return Response(json_data, status=status.HTTP_400_BAD_REQUEST)
