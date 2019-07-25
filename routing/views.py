@@ -65,7 +65,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
     pagination_class = GeoJsonPagination
 
     def get(self, request, format=None):
-        return_bridges = request.query_params.get('return_bridges', 'false')
+        return_bridges = bool(request.query_params.get('return_bridges', 'false'))
         if return_bridges == 'true' or return_bridges is True:
             return_bridges = True
         else:
