@@ -1,3 +1,46 @@
 <div class="search-panel">
-  <p>search works!</p>
+  <div *ngIf="!panelOpen">
+    <mat-form-field class="form-field" appearance="outline" color="accent">
+      <input matInput color="warn">
+      <mat-label>
+        Search address or place name
+      </mat-label>
+      <button matSuffix mat-icon-button aria-label="Execute search">
+          <mat-icon>search</mat-icon>
+        </button>
+    </mat-form-field>
+  
+  <!-- <div class="form-button"> -->
+      <!-- <button mat-icon-button aria-label="Execute search">
+        <mat-icon>search</mat-icon>
+      </button> -->
+  </div>
+<!-- </div> -->
+
+<mat-expansion-panel (opened)="panelOpen = true;"
+                     (closed)="panelOpen = false;">
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        Detailed search
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <mat-form-field class="detailed-form-field" color="accent">
+      <input matInput placeholder="Street address">
+    </mat-form-field>
+
+    <mat-form-field class="detailed-form-field" color="accent">
+      <input matInput placeholder="City">
+    </mat-form-field>
+
+    <mat-form-field class="detailed-form-field" color="accent">
+      <input matInput placeholder="State">
+    </mat-form-field>
+
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput placeholder="Country">
+      </mat-form-field>
+
+      <button mat-raised-button class="center-button">Search</button>
+  </mat-expansion-panel>
 </div>

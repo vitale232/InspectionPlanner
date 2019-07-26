@@ -8,7 +8,7 @@ import { SidenavService } from 'src/app/services/sidenav.service';
   styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent {
-  sidenavOpen = true;
+  sidenavOpen = false;
 
   constructor(
     private sidenavService: SidenavService,

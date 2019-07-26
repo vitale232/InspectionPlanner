@@ -7,6 +7,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit {
+  panelOpen = false;
 
   constructor(
   ) { }

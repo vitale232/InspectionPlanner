@@ -1,3 +1,29 @@
 .search-panel {
     width: 325px;
 }
+
+.form-container {
+    width: 100%;
+}
+
+.form-field {
+    width: 300px;
+    margin: 0 auto;
+    display: block;
+}
+
+.detailed-form-field {
+    width: 280px;
+    margin: 0 auto;
+    display: block;
+}
+
+.form-button {
+    padding-left: 3px;
+}
+
+.center-button {
+    margin: 0 auto;
+    display: block;
+    width: 250px;
+}

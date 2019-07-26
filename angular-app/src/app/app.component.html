@@ -4,8 +4,8 @@
 
   <app-navbar></app-navbar>
 
-  <mat-sidenav-container fxFlex>
-    <mat-sidenav #sidenav mode="side" opened>
+  <mat-sidenav-container fxFlex [hasBackdrop]="false">
+    <mat-sidenav #sidenav mode="over">
       <app-search></app-search>
     </mat-sidenav>
       <app-map></app-map>

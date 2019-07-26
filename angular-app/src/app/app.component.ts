@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { MatSidenav } from '@angular/material';
 import { SidenavService } from './services/sidenav.service';
 
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -17,6 +18,4 @@ export class AppComponent implements AfterViewInit {
   ngAfterViewInit() {
     this.sidenavService.setSidenav(this.sidenav);
   }
-
-
 }
