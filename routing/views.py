@@ -79,12 +79,14 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             city = None
             state = None
             country = None
+            search_text = query
         else:
             query = None
             street = request.query_params.get('street', None)
             city = request.query_params.get('city', None)
             state = request.query_params.get('state', 'NY')
             country = request.query_params.get('country', 'USA')
+            search_text = ', '.join([street, city, state, country])
 
         # If the desired drive time is not specified, default to 15 mins.
         drive_time_hours = request.query_params.get('drive_time', 0.25)
@@ -117,16 +119,17 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                     place_id=place_id
                 ).order_by(
                     '-created_time'
-                ).first()
+                )[:1].get()
                 drive_time_polygon = DriveTimePolygon.objects.filter(
                     drive_time_query=existing_drive_time_query
                 ).order_by(
                     '-created_time'
                 )[:1].get()
+                print(f'found drive_time_polygon: {drive_time_polygon}')
                 drive_time_query = existing_drive_time_query
-            except DriveTimePolygon.DoesNotExist:
+            except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist):
                 existing_drive_time_query = None
-            
+
             if not existing_drive_time_query:
                 data.pop('licence', None)
                 data['bounding_box'] = data.pop('boundingbox', None)
@@ -135,11 +138,13 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 lon = data.get('lon', None)
                 lat = data.get('lat', None)
                 data['the_geom'] = f'POINT({lon} {lat})'
+                data['search_text'] = query
                 osm_id = data.get('osm_id', None)
                 # Remove nominatim fields that are not modeled
                 allowed_fields = [field.name for field in DriveTimeQuery._meta.fields]
                 data = {key: value for key, value in data.items() if key in allowed_fields}
-
+                from pprint import pprint
+                pprint(data)
                 # Query the Ways table with the osm_id returned by Nominatim API
                 # If it wasn't a way object, it won't exist. Instead use the lat/lon from
                 # the nominatim response to build a buffer polygon and capture the
@@ -153,14 +158,17 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 except (Ways.DoesNotExist, Ways.MultipleObjectsReturned) as exc:
                     if not lat or not lon:
                         raise exc
-                    point = Point(float(lon), float(lat), srid=4326)
+                    nominatim_point = Point(float(lon), float(lat), srid=4326)
                     way = Ways.objects.filter(
-                        the_geom__intersects=point.buffer(0.01)
+                        the_geom__intersects=nominatim_point.buffer(0.01)
                     ).annotate(
-                        distance=Distance('the_geom', point)
+                        distance=Distance('the_geom', nominatim_point)
                     ).order_by(
                         'distance'
                     )[:1].get()
+                    print(f'way gid: {way.gid}')
+                    print(f'way osm_id: {way.osm_id}')
+                    # print(f'ways tag: {way.tag}')
                     
                 ways_vertices_pgr = WaysVerticesPgr.objects.get(
                     id=way.source.pk
@@ -178,7 +186,8 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 rows = drive_time.execute_sql()
                 models = drive_time.to_models(drive_time_query=drive_time_query)
                 DriveTimeNode.objects.bulk_create(models)
-
+                print(f'len(models): {len(models)}')
+                print('computing drive time polygon')
                 drive_time_polygon = drive_time.to_polygon(
                     alpha=30,
                     drive_time_query=drive_time_query
@@ -186,11 +195,18 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             if not return_bridges:
                 serializer = DriveTimePolygonSerializer(drive_time_polygon)
             else:
-                bridges = NewYorkBridge.objects.filter(
-                    the_geom__intersects=drive_time_polygon.the_geom
-                ).order_by(
-                    'bin'
-                )
+                try:
+                    bridges = NewYorkBridge.objects.filter(
+                        the_geom__intersects=drive_time_polygon.the_geom
+                    ).order_by(
+                        'bin'
+                    )
+                except AttributeError:
+                    # TODO: return drive time query here for development
+                    # return Response()
+                    serializer = DriveTimeQuerySerializer(drive_time_query)
+                    print('oops')
+                    return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
                 paginated_bridges = self.paginate_queryset(bridges)
                 if paginated_bridges is not None:
                     serializer = NewYorkBridgeSerializer(paginated_bridges, many=True)
