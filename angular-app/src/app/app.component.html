@@ -1,47 +1,14 @@
-<div fxFlexFill
-     fxLayout="column"
+<div fxFlexFill fxLayout="column"
      fxLayoutAlign="start none"
      class="full-height">
 
-  <div fxLayout="row" fxLayoutAlign="center center">
-    <div fxFlex>
-      <app-navbar></app-navbar>
-    </div>
-  </div>
+  <app-navbar></app-navbar>
 
-  <mat-sidenav-container>
-
-    <mat-sidenav #leftSidenav mode="side" opened class="search-panel">
-      <div class="example-container">
-        <mat-form-field>
-          <input matInput placeholder="Input">
-        </mat-form-field>
-        
-        <mat-form-field>
-          <textarea matInput placeholder="Textarea"></textarea>
-        </mat-form-field>
-      
-        <mat-form-field>
-          <mat-select placeholder="Select">
-            <mat-option value="option">Option</mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <p>
-            this is it<br>
-            this is it<br>
-            this is it<br>
-            this is it<br>
-            this is it<br>
-            this is it<br>
-            this is it<br>
-        </p>
-      </div>
+  <mat-sidenav-container fxFlex>
+    <mat-sidenav mode="side" opened>
+      <app-search></app-search>
     </mat-sidenav>
-
-    <mat-sidenav-content>
-      <div fxFlex leaflet [leafletOptions]="options" class="full-height"> </div>
-    </mat-sidenav-content>
+      <app-map></app-map>
   </mat-sidenav-container>
 
 </div>

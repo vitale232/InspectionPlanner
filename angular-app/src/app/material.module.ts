@@ -9,6 +9,7 @@ import {
     MatSidenavModule,
     MatFormFieldModule,
     MatSelectModule,
+    MatCardModule,
 } from '@angular/material';
 
 @NgModule({
@@ -21,7 +22,8 @@ import {
     MatIconModule,
     MatSidenavModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    MatCardModule,
   ]
 })
 export class MaterialModule {}
