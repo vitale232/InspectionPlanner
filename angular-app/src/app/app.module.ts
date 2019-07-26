@@ -12,6 +12,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MapComponent } from './components/map/map.component';
 import { SearchComponent } from './components/search/search.component';
+import { SidenavService } from './services/sidenav.service';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,9 @@ import { SearchComponent } from './components/search/search.component';
     MaterialModule,
     LeafletModule.forRoot(),
   ],
-  providers: [],
+  providers: [
+    SidenavService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

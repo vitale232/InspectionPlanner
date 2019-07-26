@@ -1,7 +1,17 @@
 <mat-toolbar color="primary">
-  <mat-icon>menu</mat-icon>
+  
+  <div *ngIf="sidenavOpen; else elseBlock">
+      <button mat-icon-button (click)="toggleSidenav();" aria-label="Toggle search panel">
+        <mat-icon>close</mat-icon>
+      </button>
+  </div>
+  <ng-template #elseBlock>
+    <button mat-icon-button (click)="toggleSidenav();" aria-label="Toggle search panel">
+      <mat-icon>search</mat-icon>
+    </button>
+  </ng-template>
 
-  <span class="fill-remaining-space">Inspection Planner</span>
+  <span class="fill-remaining-space">Inspection Planner Application (IPA)</span>
 
   <button mat-button [matMenuTriggerFor]="menu">Menu</button>
   <mat-menu #menu="matMenu">

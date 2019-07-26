@@ -1,15 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { SidenavService } from 'src/app/services/sidenav.service';
+
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
+  sidenavOpen = true;
 
-  constructor() { }
+  constructor(
+    private sidenavService: SidenavService,
+  ) { }
 
-  ngOnInit() {
+  toggleSidenav() {
+    this.sidenavService.toggle();
+    this.sidenavOpen = !this.sidenavOpen;
   }
 
 }
