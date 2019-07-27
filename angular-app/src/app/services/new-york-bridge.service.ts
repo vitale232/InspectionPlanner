@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class NewYorkBridgeService {
   newYorkBridgesUrl = 'bridges/new-york-bridges/';
-  newYorkBridgesHeavyUrl = 'bridges/new-york-bridges-feeling-lucky/';
+  newYorkBridgesHeavyUrl = 'bridges/new-york-bridges/feeling-lucky/';
   constructor(
     private http: HttpClient
   ) { }
