@@ -1,5 +1,5 @@
 <div class="search-panel">
-  <div *ngIf="!panelOpen">
+  <div *ngIf="!detailPanelOpen">
     <mat-form-field class="form-field" appearance="outline" color="accent">
       <input matInput color="warn">
       <mat-label>
@@ -9,16 +9,11 @@
           <mat-icon>search</mat-icon>
         </button>
     </mat-form-field>
-  
-  <!-- <div class="form-button"> -->
-      <!-- <button mat-icon-button aria-label="Execute search">
-        <mat-icon>search</mat-icon>
-      </button> -->
   </div>
-<!-- </div> -->
 
-<mat-expansion-panel (opened)="panelOpen = true;"
-                     (closed)="panelOpen = false;">
+
+  <mat-expansion-panel (opened)="detailPanelOpen = true;"
+                      (closed)="detailPanelOpen = false;">
     <mat-expansion-panel-header>
       <mat-panel-title>
         Detailed search
@@ -37,10 +32,27 @@
       <input matInput value="NY" placeholder="State">
     </mat-form-field>
 
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput value="USA" placeholder="Country">
-      </mat-form-field>
+    <mat-form-field class="detailed-form-field" color="accent">
+      <input matInput value="USA" placeholder="Country">
+    </mat-form-field>
 
-      <button mat-raised-button class="center-button">Search</button>
+    <button mat-raised-button class="center-button">Search</button>
   </mat-expansion-panel>
+
+  <div *ngIf="driveTimeQueriesData">
+    <mat-expansion-panel (opened)="detailPanelOpen = true;" (closed)="detailPanelOpen = false;">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Past searches
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-action-list>
+        <button mat-list-item
+                *ngFor="let name of driveTimeQueriesText">
+          {{ name }}
+        </button>
+      </mat-action-list>
+    </mat-expansion-panel>
+  </div>
+
 </div>

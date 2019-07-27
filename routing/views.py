@@ -38,7 +38,7 @@ class DriveTimePolygonDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = DriveTimePolygonSerializer
 
 class DriveTimeQueryList(generics.ListCreateAPIView):
-    queryset = DriveTimeQuery.objects.all()
+    queryset = DriveTimeQuery.objects.all().order_by('-created_time')
     serializer_class = DriveTimeQuerySerializer
 
 class DriveTimeQueryDetail(generics.RetrieveUpdateDestroyAPIView):
