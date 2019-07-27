@@ -4,7 +4,6 @@ import * as L from 'leaflet';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { NewYorkBridgesApiResponse } from 'src/app/models/new-york-bridges.model';
 import { LeafletLayersModel } from 'src/app/models/leaflet-layers.model';
-import { forkJoin } from 'rxjs';
 
 
 @Component({
@@ -66,23 +65,6 @@ export class MapComponent implements OnInit, AfterViewInit {
     ])
   };
 
-  geoJSON = {
-    id: 'geoJSON',
-    name: 'Geo JSON Polygon',
-    enabled: true,
-    layer: L.geoJSON(
-      ({
-        type: 'Polygon',
-        coordinates: [[
-          [42.44040861851155, -73.97946599681609],
-          [42.44040861851155, -73.5713780501485],
-          [42.86769928070402, -73.5713780501485],
-          [42.86769928070402, -73.97946599681609]
-        ]]
-      }) as any,
-      { style: () => ({ color: '#ff7800' })})
-  };
-
   model = new LeafletLayersModel(
     [
       this.LAYER_OPEN_STREET_MAP,
@@ -91,43 +73,28 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.LAYER_OPEN_STREET_MAP.id,
     [
       this.studyArea,
-      this.geoJSON,
+      // this.geoJSON,
       this.studyArea2
     ]
   );
 
   layers: L.Layer[];
-  layersControl = {
+  layersControl: {[k: string]: any} = {
     baseLayers: {
       OpenStreetMap: this.LAYER_OPEN_STREET_MAP.layer,
       'Wikimedia Map': this.LAYER_WIKIMEDIA_MAP.layer
     },
     overlays: {
-      Extent: this.studyArea.layer,
-      GeoJSON: this.geoJSON.layer,
-      Extent2: this.studyArea2.layer
+      'Routable Network Extent': this.studyArea.layer,
+      // GeoJSON: this.geoJSON.layer,
+      'Drive Time BBox': this.studyArea2.layer
     }
   };
 
   options = {
     zoom: 6,
-    center: L.latLng(43.2994, -74.2179)
+    center: L.latLng(43.0, -75.3)
   };
-
-  // overlaysGroup = L.layerGroup();
-  // allOverlays = [this.studyArea];
-
-  // layersControl = {
-  //   baseLayers: {
-  //     'Wikimedia Maps': this.wMaps,
-  //     'Open Street Map': this.osm,
-  //   },
-  //   overlays: {
-  //     'Extent of routable network': this.studyArea,
-  //     // 'GeoJSON': L.geoJSON(this.bridges),
-  //     'overlays': this.overlaysGroup
-  //   }
-  // };
 
   constructor(
     private newYorkBridgeService: NewYorkBridgeService,
@@ -155,78 +122,29 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    console.log('after init');
+    this.getBridges();
   }
 
-  // handleBridgePages() {
-  //   if (this.bridgeResponse.count) {
-  //     this.bridgePageCount = Math.ceil(this.bridgeResponse.count / 100);
-  //   }
-  //   if (this.bridgeResponse.next) {
-  //     this.nextBridgePage = this.bridgeResponse.next[this.bridgeResponse.next.length - 1];
-  //   }
-  // }
-
-  // getBridges(map: L.Map = null) {
-  //   console.log(`next page: ${this.nextBridgePage}`);
-  //   this.newYorkBridgeService.getNewYorkBridgesHeavyTraffic(this.nextBridgePage)
-  //   .subscribe(
-  //     data => {
-  //       this.bridges = data.results;
-  //       this.bridgeResponse = data;
-  //     },
-  //     err => {console.log(err); },
-  //     () => {
-  //       if (map) {
-  //         // L.geoJSON(this.bridges).addTo(map);
-  //         // this.layersControl.overlays.GeoJSON = L.geoJSON(this.bridges);
-  //         // this.options.layers = this.options.layers.push(this.layersControl.overlays.GeoJSON);
-  //         // console.log(this.layersControl);
-  //         // console.log(this.options);
-  //       }
-  //       this.handleBridgePages();
-  //     }
-  //   );
-  // }
-
-  // onMapReady(map: L.Map) {
-  //   this.allOverlays.forEach(overlay => {
-  //     overlay.addTo(this.overlaysGroup);
-  //   });
-  //   // this.getBridges(map);
-  //   // map.fitBounds(this.studyArea.getBounds(), {
-  //   //   padding: L.point(24, 24),
-  //   //   maxZoom: 12,
-  //   //   animate: true
-  //   // });
-  // }
-
-  // // getBridgeCalls() {
-  // //   const calls = [];
-  // //   for (let i = 2; i < this.bridgePageCount; i++) { // replace 10 w this.bridgePageCount
-  // //     calls.push(
-  // //       this.newYorkBridgeService.getNewYorkBridgesHeavyTraffic(i)
-  // //     );
-  // //   }
-  // //   this.bridgeCalls = calls;
-  // // }
-
-  // // getMoreBridges(map: L.Map = null) {
-  // //   forkJoin(this.bridgeCalls).subscribe(
-  // //     (getRequestArray) => {
-  // //       getRequestArray.forEach((bridgePage: NewYorkBridgesApiResponse) => {
-  // //         bridgePage.results.features.forEach(feature => {
-  // //           this.bridges.features.push(feature);
-  // //         });
-  // //       } );
-  // //     },
-  // //     err => {
-  // //       console.log(err);
-  // //     },
-  // //     () => {
-  // //       console.log('complete');
-  // //       console.log(this.bridges);
-  // //     }
-  // //   );
-  // // }
+  getBridges(map: L.Map = null) {
+    this.newYorkBridgeService.getNewYorkBridgesHeavyTraffic(this.nextBridgePage)
+    .subscribe(
+      (data: NewYorkBridgesApiResponse) => {
+        const bridgesGeoJSON = {
+          id: 'bridgesGeoJSON',
+          name: 'Bridges Geo JSON',
+          enabled: true,
+          layer: L.geoJSON(
+            (data.results) as any
+          )
+        };
+        this.bridges = data.results;
+        this.model.overlayLayers.push(bridgesGeoJSON);
+        this.layersControl.overlays.Bridges = bridgesGeoJSON.layer;
+      },
+      err => {console.log(err); },
+      () => {
+        this.apply();
+      }
+    );
+  }
 }
