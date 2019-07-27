@@ -40,7 +40,9 @@
   </mat-expansion-panel>
 
   <div *ngIf="driveTimeQueriesData">
-    <mat-expansion-panel (opened)="detailPanelOpen = true;" (closed)="detailPanelOpen = false;">
+    <mat-expansion-panel
+      (opened)="pastPanelOpen = true;"
+      (closed)="pastPanelOpen = false;">
       <mat-expansion-panel-header>
         <mat-panel-title>
           Past searches
