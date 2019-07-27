@@ -1,5 +1,3 @@
-import random
-
 from rest_framework import generics
 
 from bridges.models import NewYorkBridge
@@ -15,10 +13,5 @@ class NewYorkBridgeDetail(generics.RetrieveUpdateDestroyAPIView):
 
 class NewYorkBridgeRandom(generics.ListCreateAPIView):
     # Get 500 random bridges for zoomed out view
-    queryset = NewYorkBridge.objects.filter(
-        id__in=sorted(
-            [q['id'] for q in NewYorkBridge.objects.all().values('id')],
-            key=lambda k: random.random()
-        )[:500]
-    )
+    queryset = NewYorkBridge.objects.order_by('?')[:500]
     serializer_class = NewYorkBridgeSerializer
