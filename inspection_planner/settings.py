@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'rest_framework',
     'rest_framework_gis',
+    'django_filters',
 
     'inspection_planner',
     'routing',

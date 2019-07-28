@@ -1,4 +1,5 @@
 from rest_framework import generics
+from rest_framework_gis.filters import InBBoxFilter
 
 from bridges.models import NewYorkBridge
 from bridges.serializers import NewYorkBridgeSerializer
@@ -6,6 +7,8 @@ from bridges.serializers import NewYorkBridgeSerializer
 class NewYorkBridgeList(generics.ListCreateAPIView):
     queryset = NewYorkBridge.objects.all().order_by('pk')
     serializer_class = NewYorkBridgeSerializer
+    bbox_filter_field = 'the_geom'
+    filter_backends = (InBBoxFilter, )
 
 class NewYorkBridgeDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = NewYorkBridge.objects.all()
