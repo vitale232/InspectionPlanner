@@ -139,13 +139,13 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   onMapMove(mapMoveEvent: Event) {
     const page = 1;
-    const zoom = this.map.options.zoom;
-    if (zoom) {
+    const zoom = this.map.getZoom();
+    if (zoom > 8) {
       this.getBridgesBbox(page, this.map.getBounds().pad(0.05));
     }
   }
 
-  getBridgesBbox(page: number, bounds: L.bounds) {
+  getBridgesBbox(page: number, bounds: any) {
     // If a request is already out, cancel it
     if (this.bridgeSubscription) {
       this.bridgeSubscription.unsubscribe();
