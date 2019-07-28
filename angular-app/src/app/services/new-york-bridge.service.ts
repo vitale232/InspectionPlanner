@@ -13,15 +13,23 @@ export class NewYorkBridgeService {
     private http: HttpClient
   ) { }
 
-  getNewYorkBridges(pageNumber: number) {
+  getNewYorkBridgesBounds(pageNumber: number, bounds) {
+    const queryParams: any = { };
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
+      queryParams.page = pageNumber;
     }
-    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, {
-      params: {
-        page: `${pageNumber}`
-      }
-    });
+    if (bounds) {
+      const bbox = (
+        `${bounds._northEast.lng},${bounds._southWest.lat},` +
+        `${bounds._southWest.lng},${bounds._northEast.lat}`
+      );
+      console.log(bbox);
+      queryParams.in_bbox = bbox;
+    }
+    console.log('params');
+    console.log(queryParams);
+    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, { params: queryParams });
   }
 
   getNewYorkBridgesHeavyTraffic(pageNumber: number) {

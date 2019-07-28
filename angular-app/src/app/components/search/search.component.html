@@ -50,8 +50,10 @@
       </mat-expansion-panel-header>
       <mat-action-list>
         <button mat-list-item
+                matTooltip="{{ name.longName }}"
+                matTooltipShowDelay="1000"
                 *ngFor="let name of driveTimeQueriesText">
-          {{ name }}
+          {{ name.shortName }}
         </button>
       </mat-action-list>
     </mat-expansion-panel>

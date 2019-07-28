@@ -4,6 +4,7 @@ import * as L from 'leaflet';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { NewYorkBridgesApiResponse } from 'src/app/models/new-york-bridges.model';
 import { LeafletLayersModel } from 'src/app/models/leaflet-layers.model';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -13,12 +14,14 @@ import { LeafletLayersModel } from 'src/app/models/leaflet-layers.model';
 })
 export class MapComponent implements OnInit, AfterViewInit {
   title = 'angular-app';
+  bridgeSubscription: Subscription|null;
   bridgeResponse = null;
   bridgePageCount = null;
   nextBridgePage = 1;
   bridgeCalls = null;
   bridges = null;
   featureContainer = [];
+  map: L.Map;
 
   LAYER_WIKIMEDIA_MAP = {
     id: 'wikimediamap',
@@ -73,7 +76,6 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.LAYER_OPEN_STREET_MAP.id,
     [
       this.studyArea,
-      // this.geoJSON,
       this.studyArea2
     ]
   );
@@ -86,7 +88,6 @@ export class MapComponent implements OnInit, AfterViewInit {
     },
     overlays: {
       'Routable Network Extent': this.studyArea.layer,
-      // GeoJSON: this.geoJSON.layer,
       'Drive Time BBox': this.studyArea2.layer
     }
   };
@@ -106,6 +107,10 @@ export class MapComponent implements OnInit, AfterViewInit {
     setTimeout(() => { console.log(this.bridges); }, 5000);
   }
 
+  ngAfterViewInit() {
+    this.getRandomBridges(1);
+  }
+
   apply() {
     // Get the active base layer
     const baseLayer = this.model.baseLayers.find((l: any) => (l.id === this.model.baseLayer));
@@ -121,11 +126,59 @@ export class MapComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  ngAfterViewInit() {
-    this.getBridges();
+  onMapReady(map: L.Map) {
+    this.map = map;
   }
 
-  getBridges(map: L.Map = null) {
+  onZoomChange(zoom: number) {
+    if (zoom > 8) {
+      const page = 1;
+      this.getBridgesBbox(page, this.map.getBounds().pad(0.05));
+    }
+  }
+
+  onMapMove(mapMoveEvent: Event) {
+    const page = 1;
+    const zoom = this.map.options.zoom;
+    if (zoom) {
+      this.getBridgesBbox(page, this.map.getBounds().pad(0.05));
+    }
+  }
+
+  getBridgesBbox(page: number, bounds: L.bounds) {
+    // If a request is already out, cancel it
+    if (this.bridgeSubscription) {
+      this.bridgeSubscription.unsubscribe();
+    }
+    this.bridgeSubscription = this.newYorkBridgeService.getNewYorkBridgesBounds(1, bounds)
+      .subscribe(
+        (data: NewYorkBridgesApiResponse) => {
+            const bridgesGeoJSON = {
+              id: 'bridgesGeoJSON',
+              name: 'Bridges Geo JSON',
+              enabled: true,
+              layer: L.geoJSON(
+                (data.results) as any
+              )
+            };
+
+            this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
+              return overlay.id !== 'bridgesGeoJSON';
+            });
+            this.bridges = data.results;
+            this.model.overlayLayers.push(bridgesGeoJSON);
+            this.layersControl.overlays.Bridges = bridgesGeoJSON.layer;
+        },
+        err => { console.log(err); },
+        () => { this.apply(); }
+      );
+  }
+
+  getRandomBridges(zoom: number = null) {
+    // If a pan/zoom getBridges request exists, might as well cancel it
+    if (this.bridgeSubscription) {
+      this.bridgeSubscription.unsubscribe();
+    }
     this.newYorkBridgeService.getNewYorkBridgesHeavyTraffic(this.nextBridgePage)
     .subscribe(
       (data: NewYorkBridgesApiResponse) => {

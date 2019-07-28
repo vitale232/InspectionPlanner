@@ -1,5 +1,8 @@
 <div leaflet class="full-height"
      [leafletOptions]="options"
      [leafletLayers]="layers"
-     [leafletLayersControl]="layersControl">
+     [leafletLayersControl]="layersControl"
+     (leafletZoomChange)="onZoomChange($event)"
+     (leafletMapMoveEnd)="onMapMove($event)"
+     (leafletMapReady)="onMapReady($event)">
 </div>
