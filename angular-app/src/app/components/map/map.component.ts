@@ -2,7 +2,7 @@ import { Component, OnInit, AfterViewInit } from '@angular/core';
 // import { tileLayer, latLng, Map, polyline, point, polygon } from 'leaflet';
 import * as L from 'leaflet';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
-import { NewYorkBridgesApiResponse } from 'src/app/models/new-york-bridges.model';
+import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
 import { LeafletLayersModel } from 'src/app/models/leaflet-layers.model';
 import { Subscription } from 'rxjs';
 
@@ -150,6 +150,14 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   }
 
+  bridgePopupHtml(feature: NewYorkBridgeFeature) {
+    return `<dl> <dt> BIN </dt> <dd> ${feature.properties.bin} </dd> </dl>` +
+      `<dl> <dt> Common Name </dt> <dd> ${feature.properties.common_name} </dd> </dl>` +
+      `<dl> <dt> County </dt> <dd> ${feature.properties.county_name} </dd> </dl>` +
+      `<dl> <dt> AADT </dt> <dd> ${feature.properties.aadt} </dd> </dl>` +
+      `<dl> <dt> AADT Year </dt> <dd> ${feature.properties.year_of_aadt} </dd> </dl>` +
+      `<dl> <dt> Inspection </dt> <dd> ${feature.properties.inspection} </dd> </dl>`;
+  }
   getBridgesBbox(page: number, bounds: any) {
     // If a request is already out, cancel it
     this.cancelRequests();
@@ -161,7 +169,11 @@ export class MapComponent implements OnInit, AfterViewInit {
               name: 'Bridges Geo JSON',
               enabled: true,
               layer: L.geoJSON(
-                (data.results) as any
+                (data.results) as any, {
+                  onEachFeature: (feature: any, layer: L.Layer) => {
+                    layer.bindPopup(this.bridgePopupHtml(feature));
+                  }
+                }
               )
             };
 
@@ -188,7 +200,11 @@ export class MapComponent implements OnInit, AfterViewInit {
           name: 'Bridges Geo JSON',
           enabled: true,
           layer: L.geoJSON(
-            (data.results) as any
+            (data.results) as any, {
+              onEachFeature: (feature: any, layer: L.Layer) => {
+                layer.bindPopup(this.bridgePopupHtml(feature));
+              }
+            }
           )
         };
 
