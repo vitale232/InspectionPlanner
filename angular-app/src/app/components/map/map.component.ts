@@ -132,11 +132,11 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   onZoomChange(zoom: number) {
+    const page = 1;
     if (zoom > 8) {
-      const page = 1;
       this.getBridgesBbox(page, this.map.getBounds().pad(0.05));
     } else {
-      this.getRandomBridges(1);
+      this.getRandomBridges(page);
     }
   }
 
@@ -146,7 +146,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     if (zoom > 8) {
       this.getBridgesBbox(page, this.map.getBounds().pad(0.05));
     } else {
-      this.getRandomBridges(1);
+      this.getRandomBridges(page);
     }
   }
 
@@ -180,7 +180,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   getRandomBridges(zoom: number = null) {
     // If a pan/zoom getBridges request exists, might as well cancel it
     this.cancelRequests();
-    this.randomSubscription = this.newYorkBridgeService.getNewYorkBridgesRandom(this.nextBridgePage)
+    this.randomSubscription = this.newYorkBridgeService.getNewYorkBridgesRandom(1)
     .subscribe(
       (data: NewYorkBridgesApiResponse) => {
         const bridgesGeoJSON = {
