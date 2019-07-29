@@ -13,9 +13,11 @@
 
   <span class="fill-remaining-space">Inspection Planner Application (IPA)</span>
 
-  <button mat-button [matMenuTriggerFor]="menu">Menu</button>
+  <button mat-button [matMenuTriggerFor]="menu">
+    <mat-icon>menu</mat-icon>
+  </button>
   <mat-menu #menu="matMenu">
-    <button mat-menu-item>Item 1</button>
-    <button mat-menu-item>Item 2</button>
+    <a mat-menu-item href="https://openstreetmap.org">OpenStreetMap.org</a>
+    <a mat-menu-item href="https://timelinetamer.com">TimelineTamer.com</a>
   </mat-menu>
 </mat-toolbar>
