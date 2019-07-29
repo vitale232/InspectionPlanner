@@ -23,6 +23,10 @@ export class MapComponent implements OnInit, AfterViewInit {
   bridges = null;
   featureContainer = [];
   map: L.Map;
+  bridgeMarker = L.icon({
+    iconUrl: 'leaflet/marker-icon.png',
+    shadowUrl: 'leaflet/marker-shadow.png'
+  });
 
   LAYER_WIKIMEDIA_MAP = {
     id: 'wikimediamap',
@@ -134,7 +138,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   onZoomChange(zoom: number) {
     const page = 1;
     if (zoom > 8) {
-      this.getBridgesBbox(page, this.map.getBounds().pad(0.05));
+      this.getBridgesBbox(page, this.map.getBounds().pad(0.2));
     } else {
       this.getRandomBridges(page);
     }
@@ -143,16 +147,29 @@ export class MapComponent implements OnInit, AfterViewInit {
   onMapMove(mapMoveEvent: Event) {
     const page = 1;
     const zoom = this.map.getZoom();
-    if (zoom > 8) {
-      this.getBridgesBbox(page, this.map.getBounds().pad(0.05));
+    // const boundsIntersect = this.
+    let mapBoundsContained = null;
+    if (this.bridges.layer) {
+      mapBoundsContained = this.bridges.layer.getBounds().pad(0.15).contains(
+        this.map.getBounds()
+      );
+      console.log(`Map bounds contained in bridge bounds: ${mapBoundsContained}`);
+
     } else {
-      this.getRandomBridges(page);
+      mapBoundsContained = false;
+    }
+    if (!mapBoundsContained) {
+      if (zoom > 8) {
+        this.getBridgesBbox(page, this.map.getBounds().pad(0.2));
+      } else {
+        this.getRandomBridges(page);
+      }
     }
   }
 
   bridgePopupHtml(feature: NewYorkBridgeFeature) {
     return `<dl> <dt> BIN </dt> <dd> ${feature.properties.bin} </dd> </dl>` +
-      `<dl> <dt> Common Name </dt> <dd> ${feature.properties.common_name} </dd> </dl>` +
+      `<dl> <dt> Carried </dt> <dd> ${feature.properties.carried} </dd> </dl>` +
       `<dl> <dt> County </dt> <dd> ${feature.properties.county_name} </dd> </dl>` +
       `<dl> <dt> AADT </dt> <dd> ${feature.properties.aadt} </dd> </dl>` +
       `<dl> <dt> AADT Year </dt> <dd> ${feature.properties.year_of_aadt} </dd> </dl>` +
@@ -172,15 +189,21 @@ export class MapComponent implements OnInit, AfterViewInit {
                 (data.results) as any, {
                   onEachFeature: (feature: any, layer: L.Layer) => {
                     layer.bindPopup(this.bridgePopupHtml(feature));
+                  },
+                  pointToLayer: (feature, latLng) => {
+                    return L.marker(latLng, {icon: this.bridgeMarker});
                   }
                 }
               )
             };
 
+            // console.log('here is the bounds');
+            // console.log(bridgesGeoJSON.layer.getBounds());
+            // console.log(bridgesGeoJSON.layer.getBounds().intersects(this.map.getBounds()));
             this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
               return overlay.id !== 'bridgesGeoJSON';
             });
-            this.bridges = data.results;
+            this.bridges = bridgesGeoJSON;
             this.model.overlayLayers.push(bridgesGeoJSON);
             this.layersControl.overlays.Bridges = bridgesGeoJSON.layer;
         },
@@ -203,6 +226,9 @@ export class MapComponent implements OnInit, AfterViewInit {
             (data.results) as any, {
               onEachFeature: (feature: any, layer: L.Layer) => {
                 layer.bindPopup(this.bridgePopupHtml(feature));
+              },
+              pointToLayer: (feature, latLng) => {
+                return L.marker(latLng, {icon: this.bridgeMarker});
               }
             }
           )
@@ -211,7 +237,7 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
           return overlay.id !== 'bridgesGeoJSON';
         });
-        this.bridges = data.results;
+        this.bridges = bridgesGeoJSON;
         this.model.overlayLayers.push(bridgesGeoJSON);
         this.layersControl.overlays.Bridges = bridgesGeoJSON.layer;
       },
