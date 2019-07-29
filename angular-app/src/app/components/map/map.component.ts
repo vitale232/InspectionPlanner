@@ -14,7 +14,8 @@ import { Subscription } from 'rxjs';
 })
 export class MapComponent implements OnInit, AfterViewInit {
   title = 'angular-app';
-  bridgeSubscription: Subscription|null;
+  bboxSubscription: Subscription|null;
+  randomSubscription: Subscription|null;
   bridgeResponse = null;
   bridgePageCount = null;
   nextBridgePage = 1;
@@ -134,6 +135,8 @@ export class MapComponent implements OnInit, AfterViewInit {
     if (zoom > 8) {
       const page = 1;
       this.getBridgesBbox(page, this.map.getBounds().pad(0.05));
+    } else {
+      this.getRandomBridges(1);
     }
   }
 
@@ -142,15 +145,15 @@ export class MapComponent implements OnInit, AfterViewInit {
     const zoom = this.map.getZoom();
     if (zoom > 8) {
       this.getBridgesBbox(page, this.map.getBounds().pad(0.05));
+    } else {
+      this.getRandomBridges(1);
     }
   }
 
   getBridgesBbox(page: number, bounds: any) {
     // If a request is already out, cancel it
-    if (this.bridgeSubscription) {
-      this.bridgeSubscription.unsubscribe();
-    }
-    this.bridgeSubscription = this.newYorkBridgeService.getNewYorkBridgesBounds(1, bounds)
+    this.cancelRequests();
+    this.bboxSubscription = this.newYorkBridgeService.getNewYorkBridgesBounds(1, bounds)
       .subscribe(
         (data: NewYorkBridgesApiResponse) => {
             const bridgesGeoJSON = {
@@ -176,10 +179,8 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   getRandomBridges(zoom: number = null) {
     // If a pan/zoom getBridges request exists, might as well cancel it
-    if (this.bridgeSubscription) {
-      this.bridgeSubscription.unsubscribe();
-    }
-    this.newYorkBridgeService.getNewYorkBridgesHeavyTraffic(this.nextBridgePage)
+    this.cancelRequests();
+    this.randomSubscription = this.newYorkBridgeService.getNewYorkBridgesRandom(this.nextBridgePage)
     .subscribe(
       (data: NewYorkBridgesApiResponse) => {
         const bridgesGeoJSON = {
@@ -190,6 +191,10 @@ export class MapComponent implements OnInit, AfterViewInit {
             (data.results) as any
           )
         };
+
+        this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
+          return overlay.id !== 'bridgesGeoJSON';
+        });
         this.bridges = data.results;
         this.model.overlayLayers.push(bridgesGeoJSON);
         this.layersControl.overlays.Bridges = bridgesGeoJSON.layer;
@@ -199,5 +204,14 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.apply();
       }
     );
+  }
+
+  cancelRequests() {
+    if (this.bboxSubscription) {
+      this.bboxSubscription.unsubscribe();
+    }
+    if (this.randomSubscription) {
+      this.randomSubscription.unsubscribe();
+    }
   }
 }

@@ -32,7 +32,7 @@ export class NewYorkBridgeService {
     return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, { params: queryParams });
   }
 
-  getNewYorkBridgesHeavyTraffic(pageNumber: number) {
+  getNewYorkBridgesRandom(pageNumber: number) {
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
     }
