@@ -34,7 +34,7 @@ class DriveTime:
         if not self.rows:
             raise AttributeError(
                 "Attribute 'rows' of 'DriveTime' does not exist. " +
-                "Have you invoked the 'execute' method?"
+                "Have you invoked the 'execute_sql' method?"
             )
         self.models = [
             DriveTimeNode(
