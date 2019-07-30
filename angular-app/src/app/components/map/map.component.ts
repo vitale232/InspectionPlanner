@@ -24,6 +24,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   featureContainer = [];
   map: L.Map;
   padding = 0.25;
+  loadingBridges: boolean;
   bridgeMarker = L.icon({
     iconUrl: 'leaflet/marker-icon.png',
     shadowUrl: 'leaflet/marker-shadow.png'
@@ -110,7 +111,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    setTimeout(() => { console.log(this.bridges); }, 5000);
+    this.loadingBridges = true;
   }
 
   ngAfterViewInit() {
@@ -150,20 +151,25 @@ export class MapComponent implements OnInit, AfterViewInit {
     const zoom = this.map.getZoom();
     // const boundsIntersect = this.
     let mapBoundsContained = null;
+    let padding = null;
     if (this.bridges.layer) {
-      console.log(this.bridges.layer.getBounds().pad(this.padding));
-      console.log(this.map.getBounds());
-      mapBoundsContained = this.bridges.layer.getBounds().pad(this.padding).contains(
+      if (zoom > 12) {
+        padding = this.padding + 0.25;
+      } else {
+        padding = this.padding;
+      }
+      mapBoundsContained = this.bridges.layer.getBounds().pad(padding).contains(
         this.map.getBounds()
       );
       console.log(`Map bounds contained in bridge bounds: ${mapBoundsContained}`);
+      console.log(zoom);
 
     } else {
       mapBoundsContained = false;
     }
     if (!mapBoundsContained) {
       if (zoom > 8) {
-        this.getBridgesBbox(page, this.map.getBounds().pad(0.2));
+        this.getBridgesBbox(page, this.map.getBounds().pad(this.padding));
       } else {
         this.getRandomBridges(page);
       }
@@ -181,6 +187,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   getBridgesBbox(page: number, bounds: any) {
     // If a request is already out, cancel it
     this.cancelRequests();
+    this.loadingBridges = true;
     this.bboxSubscription = this.newYorkBridgeService.getNewYorkBridgesBounds(1, bounds)
       .subscribe(
         (data: NewYorkBridgesApiResponse) => {
@@ -210,14 +217,16 @@ export class MapComponent implements OnInit, AfterViewInit {
             this.model.overlayLayers.push(bridgesGeoJSON);
             this.layersControl.overlays.Bridges = bridgesGeoJSON.layer;
         },
-        err => { console.log(err); },
-        () => { this.apply(); }
+        err => { this.loadingBridges = this.apply(); },
+        () => { this.loadingBridges = this.apply(); }
       );
   }
 
   getRandomBridges(zoom: number = null) {
     // If a pan/zoom getBridges request exists, might as well cancel it
     this.cancelRequests();
+    this.loadingBridges = true;
+    console.log(this.loadingBridges);
     this.randomSubscription = this.newYorkBridgeService.getNewYorkBridgesRandom(1)
     .subscribe(
       (data: NewYorkBridgesApiResponse) => {
@@ -244,10 +253,8 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.model.overlayLayers.push(bridgesGeoJSON);
         this.layersControl.overlays.Bridges = bridgesGeoJSON.layer;
       },
-      err => {console.log(err); },
-      () => {
-        this.apply();
-      }
+      err => { this.loadingBridges = this.apply(); },
+      () => { this.loadingBridges = this.apply(); console.log(this.loadingBridges); }
     );
   }
 
