@@ -23,6 +23,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   bridges = null;
   featureContainer = [];
   map: L.Map;
+  padding = 0.2;
   bridgeMarker = L.icon({
     iconUrl: 'leaflet/marker-icon.png',
     shadowUrl: 'leaflet/marker-shadow.png'
@@ -85,7 +86,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     ]
   );
 
-  layers: L.Layer[];
+  layers: Array<L.Layer>;
   layersControl: {[k: string]: any} = {
     baseLayers: {
       OpenStreetMap: this.LAYER_OPEN_STREET_MAP.layer,
@@ -138,7 +139,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   onZoomChange(zoom: number) {
     const page = 1;
     if (zoom > 8) {
-      this.getBridgesBbox(page, this.map.getBounds().pad(0.2));
+      this.getBridgesBbox(page, this.map.getBounds().pad(padding));
     } else {
       this.getRandomBridges(page);
     }
@@ -150,7 +151,9 @@ export class MapComponent implements OnInit, AfterViewInit {
     // const boundsIntersect = this.
     let mapBoundsContained = null;
     if (this.bridges.layer) {
-      mapBoundsContained = this.bridges.layer.getBounds().pad(0.15).contains(
+      console.log(this.bridges.layer.getBounds().pad(padding));
+      console.log(this.map.getBounds());
+      mapBoundsContained = this.bridges.layer.getBounds().pad(padding).contains(
         this.map.getBounds()
       );
       console.log(`Map bounds contained in bridge bounds: ${mapBoundsContained}`);
