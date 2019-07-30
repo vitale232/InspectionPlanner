@@ -151,7 +151,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     const zoom = this.map.getZoom();
     // const boundsIntersect = this.
     let mapBoundsContained = null;
-    let padding = null;
+    let padding = this.padding;
     if (this.bridges.layer) {
       if (zoom > 12) {
         padding = this.padding + 0.25;
@@ -169,7 +169,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
     if (!mapBoundsContained) {
       if (zoom > 8) {
-        this.getBridgesBbox(page, this.map.getBounds().pad(this.padding));
+        this.getBridgesBbox(page, this.map.getBounds().pad(padding));
       } else {
         this.getRandomBridges(page);
       }
@@ -177,12 +177,12 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   bridgePopupHtml(feature: NewYorkBridgeFeature) {
-    return `<dl> <dt> BIN </dt> <dd> ${feature.properties.bin} </dd> </dl>` +
-      `<dl> <dt> Carried </dt> <dd> ${feature.properties.carried} </dd> </dl>` +
-      `<dl> <dt> County </dt> <dd> ${feature.properties.county_name} </dd> </dl>` +
-      `<dl> <dt> AADT </dt> <dd> ${feature.properties.aadt} </dd> </dl>` +
-      `<dl> <dt> AADT Year </dt> <dd> ${feature.properties.year_of_aadt} </dd> </dl>` +
-      `<dl> <dt> Inspection </dt> <dd> ${feature.properties.inspection} </dd> </dl>`;
+    return `<dl> <dt> BIN </dt> <dd> ${feature.properties.bin} </dd>` +
+      `<dt> Carried </dt> <dd> ${feature.properties.carried} </dd>` +
+      `<dt> County </dt> <dd> ${feature.properties.county_name} </dd>` +
+      `<dt> AADT </dt> <dd> ${feature.properties.aadt} </dd>` +
+      `<dt> AADT Year </dt> <dd> ${feature.properties.year_of_aadt} </dd>` +
+      `<dt> Inspection </dt> <dd> ${feature.properties.inspection} </dd> </dl>`;
   }
   getBridgesBbox(page: number, bounds: any) {
     // If a request is already out, cancel it
