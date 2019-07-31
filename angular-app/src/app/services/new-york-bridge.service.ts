@@ -24,11 +24,8 @@ export class NewYorkBridgeService {
         `${bounds._northEast.lng},${bounds._southWest.lat},` +
         `${bounds._southWest.lng},${bounds._northEast.lat}`
       );
-      console.log(bbox);
       queryParams.in_bbox = bbox;
     }
-    console.log('params');
-    console.log(queryParams);
     return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, { params: queryParams });
   }
 

@@ -20,7 +20,6 @@ export class SearchComponent implements OnInit {
 
   ngOnInit() {
     this.getRecentQueries();
-    console.log('init');
   }
 
   getRecentQueries() {
@@ -38,7 +37,7 @@ export class SearchComponent implements OnInit {
               longName: feature.properties.display_name
             });
           });
-          console.log(searchTextArray);
+
           this.driveTimeQueriesText = Object.values(searchTextArray.reduce((unique, o) => {
             if (!unique[o.shortName]) {
               unique[o.shortName] = o;
@@ -46,8 +45,7 @@ export class SearchComponent implements OnInit {
 
             return unique;
           }, {}));
-          console.log('filteredArray');
-          console.log(this.driveTimeQueriesText);
+
           // // Filter addresses for unique values
           // this.driveTimeQueriesText = searchTextArray.filter((value, index, arr) => {
           //   // arr.indexOf will return the first occurrence of the value in the
@@ -55,8 +53,8 @@ export class SearchComponent implements OnInit {
           //   return arr.indexOf(value) === index;
           // }).slice(0, 10);
         },
-        err => { console.log(err); },
-        () => { console.log('complete'); }
+        err => { },
+        () => { }
       );
   }
 

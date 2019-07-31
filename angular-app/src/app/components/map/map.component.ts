@@ -115,12 +115,12 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.getRandomBridges(1);
+
   }
 
   apply() {
     // Get the active base layer
-    const baseLayer = this.model.baseLayers.find((l: any) => (l.id === this.model.baseLayer));
+    const baseLayer: any = this.model.baseLayers.find((l: any) => (l.id === this.model.baseLayer));
 
     // Get all the active overlay layers
     const newLayers = this.model.overlayLayers
@@ -135,24 +135,34 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   onMapReady(map: L.Map) {
     this.map = map;
+    const showBridges = false;
+    this.getRandomBridges(false);
   }
 
   onZoomChange(zoom: number) {
+    this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
+      return overlay.id !== 'bridgesGeoJSON';
+    });
+    this.apply();
+
     const page = 1;
-    if (zoom > 8) {
+    if (zoom >= 8) {
       this.getBridgesBbox(page, this.map.getBounds().pad(this.padding));
     } else {
-      this.getRandomBridges(page);
+      this.getRandomBridges(false);
     }
   }
 
   onMapMove(mapMoveEvent: Event) {
     const page = 1;
     const zoom = this.map.getZoom();
-    // const boundsIntersect = this.
     let mapBoundsContained = null;
     let padding = this.padding;
-    if (this.bridges.layer) {
+
+    // When zoomed in, check if the map bounds lies within the
+    // bridges bounds (bounding box, bbox). If so, don't load data.
+    // If not, load data based on zoom
+    if (this.model.overlayLayers) {
       if (zoom > 12) {
         padding = this.padding + 0.25;
       } else {
@@ -161,29 +171,39 @@ export class MapComponent implements OnInit, AfterViewInit {
       mapBoundsContained = this.bridges.layer.getBounds().pad(padding).contains(
         this.map.getBounds()
       );
-      console.log(`Map bounds contained in bridge bounds: ${mapBoundsContained}`);
-      console.log(zoom);
-
     } else {
       mapBoundsContained = false;
+      this.loadingBridges = true;
     }
     if (!mapBoundsContained) {
-      if (zoom > 8) {
+      if (zoom >= 8) {
         this.getBridgesBbox(page, this.map.getBounds().pad(padding));
       } else {
-        this.getRandomBridges(page);
+        this.getRandomBridges(false);
       }
     }
   }
 
   bridgePopupHtml(feature: NewYorkBridgeFeature) {
-    return `<dl> <dt> BIN </dt> <dd> ${feature.properties.bin} </dd>` +
-      `<dt> Carried </dt> <dd> ${feature.properties.carried} </dd>` +
-      `<dt> County </dt> <dd> ${feature.properties.county_name} </dd>` +
-      `<dt> AADT </dt> <dd> ${feature.properties.aadt} </dd>` +
-      `<dt> AADT Year </dt> <dd> ${feature.properties.year_of_aadt} </dd>` +
-      `<dt> Inspection </dt> <dd> ${feature.properties.inspection} </dd> </dl>`;
+    return `<dl> <dt> BIN: </dt> <dd> ${feature.properties.bin} </dd>` +
+      `<dt> Carried: </dt> <dd> ${feature.properties.carried} </dd>` +
+      `<dt> County: </dt> <dd> ${feature.properties.county_name} </dd>` +
+      `<dt> AADT: </dt> <dd> ${feature.properties.aadt} </dd>` +
+      `<dt> AADT: Year </dt> <dd> ${feature.properties.year_of_aadt} </dd>` +
+      `<dt> Inspection: </dt> <dd> ${feature.properties.inspection} </dd> ` +
+      `<dt> Common Name: </dt> <dd> ${feature.properties.common_name} </dd> </dl>`;
   }
+
+  bridgesEnabled() {
+    let enableBridges: boolean|null = null;
+    if (this.bridges) {
+      enableBridges = this.map.hasLayer(this.bridges.layer);
+    } else {
+      enableBridges = true;
+    }
+    return enableBridges;
+  }
+
   getBridgesBbox(page: number, bounds: any) {
     // If a request is already out, cancel it
     this.cancelRequests();
@@ -191,49 +211,56 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.bboxSubscription = this.newYorkBridgeService.getNewYorkBridgesBounds(1, bounds)
       .subscribe(
         (data: NewYorkBridgesApiResponse) => {
-            const bridgesGeoJSON = {
-              id: 'bridgesGeoJSON',
-              name: 'Bridges Geo JSON',
-              enabled: true,
-              layer: L.geoJSON(
-                (data.results) as any, {
-                  onEachFeature: (feature: any, layer: L.Layer) => {
-                    layer.bindPopup(this.bridgePopupHtml(feature));
-                  },
-                  pointToLayer: (feature, latLng) => {
-                    return L.marker(latLng, {icon: this.bridgeMarker});
-                  }
-                }
-              )
-            };
 
-            // console.log('here is the bounds');
-            // console.log(bridgesGeoJSON.layer.getBounds());
-            // console.log(bridgesGeoJSON.layer.getBounds().intersects(this.map.getBounds()));
-            this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
-              return overlay.id !== 'bridgesGeoJSON';
-            });
-            this.bridges = bridgesGeoJSON;
-            this.model.overlayLayers.push(bridgesGeoJSON);
-            this.layersControl.overlays.Bridges = bridgesGeoJSON.layer;
-        },
-        err => { this.loadingBridges = this.apply(); },
-        () => { this.loadingBridges = this.apply(); }
-      );
+          const bridgesGeoJSON = {
+            id: 'bridgesGeoJSON',
+            name: 'Bridges Geo JSON',
+            enabled: true, // this.bridgesEnabled(),
+            layer: L.geoJSON(
+              (data.results) as any, {
+                onEachFeature: (feature: any, layer: L.Layer) => {
+                  layer.bindPopup(this.bridgePopupHtml(feature));
+                },
+                pointToLayer: (feature, latLng) => {
+                  return L.marker(latLng, {icon: this.bridgeMarker});
+                }
+              }
+            )
+          };
+          this.bridges = bridgesGeoJSON;
+      },
+      err => {
+        this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
+          return overlay.id !== 'bridgesGeoJSON';
+        });
+        this.loadingBridges = this.apply();
+      },
+      () => {
+        this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
+          return overlay.id !== 'bridgesGeoJSON';
+        });
+        this.apply();
+        this.model.overlayLayers.push(this.bridges);
+        this.layersControl.overlays.Bridges = this.bridges.layer;
+        this.loadingBridges = this.apply();
+      }
+    );
   }
 
-  getRandomBridges(zoom: number = null) {
+  getRandomBridges(enable: boolean) {
     // If a pan/zoom getBridges request exists, might as well cancel it
+    enable = (typeof enable === 'undefined') ? true : enable;
     this.cancelRequests();
     this.loadingBridges = true;
-    console.log(this.loadingBridges);
     this.randomSubscription = this.newYorkBridgeService.getNewYorkBridgesRandom(1)
     .subscribe(
       (data: NewYorkBridgesApiResponse) => {
+
+        this.apply();
         const bridgesGeoJSON = {
           id: 'bridgesGeoJSON',
           name: 'Bridges Geo JSON',
-          enabled: true,
+          enabled: enable, // this.bridgesEnabled(),
           layer: L.geoJSON(
             (data.results) as any, {
               onEachFeature: (feature: any, layer: L.Layer) => {
@@ -245,16 +272,23 @@ export class MapComponent implements OnInit, AfterViewInit {
             }
           )
         };
-
+        this.bridges = bridgesGeoJSON;
+      },
+      err => {
         this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
           return overlay.id !== 'bridgesGeoJSON';
         });
-        this.bridges = bridgesGeoJSON;
-        this.model.overlayLayers.push(bridgesGeoJSON);
-        this.layersControl.overlays.Bridges = bridgesGeoJSON.layer;
+        this.loadingBridges = this.apply();
       },
-      err => { this.loadingBridges = this.apply(); },
-      () => { this.loadingBridges = this.apply(); console.log(this.loadingBridges); }
+      () => {
+        this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
+          return overlay.id !== 'bridgesGeoJSON';
+        });
+        this.apply();
+        this.model.overlayLayers.push(this.bridges);
+        this.layersControl.overlays.Bridges = this.bridges.layer;
+        this.loadingBridges = this.apply();
+      }
     );
   }
 

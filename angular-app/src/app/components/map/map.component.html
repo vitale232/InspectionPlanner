@@ -8,5 +8,7 @@
      [leafletLayersControl]="layersControl"
      (leafletZoomChange)="onZoomChange($event)"
      (leafletMapMoveEnd)="onMapMove($event)"
-     (leafletMapReady)="onMapReady($event)">
+     (leafletMapReady)="onMapReady($event)"
+     (leafletLayerAdd)="onLayerAdd($event)"
+     (leafletLayerRemove)="onLayerRemove($event)">
 </div>
