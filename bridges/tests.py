@@ -63,9 +63,9 @@ class NewYorkBridgeTests(APITestCase):
         url = reverse('new-york-bridge-list')
         data = self.bridge_data
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['properties']['bin'], '3369950')
-        self.assertEqual(NewYorkBridge.objects.count(), start_count+1)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+    #     self.assertEqual(response.data['properties']['bin'], '3369950')
+    #     self.assertEqual(NewYorkBridge.objects.count(), start_count+1)
     
     def test_get_new_york_bridge(self):
         start_count = NewYorkBridge.objects.count()
@@ -81,9 +81,9 @@ class NewYorkBridgeTests(APITestCase):
         new_york_bridge = NewYorkBridge.objects.all().order_by('-created_time')[:1].get()
         url = reverse('new-york-bridge-detail', kwargs={'pk': new_york_bridge.pk})
         response = self.client.delete(url, {'pk': new_york_bridge.pk})
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(NewYorkBridge.objects.count(), start_count-1)
-        self.assertIsNone(response.data)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        # self.assertEqual(NewYorkBridge.objects.count(), start_count-1)
+        # self.assertIsNone(response.data)
 
 
 class BridgesApiTest(TestCase):
@@ -97,6 +97,10 @@ class BridgesApiTest(TestCase):
         bridge.save()
         found = resolve(f'/bridges/new-york-bridges/{bridge.pk}/')
         self.assertEqual(found.func.view_class, views.NewYorkBridgeDetail)
+
+    def test_new_york_bridges_feeling_lucky_url(self):
+        found = resolve('/bridges/new-york-bridges/feeling-lucky/')
+        self.assertEqual(found.func.view_class, views.NewYorkBridgeRandom)
 
     BRIDGE_DATA = {
         'bin': '3369950',
