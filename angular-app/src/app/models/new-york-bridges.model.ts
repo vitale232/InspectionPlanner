@@ -11,7 +11,10 @@ export interface NewYorkBridgesApiResponse {
 export interface NewYorkBridgeFeature {
   id: number;
   type: string;
-  coordinates: Array<number>;
+  geometry: {
+    coordinates: Array<number>,
+    id: number;
+  };
   bbox: Array<number>;
   properties: {
     bin: string;

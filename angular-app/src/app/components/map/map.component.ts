@@ -100,7 +100,7 @@ export class MapComponent implements OnInit, AfterViewInit {
   };
 
   options = {
-    zoom: 6,
+    zoom: 7,
     center: L.latLng(43.0, -75.3)
   };
 
@@ -185,13 +185,18 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   bridgePopupHtml(feature: NewYorkBridgeFeature) {
+    const googleMapsUrl = (
+      `https://www.google.com/maps/search/?api=1&query=` +
+      `${feature.geometry.coordinates[1]},${feature.geometry.coordinates[0]}`
+    );
     return `<dl> <dt> BIN: </dt> <dd> ${feature.properties.bin} </dd>` +
       `<dt> Carried: </dt> <dd> ${feature.properties.carried} </dd>` +
       `<dt> County: </dt> <dd> ${feature.properties.county_name} </dd>` +
       `<dt> AADT: </dt> <dd> ${feature.properties.aadt} </dd>` +
       `<dt> AADT: Year </dt> <dd> ${feature.properties.year_of_aadt} </dd>` +
       `<dt> Inspection: </dt> <dd> ${feature.properties.inspection} </dd> ` +
-      `<dt> Common Name: </dt> <dd> ${feature.properties.common_name} </dd> </dl>`;
+      `<dt> Common Name: </dt> <dd> ${feature.properties.common_name} </dd> ` +
+      `<dt> Navigation: <dt> <dd> <a href="${googleMapsUrl}"> Google Maps </a> </dd></dl>`;
   }
 
   bridgesEnabled() {
