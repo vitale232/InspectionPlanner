@@ -185,9 +185,19 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
   bridgePopupHtml(feature: NewYorkBridgeFeature) {
+    const openStreetMapUrl = (
+      `https://www.openstreetmap.org/` +
+      `?mlat=${feature.geometry.coordinates[1]}` +
+      `&mlon=${feature.geometry.coordinates[0]}&zoom=14`
+    );
     const googleMapsUrl = (
       `https://www.google.com/maps/search/?api=1&query=` +
       `${feature.geometry.coordinates[1]},${feature.geometry.coordinates[0]}`
+    );
+    const bingMapsUrl = (
+      `https://www.bing.com/maps?sp=point.` +
+      `${feature.geometry.coordinates[1]}_${feature.geometry.coordinates[0]}_` +
+      `BIN:${feature.properties.bin}_${feature.properties.common_name}`
     );
     return `<dl> <dt> BIN: </dt> <dd> ${feature.properties.bin} </dd>` +
       `<dt> Carried: </dt> <dd> ${feature.properties.carried} </dd>` +
@@ -196,7 +206,10 @@ export class MapComponent implements OnInit, AfterViewInit {
       `<dt> AADT: Year </dt> <dd> ${feature.properties.year_of_aadt} </dd>` +
       `<dt> Inspection: </dt> <dd> ${feature.properties.inspection} </dd> ` +
       `<dt> Common Name: </dt> <dd> ${feature.properties.common_name} </dd> ` +
-      `<dt> Navigation: <dt> <dd> <a href="${googleMapsUrl}"> Google Maps </a> </dd></dl>`;
+      `<dt> Navigation: <dt> ` +
+        `<dd> <a href=${openStreetMapUrl}> OpenStreetMap </a> </dd> ` +
+        `<dd> <a href="${googleMapsUrl}"> Google Maps </a> </dd>` +
+        `<dd> <a href=${bingMapsUrl}"> Bing Maps </a> </dd> </dl>`;
   }
 
   bridgesEnabled() {
