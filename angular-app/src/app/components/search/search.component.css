@@ -28,3 +28,18 @@
     display: block;
     width: 250px;
 }
+
+.pad-button {
+    padding-bottom: 8px;
+}
+
+.selection-input {
+    /* margin: 0 auto; */
+    /* text-align: center; */
+    /* display: block;  */
+    padding-left: 75px;
+}
+
+.small-font {
+    font-size: 0.9em;
+}

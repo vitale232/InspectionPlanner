@@ -13,6 +13,17 @@ export class SearchComponent implements OnInit {
   pastPanelOpen = false;
   driveTimeQueriesData: DriveTimeQueryFeature;
   driveTimeQueriesText: Array<string>;
+  driveTimeSearchToggle = false;
+  selectedTimeInterval = 'fifteenMins';
+
+  timeIntervals = [
+    {value: 'fifteenMins', viewValue: '15 minutes'},
+    {value: 'thirtyMins', viewValue: '30 minutes'},
+    {value: 'fortyFiveMins', viewValue: '45 minutes'},
+    {value: 'sixtyMins', viewValue: '1 hour'},
+    {value: 'seventyFiveMins', viewValue: '1 hour 15 minutes'},
+    {value: 'ninetyMins', viewValue: '1 hour 30 minutes'}
+  ];
 
   constructor(
     private driveTimeQueryService: DriveTimeQueryService,
@@ -33,7 +44,7 @@ export class SearchComponent implements OnInit {
           const searchTextArray = [];
           uniqueSearchText.forEach((feature) => {
             searchTextArray.push({
-              shortName: feature.properties.display_name.substring(0, 50) + '...',
+              shortName: feature.properties.display_name.substring(0, 61) + '...',
               longName: feature.properties.display_name
             });
           });

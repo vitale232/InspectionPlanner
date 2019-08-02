@@ -197,7 +197,8 @@ export class MapComponent implements OnInit, AfterViewInit {
     const bingMapsUrl = (
       `https://www.bing.com/maps?sp=point.` +
       `${feature.geometry.coordinates[1]}_${feature.geometry.coordinates[0]}_` +
-      `BIN:${feature.properties.bin}_${feature.properties.common_name}`
+      `BIN:${feature.properties.bin}_` +
+      `Inspected:${feature.properties.inspection}`
     );
     return `<dl> <dt> BIN: </dt> <dd> ${feature.properties.bin} </dd>` +
       `<dt> Carried: </dt> <dd> ${feature.properties.carried} </dd>` +
@@ -209,7 +210,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       `<dt> Navigation: <dt> ` +
         `<dd> <a href=${openStreetMapUrl}> OpenStreetMap </a> </dd> ` +
         `<dd> <a href="${googleMapsUrl}"> Google Maps </a> </dd>` +
-        `<dd> <a href=${bingMapsUrl}"> Bing Maps </a> </dd> </dl>`;
+        `<dd> <a href="${bingMapsUrl}"> Bing Maps </a> </dd> </dl>`;
   }
 
   bridgesEnabled() {

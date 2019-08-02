@@ -1,14 +1,48 @@
 <div class="search-panel">
   <div *ngIf="!detailPanelOpen">
-    <mat-form-field class="form-field" appearance="outline" color="accent">
-      <input matInput color="warn">
-      <mat-label>
-        Search address or place name
-      </mat-label>
-      <button matSuffix mat-icon-button aria-label="Execute search">
+    <div *ngIf="!driveTimeSearchToggle; else elseBlock">
+      <mat-form-field class="form-field"
+                      appearance="outline"
+                      color="accent">
+        <input matInput color="warn">
+        <mat-label>
+          Search address or place name
+        </mat-label>
+        <button matSuffix
+                mat-icon-button
+                aria-label="Execute search">
           <mat-icon>search</mat-icon>
         </button>
-    </mat-form-field>
+      </mat-form-field>
+    </div>
+    <ng-template #elseBlock>
+      <mat-form-field class="form-field" appearance="outline" color="accent">
+        <input matInput placeholder="Input">
+        <mat-label>
+          Search address or place name
+        </mat-label>
+      </mat-form-field>
+          <!-- <form> -->
+      <mat-form-field appearance="outline" color="accent" class="form-field">
+        <mat-label>Max drive time </mat-label>
+        <mat-select [(ngModel)]="selectedTimeInterval" name="time">
+          <mat-option *ngFor="let time of timeIntervals" [value]="time.value">
+            {{time.viewValue}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+        <!-- </form> -->
+        <div class="pad-button">
+          <button mat-flat-button 
+                  color="primary"
+                  class="center-button"> Search </button>
+        </div> 
+    </ng-template>
+
+    <mat-slide-toggle [(ngModel)]="driveTimeSearchToggle" class="selection-input">
+      Drive Time Search
+      </mat-slide-toggle>
+
   </div>
 
 
@@ -16,7 +50,7 @@
                       (closed)="detailPanelOpen = false;">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        Detailed search
+        Search filters
       </mat-panel-title>
     </mat-expansion-panel-header>
 
@@ -45,11 +79,12 @@
       (closed)="pastPanelOpen = false;">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          Recent searches
+          Search history
         </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-action-list>
         <button mat-list-item
+                class="small-font"
                 matTooltip="{{ name.longName }}"
                 matTooltipShowDelay="1000"
                 *ngFor="let name of driveTimeQueriesText">
