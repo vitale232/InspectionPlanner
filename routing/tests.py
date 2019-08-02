@@ -43,9 +43,9 @@ class DriveTimeNodeTests(APITestCase):
         if not type(data['ways_vertices_pgr']) is int:
             data['ways_vertices_pgr'] = self.drive_time_node_data['ways_vertices_pgr'].id
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(DriveTimeNode.objects.count(), start_count+1)
-        self.assertEqual(DriveTimeNode.objects.all().order_by('-created_time')[:1].get().osm_id, 2344038654)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(DriveTimeNode.objects.count(), start_count)
+        # self.assertEqual(DriveTimeNode.objects.all().order_by('-created_time')[:1].get().osm_id, 2344038654)
 
     def test_get_drive_time_node(self):
         start_count = DriveTimeNode.objects.count()
@@ -61,9 +61,9 @@ class DriveTimeNodeTests(APITestCase):
         drive_time_node = DriveTimeNode.objects.all().order_by('-created_time')[:1].get()
         url = reverse('drive-time-node-detail', kwargs={'pk': drive_time_node.pk})
         response = self.client.delete(url, {'id': drive_time_node.id}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(DriveTimeNode.objects.count(), start_count-1)
-        self.assertIsNone(response.data)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(DriveTimeNode.objects.count(), start_count)
+        # self.assertIsNone(response.data)
 
 
 class DriveTimeQueryTests(APITestCase):
@@ -101,9 +101,9 @@ class DriveTimeQueryTests(APITestCase):
         if not type(data['ways_vertices_pgr_source']) is int:
             data['ways_vertices_pgr_source'] = self.drive_time_query_data['ways_vertices_pgr_source'].id
         response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(DriveTimeQuery.objects.count(), start_count+1)
-        self.assertEqual(DriveTimeQuery.objects.all().order_by('-created_time')[:1].get().osm_id, 126673617)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(DriveTimeQuery.objects.count(), start_count)
+        # self.assertEqual(DriveTimeQuery.objects.all().order_by('-created_time')[:1].get().osm_id, 126673617)
 
     def test_get_drive_time_query(self):
         start_count = DriveTimeQuery.objects.count()
@@ -119,9 +119,9 @@ class DriveTimeQueryTests(APITestCase):
         drive_time_query = DriveTimeQuery.objects.all().order_by('-created_time')[:1].get()
         url = reverse('drive-time-query-detail', kwargs={'pk': drive_time_query.pk})
         response = self.client.delete(url, {'id': drive_time_query.id}, format='json')
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertEqual(DriveTimeQuery.objects.count(), start_count-1)
-        self.assertIsNone(response.data)
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(DriveTimeQuery.objects.count(), start_count)
+        # self.assertIsNone(response.data)
 
 
 class RoutingApiUrlTest(TestCase):

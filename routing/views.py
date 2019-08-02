@@ -21,43 +21,43 @@ from routing.serializers import (
     WaysVerticesPgrSerializer
 )
 
-class DriveTimeNodeList(generics.ListCreateAPIView):
+class DriveTimeNodeList(generics.ListAPIView):
     queryset = DriveTimeNode.objects.all()
     serializer_class = DriveTimeNodeSerializer
 
-class DriveTimeNodeDetail(generics.RetrieveUpdateDestroyAPIView):
+class DriveTimeNodeDetail(generics.RetrieveAPIView):
     queryset = DriveTimeNode.objects.all()
     serializer_class = DriveTimeNodeSerializer
 
-class DriveTimePolygonList(generics.ListCreateAPIView):
+class DriveTimePolygonList(generics.ListAPIView):
     queryset = DriveTimePolygon.objects.all()
     serializer_class = DriveTimePolygonSerializer
 
-class DriveTimePolygonDetail(generics.RetrieveUpdateDestroyAPIView):
+class DriveTimePolygonDetail(generics.RetrieveAPIView):
     queryset = DriveTimePolygon.objects.all()
     serializer_class = DriveTimePolygonSerializer
 
-class DriveTimeQueryList(generics.ListCreateAPIView):
+class DriveTimeQueryList(generics.ListAPIView):
     queryset = DriveTimeQuery.objects.all().order_by('-created_time')
     serializer_class = DriveTimeQuerySerializer
 
-class DriveTimeQueryDetail(generics.RetrieveUpdateDestroyAPIView):
+class DriveTimeQueryDetail(generics.RetrieveAPIView):
     queryset = DriveTimeQuery.objects.all()
     serializer_class = DriveTimeQuerySerializer
 
-class WaysList(generics.ListCreateAPIView):
+class WaysList(generics.ListAPIView):
     queryset =  Ways.objects.all()
     serializer_class = WaysSerializer
 
-class WaysDetail(generics.RetrieveUpdateDestroyAPIView):
+class WaysDetail(generics.RetrieveAPIView):
     queryset =  Ways.objects.all()
     serializer_class = WaysSerializer
 
-class WaysVerticesPgrList(generics.ListCreateAPIView):
+class WaysVerticesPgrList(generics.ListAPIView):
     queryset = WaysVerticesPgr.objects.all()
     serializer_class = WaysVerticesPgrSerializer
 
-class WaysVerticesPgrDetail(generics.RetrieveUpdateDestroyAPIView):
+class WaysVerticesPgrDetail(generics.RetrieveAPIView):
     queryset = WaysVerticesPgr.objects.all()
     serializer_class = WaysVerticesPgrSerializer
 
