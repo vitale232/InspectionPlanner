@@ -1,4 +1,7 @@
 secrets.py
+.env
+static/*
+
 .vscode
 !.vscode/settings.json
 !.vscode/tasks.json
