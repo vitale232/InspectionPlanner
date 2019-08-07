@@ -5,6 +5,7 @@ import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
 import { LeafletLayersModel } from 'src/app/models/leaflet-layers.model';
 import { Subscription } from 'rxjs';
+import { MatSnackBar } from '@angular/material';
 
 
 @Component({
@@ -63,18 +64,6 @@ export class MapComponent implements OnInit, AfterViewInit {
     ])
   };
 
-  studyArea2  = {
-    id: 'studyarea2',
-    name: 'Study area 2',
-    enabled: true,
-    layer: L.polygon([
-      [42.44040861851155, -73.97946599681609],
-      [42.44040861851155, -73.5713780501485],
-      [42.86769928070402, -73.5713780501485],
-      [42.86769928070402, -73.97946599681609]
-    ])
-  };
-
   model = new LeafletLayersModel(
     [
       this.LAYER_OPEN_STREET_MAP,
@@ -83,7 +72,6 @@ export class MapComponent implements OnInit, AfterViewInit {
     this.LAYER_OPEN_STREET_MAP.id,
     [
       this.studyArea,
-      this.studyArea2
     ]
   );
 
@@ -95,7 +83,6 @@ export class MapComponent implements OnInit, AfterViewInit {
     },
     overlays: {
       'Routable Network Extent': this.studyArea.layer,
-      'Drive Time BBox': this.studyArea2.layer
     }
   };
 
@@ -106,16 +93,26 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   constructor(
     private newYorkBridgeService: NewYorkBridgeService,
+    private snackBar: MatSnackBar,
   ) {
     this.apply();
   }
 
   ngOnInit() {
     this.loadingBridges = true;
+    this.raiseBridgeNotification();
   }
 
   ngAfterViewInit() {
 
+  }
+
+  raiseBridgeNotification() {
+    const message = 'Zoom in to view bridges!';
+    this.snackBar.open(message, 'Close', {
+      duration: 10000,
+      panelClass: ['snackbar']
+    });
   }
 
   apply() {
@@ -150,6 +147,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.getBridgesBbox(page, this.map.getBounds().pad(this.padding));
     } else {
       this.getRandomBridges(false);
+      this.raiseBridgeNotification();
     }
   }
 
@@ -261,6 +259,8 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.apply();
         this.model.overlayLayers.push(this.bridges);
         this.layersControl.overlays.Bridges = this.bridges.layer;
+        console.log(this.layersControl);
+        console.log(typeof this.layersControl);
         this.loadingBridges = this.apply();
       }
     );

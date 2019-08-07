@@ -14,13 +14,15 @@ import { MapComponent } from './components/map/map.component';
 import { SearchComponent } from './components/search/search.component';
 import { SidenavService } from './services/sidenav.service';
 import { HttpClientModule } from '@angular/common/http';
+import { UnderConstructionComponent } from './components/under-construction/under-construction.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavbarComponent,
     MapComponent,
-    SearchComponent
+    SearchComponent,
+    UnderConstructionComponent,
   ],
   imports: [
     BrowserModule,
@@ -36,6 +38,7 @@ import { HttpClientModule } from '@angular/common/http';
   providers: [
     SidenavService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [UnderConstructionComponent]
 })
 export class AppModule { }

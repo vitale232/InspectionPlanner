@@ -1,6 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DriveTimeQueryApiResponse, DriveTimeQueryFeature } from '../../models/drive-time-queries.model';
 import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
+import { MatDialog } from '@angular/material';
+import { UnderConstructionComponent } from '../under-construction/under-construction.component';
 
 
 @Component({
@@ -9,7 +11,7 @@ import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit {
-  detailedPanelOpen = false;
+  detailsPanelOpen = false;
   pastPanelOpen = false;
   driveTimeQueriesData: DriveTimeQueryFeature;
   driveTimeQueriesText: Array<string>;
@@ -27,10 +29,15 @@ export class SearchComponent implements OnInit {
 
   constructor(
     private driveTimeQueryService: DriveTimeQueryService,
+    public dialogRef: MatDialog,
   ) { }
 
   ngOnInit() {
     this.getRecentQueries();
+  }
+
+  onClick(): void {
+    this.dialogRef.open(UnderConstructionComponent);
   }
 
   getRecentQueries() {

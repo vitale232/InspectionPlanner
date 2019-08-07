@@ -3,3 +3,8 @@ html, body {
     margin: 0;
     height: 100%;
 }
+
+.snackbar {
+    background: #000000 !important;
+    color: #FFFFFF !important;
+}

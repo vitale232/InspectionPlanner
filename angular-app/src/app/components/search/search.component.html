@@ -1,5 +1,5 @@
 <div class="search-panel">
-  <div *ngIf="!detailPanelOpen">
+  <div *ngIf="!detailsPanelOpen">
     <div *ngIf="!driveTimeSearchToggle; else elseBlock">
       <mat-form-field class="form-field"
                       appearance="outline"
@@ -10,6 +10,7 @@
         </mat-label>
         <button matSuffix
                 mat-icon-button
+                (click)="onClick()"
                 aria-label="Execute search">
           <mat-icon>search</mat-icon>
         </button>
@@ -34,6 +35,7 @@
         <!-- </form> -->
         <div class="pad-button">
           <button mat-flat-button 
+                  (click)="onClick()"
                   color="primary"
                   class="center-button"> Search </button>
         </div> 
@@ -46,8 +48,8 @@
   </div>
 
 
-  <mat-expansion-panel (opened)="detailPanelOpen = true;"
-                      (closed)="detailPanelOpen = false;">
+  <mat-expansion-panel (opened)="detailsPanelOpen = true;"
+                      (closed)="detailsPanelOpen = false;">
     <mat-expansion-panel-header>
       <mat-panel-title>
         Search filters
@@ -70,7 +72,12 @@
       <input matInput value="USA" placeholder="Country">
     </mat-form-field>
 
-    <button mat-flat-button color="primary" class="center-button">Search</button>
+    <button mat-flat-button
+            color="primary"
+            (click)="onClick()"
+            class="center-button">
+      Search
+    </button>
   </mat-expansion-panel>
 
   <div *ngIf="driveTimeQueriesData">
@@ -87,6 +94,7 @@
                 class="small-font"
                 matTooltip="{{ name.longName }}"
                 matTooltipShowDelay="1000"
+                (click)="onClick()"
                 *ngFor="let name of driveTimeQueriesText">
           {{ name.shortName }}
         </button>
