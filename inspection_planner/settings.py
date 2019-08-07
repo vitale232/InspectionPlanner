@@ -1,9 +1,25 @@
 import os
 
-from .secrets import (
-    database_host, database_name, database_port,
-    database_password, database_user, secret_key
-)
+
+env_variables = [
+    'RDS_DB_NAME', 'RDS_USERNAME', 'RDS_HOSTNAME',
+    'RDS_PASSWORD', 'RDS_PORT', 'SECRET_KEY',
+]
+
+if all([var in os.environ for var in env_variables]):
+    print('import from docker env')
+    database_name = os.environ.get('RDS_DB_NAME')
+    database_user = os.environ.get('RDS_USERNAME')
+    database_host = os.environ.get('RDS_HOSTNAME')
+    database_password = os.environ.get('RDS_PASSWORD')
+    database_port = os.environ.get('RDS_PORT')
+    secret_key = os.environ.get('SECRET_KEY')
+else:
+    print('import from secrets.py')
+    from .secrets import (
+        database_host, database_name, database_port,
+        database_password, database_user, secret_key
+    )
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -15,7 +31,11 @@ SECRET_KEY = secret_key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+]
 
 
 # Application definition
@@ -122,6 +142,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'angular-app', 'dist', 'angular-app')
+]
+
 
 # Django Rest Framework settings
 REST_FRAMEWORK = {
