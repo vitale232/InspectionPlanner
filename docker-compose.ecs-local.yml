@@ -5,8 +5,6 @@ services:
     build: .
     command:
       gunicorn inspection_planner.wsgi:application --bind 0.0.0.0:8000 --worker-class=gevent --workers=3 --threads=6 --log-level=DEBUG
-    volumes:
-      - static_volume:/usr/src/app/static
     ports:
       - 8000
     env_file:
