@@ -1,3 +1,5 @@
+docker-compose.ecs.yml
+
 .coverage
 
 secrets.py
