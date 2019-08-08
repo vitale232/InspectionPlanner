@@ -1,0 +1,7 @@
+.git
+.vscode
+.gitignore
+.envs/*
+inspection_planner/secrets.py
+
+angular-app/node_modules*

@@ -9,6 +9,133 @@ from routing.models import (
     DriveTimeQuery, Ways, WaysVerticesPgr
 )
 
+class WaysVerticesPgrTests(APITestCase):
+    def setUp(self):
+        self.ways_vert_pgrdata = {
+            'id': 2319,
+            'osm_id': 41692755,
+            'eout': None,
+            'lon': -73.55962700,
+            'lat': 42.51304600,
+            'cnt': 3,
+            'chk': 0,
+            'ein': None,
+            'the_geom': 'SRID=4326;POINT (-73.55962700000001 42.513046)'
+        }
+        data = self.ways_vert_pgrdata
+
+        ways_vertices_pgr = WaysVerticesPgr.objects.create(
+            **data
+        )
+
+    def test_post_ways_vertices_pgr(self):
+        start_count = WaysVerticesPgr.objects.count()
+        url = reverse('ways-vertices-pgr-list')
+        data = self.ways_vert_pgrdata
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(WaysVerticesPgr.objects.count(), start_count)
+        # self.assertEqual(WaysVerticesPgr.objects.all().order_by('-created_time')[:1].get().osm_id, 2344038654)
+
+    def test_get_ways_vertices_pgr(self):
+        start_count = WaysVerticesPgr.objects.count()
+        ways_vertices_pgr = WaysVerticesPgr.objects.all().order_by('-lon')[:1].get()
+        url = reverse('ways-vertices-pgr-detail', kwargs={'pk': ways_vertices_pgr.pk})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['properties']['osm_id'], ways_vertices_pgr.osm_id)
+        self.assertEqual(WaysVerticesPgr.objects.count(), start_count)
+    
+    def test_delete_ways_vertices_pgr(self):
+        start_count = WaysVerticesPgr.objects.count()
+        ways_vertices_pgr = WaysVerticesPgr.objects.all().order_by('-lon')[:1].get()
+        url = reverse('ways-vertices-pgr-detail', kwargs={'pk': ways_vertices_pgr.pk})
+        response = self.client.delete(url, {'id': ways_vertices_pgr.id}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(WaysVerticesPgr.objects.count(), start_count)
+        # self.assertIsNone(response.data)
+
+
+class WaysTests(APITestCase):
+    def setUp(self):
+        ways_vertices_pgr = WaysVerticesPgr.objects.create(
+            **RoutingApiUrlTest.WAYS_VERTICES_PGR_DATA
+        )
+        self.ways_data = {
+            "osm_id": 5611497,
+            "length": 0.00519409361291285,
+            "length_m": 479.261682035277,
+            "name": None,
+            "cost": 0.00519409361291285,
+            "reverse_cost": 0.00519409361291285,
+            "cost_s": 34.5068411065399,
+            "reverse_cost_s": 34.5068411065399,
+            "rule": None,
+            "one_way": 0,
+            "oneway": "UNKNOWN",
+            "x1": -73.559627,
+            "y1": 42.513046,
+            "x2": -73.555567,
+            "y2": 42.515796,
+            "maxspeed_forward": 50.0,
+            "maxspeed_backward": 50.0,
+            "priority": 2.5,
+            "tag": None,
+            "source": ways_vertices_pgr,
+            "target": ways_vertices_pgr,
+            "source_osm": ways_vertices_pgr,
+            "target_osm": ways_vertices_pgr,
+            "the_geom": (
+                'SRID=4326;LINESTRING (' +
+                '-73.55962700000001 42.513046, ' +
+                '-73.559073 42.513495, -73.55913200000001 42.51377, ' + 
+                '-73.558581 42.513973, -73.558031 42.514089, -73.557303 42.51432, ' + 
+                '-73.55673299999999 42.514697, -73.55634000000001 42.515102, ' + 
+                '-73.555671 42.515696, -73.555567 42.515796)'
+            )
+        }
+        data = self.ways_data
+        ways = Ways.objects.create(
+            **data
+        )
+
+    def test_post_ways(self):
+        start_count = Ways.objects.count()
+        ways = Ways.objects.all().order_by('-cost')[:1].get()
+        url = reverse('ways-detail', kwargs={'pk': ways.pk})
+        data = self.ways_data
+        if not type(data['source']) is int:
+            data['source'] = self.ways_data['source'].id
+        if not type(data['target']) is int:
+            data['target'] = self.ways_data['target'].id
+        if not type(data['source_osm']) is int:
+            data['source_osm'] = self.ways_data['source_osm'].id
+        if not type(data['target_osm']) is int:
+            data['target_osm'] = self.ways_data['target_osm'].id
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(Ways.objects.count(), start_count)
+        # self.assertEqual(Ways.objects.all().order_by('-created_time')[:1].get().osm_id, 2344038654)
+
+    def test_get_ways(self):
+        start_count = Ways.objects.count()
+        ways = Ways.objects.all().order_by('-cost')[:1].get()
+        url = reverse('ways-detail', kwargs={'pk': ways.pk})
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data['properties']['osm_id'], ways.osm_id)
+        self.assertEqual(Ways.objects.count(), start_count)
+    
+    def test_delete_ways(self):
+        start_count = Ways.objects.count()
+        ways = Ways.objects.all().order_by('-cost')[:1].get()
+        url = reverse('ways-detail', kwargs={'pk': ways.pk})
+        response = self.client.delete(url, {'id': ways.pk}, format='json')
+        self.assertEqual(response.status_code, status.HTTP_405_METHOD_NOT_ALLOWED)
+        self.assertEqual(Ways.objects.count(), start_count)
+        # self.assertIsNone(response.data)
+
+
 
 class DriveTimeNodeTests(APITestCase):
     def setUp(self):
