@@ -3,7 +3,7 @@ import os
 
 env_variables = [
     'RDS_DB_NAME', 'RDS_USERNAME', 'RDS_HOSTNAME',
-    'RDS_PASSWORD', 'RDS_PORT', 'SECRET_KEY',
+    'RDS_PASSWORD', 'RDS_PORT', 'SECRET_KEY', 'DEBUG',
 ]
 
 if all([var in os.environ for var in env_variables]):
@@ -14,12 +14,19 @@ if all([var in os.environ for var in env_variables]):
     database_password = os.environ.get('RDS_PASSWORD')
     database_port = os.environ.get('RDS_PORT')
     secret_key = os.environ.get('SECRET_KEY')
+    debug = os.environ.get('DEBUG', 'FALSE')
+    if debug == 'TRUE':
+        debug = True
+    else:
+        debug = False
+    print(f'debug={debug}')
 else:
     print('import from secrets.py')
     from .secrets import (
         database_host, database_name, database_port,
         database_password, database_user, secret_key
     )
+    debug = True
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -27,9 +34,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = secret_key
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 ALLOWED_HOSTS = [
     'localhost',
