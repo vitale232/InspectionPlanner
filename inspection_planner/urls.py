@@ -7,7 +7,6 @@ from bridges.views import NewYorkBridgeDetail, NewYorkBridgeList
 
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('ways/', WaysList.as_view()),
     path('bridges/', include('bridges.urls')),
     path('routing/', include('routing.urls')),
