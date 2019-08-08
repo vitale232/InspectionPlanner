@@ -1,0 +1,11 @@
+version: 1
+task_definition:
+  services:
+    django:
+      essential: true
+      cpu_shares: 768
+      mem_limit: 652288000
+    nginx:
+      essential: true
+      cpu_shares: 256
+      mem_limit: 262144000

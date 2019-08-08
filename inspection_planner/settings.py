@@ -15,16 +15,20 @@ if all([var in os.environ for var in env_variables]):
     database_port = os.environ.get('RDS_PORT')
     secret_key = os.environ.get('SECRET_KEY')
     debug = os.environ.get('DEBUG', 'FALSE')
+    allowed_hosts = os.environ.get('ALLOWED_HOSTS')
+
     if debug == 'TRUE':
         debug = True
     else:
         debug = False
+    ALLOWED_HOSTS = allowed_hosts.split(';')
     print(f'debug={debug}')
 else:
     print('import from secrets.py')
     from .secrets import (
         database_host, database_name, database_port,
-        database_password, database_user, secret_key
+        database_password, database_user, secret_key,
+        ALLOWED_HOSTS
     )
     debug = True
 
