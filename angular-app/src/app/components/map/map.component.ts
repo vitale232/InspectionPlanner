@@ -36,7 +36,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     name: 'Wikimedia Map',
     detectRetina: true,
     enabled: true,
-    layer: L.tileLayer('http://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', {
+    layer: L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', {
       maxZoom: 18,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     })
@@ -46,7 +46,7 @@ export class MapComponent implements OnInit, AfterViewInit {
     name: 'OpenStreetMap',
     detectRetina: true,
     enabled: true,
-    layer: L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    layer: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18,
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     })
@@ -61,15 +61,15 @@ export class MapComponent implements OnInit, AfterViewInit {
       [41.5679, -72.7328],
       [44.2841, -72.7328],
       [44.2841, -78.3377]
-    ])
+    ]).setStyle({fillOpacity: 0.0})
   };
 
   model = new LeafletLayersModel(
     [
+      this.LAYER_WIKIMEDIA_MAP,
       this.LAYER_OPEN_STREET_MAP,
-      this.LAYER_WIKIMEDIA_MAP
     ],
-    this.LAYER_OPEN_STREET_MAP.id,
+    this.LAYER_WIKIMEDIA_MAP.id,
     [
       this.studyArea,
     ]
@@ -78,8 +78,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   layers: Array<L.Layer>;
   layersControl: {[k: string]: any} = {
     baseLayers: {
+      'Wikimedia Map': this.LAYER_WIKIMEDIA_MAP.layer,
       OpenStreetMap: this.LAYER_OPEN_STREET_MAP.layer,
-      'Wikimedia Map': this.LAYER_WIKIMEDIA_MAP.layer
     },
     overlays: {
       'Routable Network Extent': this.studyArea.layer,
