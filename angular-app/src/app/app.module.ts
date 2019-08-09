@@ -15,6 +15,23 @@ import { SearchComponent } from './components/search/search.component';
 import { SidenavService } from './services/sidenav.service';
 import { HttpClientModule } from '@angular/common/http';
 import { UnderConstructionComponent } from './components/under-construction/under-construction.component';
+import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
+
+const cookieConfig: NgcCookieConsentConfig = {
+  cookie: {
+    domain: 'timelinetamer.com'
+  },
+  palette: {
+    popup: {
+      background: '#000'
+    },
+    button: {
+      background: '#f1d600'
+    }
+  },
+  theme: 'edgeless',
+  type: 'info'
+};
 
 @NgModule({
   declarations: [
@@ -34,6 +51,7 @@ import { UnderConstructionComponent } from './components/under-construction/unde
     FlexLayoutModule,
     MaterialModule,
     LeafletModule.forRoot(),
+    NgcCookieConsentModule.forRoot(cookieConfig),
   ],
   providers: [
     SidenavService
