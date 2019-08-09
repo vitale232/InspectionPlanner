@@ -4,7 +4,7 @@ import sys
 
 env_variables = [
     'RDS_DB_NAME', 'RDS_USERNAME', 'RDS_HOSTNAME',
-    'RDS_PASSWORD', 'RDS_PORT', 'SECRET_KEY', 'DEBUG',
+    'RDS_PASSWORD', 'RDS_PORT', 'SECRET_KEY', 'DEBUG', 'ALLOWED_HOSTS',
 ]
 
 if all([var in os.environ for var in env_variables]):
