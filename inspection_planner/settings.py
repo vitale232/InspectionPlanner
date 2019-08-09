@@ -1,4 +1,5 @@
 import os
+import sys
 
 
 env_variables = [
@@ -16,13 +17,12 @@ if all([var in os.environ for var in env_variables]):
     secret_key = os.environ.get('SECRET_KEY')
     debug = os.environ.get('DEBUG', 'FALSE')
     allowed_hosts = os.environ.get('ALLOWED_HOSTS')
+    ALLOWED_HOSTS = allowed_hosts.split(';')
 
     if debug == 'TRUE':
         debug = True
     else:
         debug = False
-    ALLOWED_HOSTS = allowed_hosts.split(';')
-    print(f'debug={debug}')
 else:
     print('import from secrets.py')
     from .secrets import (
@@ -38,12 +38,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = secret_key
-
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    '0.0.0.0',
-]
 
 
 # Application definition
@@ -167,3 +161,20 @@ REST_FRAMEWORK = {
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+
+# Extra logging from django server or green unicorn
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'stream': sys.stdout,
+        }
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG'
+    }
+}
+
+print(f'Here are your allowed hosts: {ALLOWED_HOSTS}')
