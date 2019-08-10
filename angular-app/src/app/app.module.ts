@@ -19,7 +19,7 @@ import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsen
 
 const cookieConfig: NgcCookieConsentConfig = {
   cookie: {
-    domain: 'timelinetamer.com'
+    domain: 'ipa.timelinetamer.com'
   },
   palette: {
     popup: {
