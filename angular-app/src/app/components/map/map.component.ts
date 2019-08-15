@@ -6,6 +6,8 @@ import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from 'src/app/models/
 import { LeafletLayersModel } from 'src/app/models/leaflet-layers.model';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 
 
 @Component({
@@ -17,12 +19,8 @@ export class MapComponent implements OnInit, AfterViewInit {
   title = 'angular-app';
   bboxSubscription: Subscription|null;
   randomSubscription: Subscription|null;
-  bridgeResponse = null;
-  bridgePageCount = null;
-  nextBridgePage = 1;
-  bridgeCalls = null;
   bridges = null;
-  featureContainer = [];
+  bridgeBounds: L.LatLngBounds;
   map: L.Map;
   padding = 0.25;
   loadingBridges: boolean;
@@ -86,14 +84,19 @@ export class MapComponent implements OnInit, AfterViewInit {
     }
   };
 
-  options = {
-    zoom: 7,
-    center: L.latLng(43.0, -75.3)
-  };
+  // options = {
+  //   zoom: 7,
+  //   center: L.latLng(43.0, -75.3)
+  // };
+  mapZoom = 7;
+  mapCenter = L.latLng(43.0, -75.3);
 
   constructor(
     private newYorkBridgeService: NewYorkBridgeService,
     private snackBar: MatSnackBar,
+    private route: ActivatedRoute,
+    private router: Router,
+    private location: Location
   ) {
     this.apply();
   }
@@ -101,12 +104,66 @@ export class MapComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.loadingBridges = true;
     this.raiseBridgeNotification();
+
   }
 
   ngAfterViewInit() {
 
   }
 
+  onMapReady(map: L.Map) {
+    this.map = map;
+    const showBridges = false;
+    this.getRandomBridges(false);
+    this.route.queryParamMap.subscribe(
+      queryParams => {
+        const params = 'params';
+        const lat = 'lat';
+        const lon = 'lon';
+        const z = 'z';
+        // If there are query params in the URL, use them to set the map options
+        if (queryParams[params][lat] &&
+            queryParams[params][lon] &&
+            queryParams[params][z]) {
+
+          this.mapZoom = queryParams[params][z];
+          this.mapCenter = new L.LatLng(queryParams[params][lat], queryParams[params][lon]);
+        }
+      });
+  }
+
+  onZoomChange(zoom: number) {
+    this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
+      return overlay.id !== 'bridgesGeoJSON';
+    });
+    this.apply();
+
+    const page = 1;
+    if (zoom >= 8) {
+      this.getBridgesBbox(page, this.map.getBounds().pad(this.padding));
+    } else {
+      this.getRandomBridges(false);
+      this.raiseBridgeNotification();
+    }
+    this.mapZoom = zoom;
+    this.updateUrl(zoom);
+    // const centerCoords = this.map.getCenter();
+    // console.log(centerCoords);
+    // const queryParams = {
+    //   lat: Number(centerCoords.lat.toFixed(6)),
+    //   lon: Number(centerCoords.lng.toFixed(6)),
+    //   z: zoom
+    // };
+    // this.router.navigate([], {
+    //   relativeTo: this.route,
+    //   queryParams: queryParams,
+    // });
+    // this.mapZoom = zoom;
+    // const lat = 'lat';
+    // const lon = 'lon';
+    // this.mapCenter = new L.LatLng(queryParams[lat], queryParams[lon]);
+
+  }
   raiseBridgeNotification() {
     const message = 'Zoom in to view bridges!';
     this.snackBar.open(message, 'Close', {
@@ -130,56 +187,66 @@ export class MapComponent implements OnInit, AfterViewInit {
     return false;
   }
 
-  onMapReady(map: L.Map) {
-    this.map = map;
-    const showBridges = false;
-    this.getRandomBridges(false);
-  }
+  updateUrl(zoom: number|null) {
+    if (this.map) {
+      // if (zoom) {
+      //   this.mapZoom = zoom;
+      // }
+      const centerCoords = this.map.getCenter();
+      const queryParams = {
+        lat: centerCoords.lat.toFixed(4),
+        lon: centerCoords.lng.toFixed(4),
+        z: this.mapZoom
+      };
+      const lat = 'lat';
+      const lon = 'lon';
 
-  onZoomChange(zoom: number) {
-    this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
-      return overlay.id !== 'bridgesGeoJSON';
-    });
-    this.apply();
-
-    const page = 1;
-    if (zoom >= 8) {
-      this.getBridgesBbox(page, this.map.getBounds().pad(this.padding));
-    } else {
-      this.getRandomBridges(false);
-      this.raiseBridgeNotification();
+      const url = this.router
+        .createUrlTree([], {relativeTo: this.route, queryParams })
+        .toString();
+      this.location.replaceState(url);
+      // this.router.navigate([], {
+      //   relativeTo: this.route,
+      //   queryParams,
+      // });
     }
   }
 
   onMapMove(mapMoveEvent: Event) {
     const page = 1;
-    const zoom = this.map.getZoom();
+    let zoom = null;
+    if (this.map) {
+      zoom = this.map.getZoom();
+    }
     let mapBoundsContained = null;
     let padding = this.padding;
 
     // When zoomed in, check if the map bounds lies within the
     // bridges bounds (bounding box, bbox). If so, don't load data.
     // If not, load data based on zoom
-    if (this.model.overlayLayers) {
+    if (this.model.overlayLayers && zoom) {
       if (zoom > 12) {
         padding = this.padding + 0.25;
       } else {
         padding = this.padding;
       }
-      mapBoundsContained = this.bridges.layer.getBounds().pad(padding).contains(
-        this.map.getBounds()
-      );
+      if (this.bridgeBounds) {
+        mapBoundsContained = this.bridgeBounds.pad(padding).contains(
+          this.map.getBounds()
+        );
+      }
     } else {
       mapBoundsContained = false;
       this.loadingBridges = true;
     }
     if (!mapBoundsContained) {
-      if (zoom >= 8) {
+      if (zoom && zoom >= 8) {
         this.getBridgesBbox(page, this.map.getBounds().pad(padding));
       } else {
         this.getRandomBridges(false);
       }
     }
+    this.updateUrl(null);
   }
 
   bridgePopupHtml(feature: NewYorkBridgeFeature) {
@@ -245,6 +312,7 @@ export class MapComponent implements OnInit, AfterViewInit {
             )
           };
           this.bridges = bridgesGeoJSON;
+          this.bridgeBounds = this.bridges.layer.getBounds();
       },
       err => {
         this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
@@ -259,8 +327,6 @@ export class MapComponent implements OnInit, AfterViewInit {
         this.apply();
         this.model.overlayLayers.push(this.bridges);
         this.layersControl.overlays.Bridges = this.bridges.layer;
-        console.log(this.layersControl);
-        console.log(typeof this.layersControl);
         this.loadingBridges = this.apply();
       }
     );
@@ -292,6 +358,7 @@ export class MapComponent implements OnInit, AfterViewInit {
           )
         };
         this.bridges = bridgesGeoJSON;
+        this.bridgeBounds = this.bridges.layer.getBounds();
       },
       err => {
         this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {

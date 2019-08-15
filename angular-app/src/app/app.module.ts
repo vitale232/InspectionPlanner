@@ -16,6 +16,7 @@ import { SidenavService } from './services/sidenav.service';
 import { HttpClientModule } from '@angular/common/http';
 import { UnderConstructionComponent } from './components/under-construction/under-construction.component';
 import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
+import { NotFoundComponent } from './components/not-found/not-found.component';
 
 const cookieConfig: NgcCookieConsentConfig = {
   cookie: {
@@ -40,11 +41,11 @@ const cookieConfig: NgcCookieConsentConfig = {
     MapComponent,
     SearchComponent,
     UnderConstructionComponent,
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
-    AppRoutingModule,
     FormsModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
@@ -52,6 +53,7 @@ const cookieConfig: NgcCookieConsentConfig = {
     MaterialModule,
     LeafletModule.forRoot(),
     NgcCookieConsentModule.forRoot(cookieConfig),
+    AppRoutingModule,
   ],
   providers: [
     SidenavService

@@ -3,7 +3,8 @@
 </div>
 
 <div leaflet class="full-height"
-     [leafletOptions]="options"
+     [(leafletZoom)]="mapZoom"
+     [(leafletCenter)]="mapCenter"
      [leafletLayers]="layers"
      [leafletLayersControl]="layersControl"
      (leafletZoomChange)="onZoomChange($event)"
