@@ -15,7 +15,7 @@ import { Location } from '@angular/common';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css']
 })
-export class MapComponent implements OnInit, AfterViewInit {
+export class MapComponent implements OnInit {
   title = 'angular-app';
   bboxSubscription: Subscription|null;
   randomSubscription: Subscription|null;
@@ -26,7 +26,9 @@ export class MapComponent implements OnInit, AfterViewInit {
   loadingBridges: boolean;
   bridgeMarker = L.icon({
     iconUrl: 'leaflet/marker-icon.png',
-    shadowUrl: 'leaflet/marker-shadow.png'
+    shadowUrl: 'leaflet/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12.5, 41]
   });
 
   LAYER_WIKIMEDIA_MAP = {
@@ -103,12 +105,6 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.loadingBridges = true;
-    this.raiseBridgeNotification();
-
-  }
-
-  ngAfterViewInit() {
-
   }
 
   onMapReady(map: L.Map) {
@@ -130,6 +126,9 @@ export class MapComponent implements OnInit, AfterViewInit {
           this.mapCenter = new L.LatLng(queryParams[params][lat], queryParams[params][lon]);
         }
       });
+    if (this.mapZoom < 8) {
+      this.openSnackbar('Zoom in to view bridges! (19,890 total)', 5000);
+    }
   }
 
   onZoomChange(zoom: number) {
@@ -143,7 +142,7 @@ export class MapComponent implements OnInit, AfterViewInit {
       this.getBridgesBbox(page, this.map.getBounds().pad(this.padding));
     } else {
       this.getRandomBridges(false);
-      this.raiseBridgeNotification();
+      this.openSnackbar('Zoom in to view bridges! (19,890 total)', 5000);
     }
     this.mapZoom = zoom;
     this.updateUrl(zoom);
@@ -164,11 +163,11 @@ export class MapComponent implements OnInit, AfterViewInit {
     // this.mapCenter = new L.LatLng(queryParams[lat], queryParams[lon]);
 
   }
-  raiseBridgeNotification() {
-    const message = 'Zoom in to view bridges!';
+  openSnackbar(message: string, duration: number = 2500) {
     this.snackBar.open(message, 'Close', {
-      duration: 10000,
-      panelClass: ['snackbar']
+      duration,
+      panelClass: ['snackbar'],
+      horizontalPosition: 'start'
     });
   }
 
@@ -313,6 +312,8 @@ export class MapComponent implements OnInit, AfterViewInit {
           };
           this.bridges = bridgesGeoJSON;
           this.bridgeBounds = this.bridges.layer.getBounds();
+          this.openSnackbar(
+            `Displaying ${data.results.features.length} of ${data.count} bridges`);
       },
       err => {
         this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
@@ -359,6 +360,8 @@ export class MapComponent implements OnInit, AfterViewInit {
         };
         this.bridges = bridgesGeoJSON;
         this.bridgeBounds = this.bridges.layer.getBounds();
+        // this.openSnackbar(
+        //   `Displaying ${data.results.features.length} of ${data.count} bridges`);
       },
       err => {
         this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
