@@ -5,3 +5,4 @@
 inspection_planner/secrets.py
 
 angular-app/node_modules*
+angular-app/src/assets*
