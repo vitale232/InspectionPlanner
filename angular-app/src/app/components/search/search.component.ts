@@ -3,6 +3,7 @@ import { DriveTimeQueryApiResponse, DriveTimeQueryFeature } from '../../models/d
 import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
 import { MatDialog } from '@angular/material';
 import { UnderConstructionComponent } from '../under-construction/under-construction.component';
+import { FormBuilder } from '@angular/forms';
 
 
 @Component({
@@ -17,6 +18,7 @@ export class SearchComponent implements OnInit {
   driveTimeQueriesText: Array<string>;
   driveTimeSearchToggle = false;
   selectedTimeInterval = 'fifteenMins';
+  searchExtent = null;
 
   timeIntervals = [
     {value: 'fifteenMins', viewValue: '15 minutes'},
@@ -27,9 +29,14 @@ export class SearchComponent implements OnInit {
     {value: 'ninetyMins', viewValue: '1 hour 30 minutes'}
   ];
 
+  locationForm = this.fb.group({
+    searchText: ['']
+  });
+
   constructor(
     private driveTimeQueryService: DriveTimeQueryService,
     public dialogRef: MatDialog,
+    private fb: FormBuilder,
   ) { }
 
   ngOnInit() {
@@ -38,6 +45,31 @@ export class SearchComponent implements OnInit {
 
   onClick(): void {
     this.dialogRef.open(UnderConstructionComponent);
+  }
+
+  onLocationSearch() {
+    const result = Object.assign({}, this.locationForm.value);
+    result.locationForm = Object.assign({}, result.locationForm);
+
+    this.getSearchLocation(result.searchText);
+    this.driveTimeQueryService.sendMapExtent(this.searchExtent);
+  }
+
+  getSearchLocation(query: string) {
+    this.driveTimeQueryService.locationSearch(query)
+      .subscribe(
+        (data: any) => {
+          this.searchExtent = {
+            lat: data[0].lat,
+            lon: data[0].lon,
+            z: 16
+          };
+        },
+        err => console.log(err),
+        () => {
+          this.driveTimeQueryService.sendMapExtent(this.searchExtent);
+        }
+      );
   }
 
   getRecentQueries() {

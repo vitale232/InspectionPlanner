@@ -1,20 +1,22 @@
 <div class="search-panel">
   <div *ngIf="!detailsPanelOpen">
     <div *ngIf="!driveTimeSearchToggle; else elseBlock">
-      <mat-form-field class="form-field"
-                      appearance="outline"
-                      color="accent">
-        <input matInput color="warn">
-        <mat-label>
-          Search address or place name
-        </mat-label>
-        <button matSuffix
-                mat-icon-button
-                (click)="onClick()"
-                aria-label="Execute search">
-          <mat-icon>search</mat-icon>
-        </button>
-      </mat-form-field>
+      <form [formGroup]="locationForm">
+        <mat-form-field class="form-field"
+                        appearance="outline"
+                        color="accent">
+          <input matInput formControlName="searchText" color="warn">
+          <mat-label>
+            Search address or place name
+          </mat-label>
+          <button matSuffix
+                  mat-icon-button
+                  (click)="onLocationSearch()"
+                  aria-label="Execute search">
+            <mat-icon>search</mat-icon>
+          </button>
+        </mat-form-field>
+      </form>
     </div>
     <ng-template #elseBlock>
       <mat-form-field class="form-field" appearance="outline" color="accent">

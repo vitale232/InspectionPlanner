@@ -8,6 +8,8 @@ import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
+import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
+import { filter } from 'rxjs/operators';
 
 
 @Component({
@@ -19,6 +21,7 @@ export class MapComponent implements OnInit {
   title = 'angular-app';
   bboxSubscription: Subscription|null;
   randomSubscription: Subscription|null;
+  searchExtentSubscription: Subscription|null;
   bridges = null;
   bridgeBounds: L.LatLngBounds;
   map: L.Map;
@@ -95,16 +98,31 @@ export class MapComponent implements OnInit {
 
   constructor(
     private newYorkBridgeService: NewYorkBridgeService,
+    private driveTimeQueryService: DriveTimeQueryService,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router,
     private location: Location
   ) {
     this.apply();
+    this.searchExtentSubscription = this.driveTimeQueryService.getMapExtent()
+      .pipe(filter(Boolean))
+      .subscribe(
+        (data) => this.applySearchExtent(data)
+      );
   }
 
   ngOnInit() {
     this.loadingBridges = true;
+  }
+
+  applySearchExtent(extent) {
+    if (extent) {
+      this.mapCenter = new L.LatLng(extent.lat, extent.lon);
+      this.mapZoom = extent.z;
+      this.updateUrl(this.mapZoom);
+      this.getBridgesBbox(1, this.map.getBounds().pad(this.padding));
+    }
   }
 
   onMapReady(map: L.Map) {
@@ -313,7 +331,7 @@ export class MapComponent implements OnInit {
           this.bridges = bridgesGeoJSON;
           this.bridgeBounds = this.bridges.layer.getBounds();
           this.openSnackbar(
-            `Displaying ${data.results.features.length} of ${data.count} bridges`);
+            `Displaying ${data.results.features.length} of ${data.count.toLocaleString()} bridges`);
       },
       err => {
         this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {

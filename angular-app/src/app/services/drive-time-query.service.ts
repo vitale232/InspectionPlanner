@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DriveTimeQueryApiResponse } from '../models/drive-time-queries.model';
+import { Subject } from 'rxjs';
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class DriveTimeQueryService {
   driveTimeQueryUrl = 'routing/drive-time-queries/';
+  nominatimUrl = 'https://nominatim.openstreetmap.org/search';
+  private mapExtentSubject = new Subject<any>();
 
   constructor(
     private http: HttpClient
@@ -20,6 +24,25 @@ export class DriveTimeQueryService {
       params: {
         page: `${pageNumber}`
       }
+    });
+  }
+
+  sendMapExtent(extent) {
+    this.mapExtentSubject.next(extent);
+  }
+
+  getMapExtent() {
+    return this.mapExtentSubject.asObservable()
+  }
+
+  locationSearch(query: string) {
+    const queryParams = {
+      q: query,
+      format: 'json'
+    };
+
+    return this.http.get<any>(this.nominatimUrl, {
+      params: queryParams
     });
   }
 }
