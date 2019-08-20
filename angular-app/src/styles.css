@@ -21,3 +21,7 @@ html, body {
     max-width: 650px;
     margin: 0 auto;
 }
+
+.typography-container a {
+    color: #FFC23D;
+}

@@ -23,12 +23,18 @@ export class MapComponent implements OnInit {
   randomSubscription: Subscription|null;
   searchExtentSubscription: Subscription|null;
   bridges = null;
-  bridgeBounds: L.LatLngBounds;
+  bridgeBounds: L.LatLngBounds|null = null;
   map: L.Map;
   padding = 0.25;
   loadingBridges: boolean;
   bridgeMarker = L.icon({
     iconUrl: 'leaflet/marker-icon.png',
+    shadowUrl: 'leaflet/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12.5, 41]
+  });
+  searchMarker = L.icon({
+    iconUrl: 'assets/marker-icon-red.png',
     shadowUrl: 'leaflet/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12.5, 41]
@@ -118,10 +124,19 @@ export class MapComponent implements OnInit {
 
   applySearchExtent(extent) {
     if (extent) {
-      this.mapCenter = new L.LatLng(extent.lat, extent.lon);
+      console.log('applySearchExtent()');
+      const latLong = new L.LatLng(extent.lat, extent.lon);
+      this.mapCenter = latLong;
       this.mapZoom = extent.z;
       this.updateUrl(this.mapZoom);
-      this.getBridgesBbox(1, this.map.getBounds().pad(this.padding));
+      this.model.overlayLayers.push({
+        id: 'Search result',
+        name: 'Search results',
+        enabled: true,
+        layer: L.marker(latLong, { icon: this.searchMarker })
+
+      });
+      this.apply();
     }
   }
 
@@ -230,6 +245,7 @@ export class MapComponent implements OnInit {
   }
 
   onMapMove(mapMoveEvent: Event) {
+    console.log('onMapMove()');
     const page = 1;
     let zoom = null;
     if (this.map) {

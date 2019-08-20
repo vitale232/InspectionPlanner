@@ -51,6 +51,11 @@ export class SearchComponent implements OnInit {
     const result = Object.assign({}, this.locationForm.value);
     result.locationForm = Object.assign({}, result.locationForm);
 
+    const locationQuery = {
+      q: result.searchText,
+      lat: 43.0,
+      lon: -75.3
+    };
     this.getSearchLocation(result.searchText);
     this.driveTimeQueryService.sendMapExtent(this.searchExtent);
   }
@@ -62,7 +67,7 @@ export class SearchComponent implements OnInit {
           this.searchExtent = {
             lat: data[0].lat,
             lon: data[0].lon,
-            z: 16
+            z: 15
           };
         },
         err => console.log(err),
@@ -88,6 +93,7 @@ export class SearchComponent implements OnInit {
             });
           });
 
+          // Filter addresses for unique values
           this.driveTimeQueriesText = Object.values(searchTextArray.reduce((unique, o) => {
             if (!unique[o.shortName]) {
               unique[o.shortName] = o;
