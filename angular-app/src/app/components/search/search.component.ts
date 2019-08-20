@@ -64,11 +64,28 @@ export class SearchComponent implements OnInit {
     this.driveTimeQueryService.locationSearch(query)
       .subscribe(
         (data: any) => {
+          console.log(data);
+
           this.searchExtent = {
             lat: data[0].lat,
             lon: data[0].lon,
-            z: 15
+            z: 14
           };
+          if (data[0].display_name) {
+            this.searchExtent.displayName = data[0].display_name;
+          }
+          if (data[0].class) {
+            this.searchExtent.class = data[0].class;
+          }
+          if (data[0].type) {
+            this.searchExtent.type = data[0].type;
+          }
+          if (data[0].osm_type) {
+            this.searchExtent.osmType = data[0].osm_type;
+          }
+
+          console.log(this.searchExtent);
+
         },
         err => console.log(err),
         () => {

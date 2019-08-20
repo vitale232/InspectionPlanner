@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 // import { tileLayer, latLng, Map, polyline, point, polygon } from 'leaflet';
 import * as L from 'leaflet';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
@@ -31,13 +31,15 @@ export class MapComponent implements OnInit {
     iconUrl: 'leaflet/marker-icon.png',
     shadowUrl: 'leaflet/marker-shadow.png',
     iconSize: [25, 41],
-    iconAnchor: [12.5, 41]
+    iconAnchor: [12.5, 41],
+    popupAnchor: [0, -20.5]
   });
   searchMarker = L.icon({
     iconUrl: 'assets/marker-icon-red.png',
     shadowUrl: 'leaflet/marker-shadow.png',
     iconSize: [25, 41],
-    iconAnchor: [12.5, 41]
+    iconAnchor: [12.5, 41],
+    popupAnchor: [0, -20.5]
   });
 
   LAYER_WIKIMEDIA_MAP = {
@@ -108,7 +110,8 @@ export class MapComponent implements OnInit {
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private changeDetector: ChangeDetectorRef,
   ) {
     this.apply();
     this.searchExtentSubscription = this.driveTimeQueryService.getMapExtent()
@@ -124,18 +127,27 @@ export class MapComponent implements OnInit {
 
   applySearchExtent(extent) {
     if (extent) {
-      console.log('applySearchExtent()');
       const latLong = new L.LatLng(extent.lat, extent.lon);
-      this.mapCenter = latLong;
       this.mapZoom = extent.z;
-      this.updateUrl(this.mapZoom);
+      this.mapCenter = latLong;
+      // Force angular change detection to get map up to date
+      this.changeDetector.detectChanges();
+      this.updateUrl(extent.z);
+
       this.model.overlayLayers.push({
         id: 'Search result',
         name: 'Search results',
         enabled: true,
-        layer: L.marker(latLong, { icon: this.searchMarker })
+        layer: L.marker(latLong, { icon: this.searchMarker }).bindPopup(
+          `<address> <strong> ${extent.displayName} </strong> </address> ` +
+          `<dl> <dt> Lat, Lon: </dt> <dd> ${extent.lat}, ${extent.lon} </dd>` +
+          `<dt> OSM Type: </dt> <dd> ${extent.osmType} </dd> ` +
+          `<dt> Class: </dt> <dd> ${extent.class} </dd> ` +
+          `<dt> Type: </dt> <dd> ${extent.type} </dd> </dl>`
+        )
 
       });
+      this.onZoomChange(extent.z);
       this.apply();
     }
   }
@@ -179,25 +191,10 @@ export class MapComponent implements OnInit {
     }
     this.mapZoom = zoom;
     this.updateUrl(zoom);
-    // const centerCoords = this.map.getCenter();
-    // console.log(centerCoords);
-    // const queryParams = {
-    //   lat: Number(centerCoords.lat.toFixed(6)),
-    //   lon: Number(centerCoords.lng.toFixed(6)),
-    //   z: zoom
-    // };
-    // this.router.navigate([], {
-    //   relativeTo: this.route,
-    //   queryParams: queryParams,
-    // });
-    // this.mapZoom = zoom;
-    // const lat = 'lat';
-    // const lon = 'lon';
-    // this.mapCenter = new L.LatLng(queryParams[lat], queryParams[lon]);
-
   }
+
   openSnackbar(message: string, duration: number = 2500) {
-    this.snackBar.open(message, 'Close', {
+    this.snackBar.open(message, 'Dismiss', {
       duration,
       panelClass: ['snackbar'],
       horizontalPosition: 'start'
@@ -245,7 +242,6 @@ export class MapComponent implements OnInit {
   }
 
   onMapMove(mapMoveEvent: Event) {
-    console.log('onMapMove()');
     const page = 1;
     let zoom = null;
     if (this.map) {
@@ -272,6 +268,7 @@ export class MapComponent implements OnInit {
       mapBoundsContained = false;
       this.loadingBridges = true;
     }
+
     if (!mapBoundsContained) {
       if (zoom && zoom >= 8) {
         this.getBridgesBbox(page, this.map.getBounds().pad(padding));
@@ -418,9 +415,11 @@ export class MapComponent implements OnInit {
   cancelRequests() {
     if (this.bboxSubscription) {
       this.bboxSubscription.unsubscribe();
+      this.loadingBridges = false;
     }
     if (this.randomSubscription) {
       this.randomSubscription.unsubscribe();
+      this.loadingBridges = false;
     }
   }
 }
