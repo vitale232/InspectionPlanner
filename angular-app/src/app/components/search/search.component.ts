@@ -1,9 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DriveTimeQueryApiResponse, DriveTimeQueryFeature } from '../../models/drive-time-queries.model';
 import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
-import { MatDialog } from '@angular/material';
+import { MatDialog, MatSnackBar } from '@angular/material';
 import { UnderConstructionComponent } from '../under-construction/under-construction.component';
 import { FormBuilder } from '@angular/forms';
+import { NotificationsService } from 'angular2-notifications';
 
 
 @Component({
@@ -37,6 +38,8 @@ export class SearchComponent implements OnInit {
     private driveTimeQueryService: DriveTimeQueryService,
     public dialogRef: MatDialog,
     private fb: FormBuilder,
+    private snackBar: MatSnackBar,
+    private notifications: NotificationsService,
   ) { }
 
   ngOnInit() {
@@ -64,30 +67,41 @@ export class SearchComponent implements OnInit {
     this.driveTimeQueryService.locationSearch(query)
       .subscribe(
         (data: any) => {
-          console.log(data);
 
-          this.searchExtent = {
-            lat: data[0].lat,
-            lon: data[0].lon,
-            z: 14
-          };
-          if (data[0].display_name) {
-            this.searchExtent.displayName = data[0].display_name;
+          if (data.length === 0) {
+            this.notifications.error(
+              'Search error',
+              `No results found for query: "${query}"`, {
+                timeOut: 10000,
+                showProgressBar: true,
+                pauseOnHover: true,
+                clickToClose: true
+            });
+          } else {
+            this.searchExtent = {
+              lat: data[0].lat,
+              lon: data[0].lon,
+              z: 14
+            };
+            if (data[0].display_name) {
+              this.searchExtent.displayName = data[0].display_name;
+            }
+            if (data[0].class) {
+              this.searchExtent.class = data[0].class;
+            }
+            if (data[0].type) {
+              this.searchExtent.type = data[0].type;
+            }
+            if (data[0].osm_type) {
+              this.searchExtent.osmType = data[0].osm_type;
+            }
           }
-          if (data[0].class) {
-            this.searchExtent.class = data[0].class;
-          }
-          if (data[0].type) {
-            this.searchExtent.type = data[0].type;
-          }
-          if (data[0].osm_type) {
-            this.searchExtent.osmType = data[0].osm_type;
-          }
-
-          console.log(this.searchExtent);
-
         },
-        err => console.log(err),
+        err => {
+
+          console.log(`don't look now... it's an err`);
+          console.log(err);
+        },
         () => {
           this.driveTimeQueryService.sendMapExtent(this.searchExtent);
         }
@@ -131,4 +145,11 @@ export class SearchComponent implements OnInit {
       );
   }
 
+  openSnackbar(message: string, duration: number = 2500) {
+    this.snackBar.open(message, 'Dismiss', {
+      duration,
+      panelClass: ['snackbar'],
+      horizontalPosition: 'start'
+    });
+  }
 }

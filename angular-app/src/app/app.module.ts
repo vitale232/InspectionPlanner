@@ -17,6 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { UnderConstructionComponent } from './components/under-construction/under-construction.component';
 import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
 import { NotFoundComponent } from './components/not-found/not-found.component';
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 const cookieConfig: NgcCookieConsentConfig = {
   cookie: {
@@ -53,6 +54,7 @@ const cookieConfig: NgcCookieConsentConfig = {
     MaterialModule,
     LeafletModule.forRoot(),
     NgcCookieConsentModule.forRoot(cookieConfig),
+    SimpleNotificationsModule.forRoot(),
     AppRoutingModule,
   ],
   providers: [

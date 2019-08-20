@@ -117,7 +117,8 @@ export class MapComponent implements OnInit {
     this.searchExtentSubscription = this.driveTimeQueryService.getMapExtent()
       .pipe(filter(Boolean))
       .subscribe(
-        (data) => this.applySearchExtent(data)
+        (data) => this.applySearchExtent(data),
+        (err) => console.log('look ma! an error!')
       );
   }
 

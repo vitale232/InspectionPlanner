@@ -26,6 +26,10 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sidenavService.setSidenav(this.sidenav);
   }
 
+  escape(event) {
+    console.log(event);
+  }
+
   ngOnDestroy() {
     if (this.popupOpenSubscription) {
       this.popupOpenSubscription.unsubscribe();
