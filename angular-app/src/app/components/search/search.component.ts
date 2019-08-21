@@ -5,6 +5,7 @@ import { MatDialog, MatSnackBar } from '@angular/material';
 import { UnderConstructionComponent } from '../under-construction/under-construction.component';
 import { FormBuilder } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
+import { SidenavService } from 'src/app/services/sidenav.service';
 
 
 @Component({
@@ -39,6 +40,7 @@ export class SearchComponent implements OnInit {
     public dialogRef: MatDialog,
     private fb: FormBuilder,
     private notifications: NotificationsService,
+    private sidenavService: SidenavService
   ) { }
 
   ngOnInit() {
@@ -103,6 +105,7 @@ export class SearchComponent implements OnInit {
         },
         () => {
           this.driveTimeQueryService.sendMapExtent(this.searchExtent);
+          this.sidenavService.close();
         }
       );
   }

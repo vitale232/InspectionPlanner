@@ -26,8 +26,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sidenavService.setSidenav(this.sidenav);
   }
 
-  escape(event) {
-    console.log(event);
+  escape($event) {
+    this.sidenavService.sendSidenavState(false);
   }
 
   ngOnDestroy() {

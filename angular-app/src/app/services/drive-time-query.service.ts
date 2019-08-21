@@ -10,7 +10,7 @@ import { Subject } from 'rxjs';
 export class DriveTimeQueryService {
   driveTimeQueryUrl = 'routing/drive-time-queries/';
   nominatimUrl = 'https://nominatim.openstreetmap.org/search';
-  photonUrl = 'https://photon.komoot.de/api'
+  photonUrl = 'https://photon.komoot.de/api';
   private mapExtentSubject = new Subject<any>();
 
   constructor(
@@ -33,7 +33,7 @@ export class DriveTimeQueryService {
   }
 
   getMapExtent() {
-    return this.mapExtentSubject.asObservable()
+    return this.mapExtentSubject.asObservable();
   }
 
   locationSearch(query: string) {

@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { SidenavService } from 'src/app/services/sidenav.service';
+import { Subscription, Observable } from 'rxjs';
 
 
 @Component({
@@ -7,16 +8,25 @@ import { SidenavService } from 'src/app/services/sidenav.service';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent {
-  sidenavOpen = false;
+export class NavbarComponent implements OnDestroy {
+  sidenavSubscription: Subscription|null;
+  sidenavState$: Observable<boolean>|null;
 
   constructor(
     private sidenavService: SidenavService,
-  ) { }
-
-  toggleSidenav() {
-    this.sidenavService.toggle();
-    this.sidenavOpen = !this.sidenavOpen;
+  ) {
+    this.sidenavState$ = this.sidenavService.getSidenavState();
   }
 
+  ngOnDestroy() {
+    this.sidenavSubscription.unsubscribe();
+  }
+
+  openSidenav() {
+    this.sidenavService.open();
+  }
+
+  closeSidenav() {
+    this.sidenavService.close();
+  }
 }
