@@ -27,6 +27,9 @@ export class MapComponent implements OnInit {
   map: L.Map;
   padding = 0.25;
   loadingBridges: boolean;
+  mapZoom = 7;
+  mapCenter = L.latLng(43.0, -75.3);
+
   bridgeMarker = L.icon({
     iconUrl: 'leaflet/marker-icon.png',
     shadowUrl: 'leaflet/marker-shadow.png',
@@ -97,13 +100,6 @@ export class MapComponent implements OnInit {
     }
   };
 
-  // options = {
-  //   zoom: 7,
-  //   center: L.latLng(43.0, -75.3)
-  // };
-  mapZoom = 7;
-  mapCenter = L.latLng(43.0, -75.3);
-
   constructor(
     private newYorkBridgeService: NewYorkBridgeService,
     private driveTimeQueryService: DriveTimeQueryService,
@@ -148,8 +144,8 @@ export class MapComponent implements OnInit {
         )
 
       });
-      this.onZoomChange(extent.z);
       this.apply();
+      this.onZoomChange(extent.z);
     }
   }
 
@@ -219,9 +215,6 @@ export class MapComponent implements OnInit {
 
   updateUrl(zoom: number|null) {
     if (this.map) {
-      // if (zoom) {
-      //   this.mapZoom = zoom;
-      // }
       const centerCoords = this.map.getCenter();
       const queryParams = {
         lat: centerCoords.lat.toFixed(4),
@@ -235,10 +228,6 @@ export class MapComponent implements OnInit {
         .createUrlTree([], {relativeTo: this.route, queryParams })
         .toString();
       this.location.replaceState(url);
-      // this.router.navigate([], {
-      //   relativeTo: this.route,
-      //   queryParams,
-      // });
     }
   }
 

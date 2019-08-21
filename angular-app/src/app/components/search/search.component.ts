@@ -38,7 +38,6 @@ export class SearchComponent implements OnInit {
     private driveTimeQueryService: DriveTimeQueryService,
     public dialogRef: MatDialog,
     private fb: FormBuilder,
-    private snackBar: MatSnackBar,
     private notifications: NotificationsService,
   ) { }
 
@@ -143,13 +142,5 @@ export class SearchComponent implements OnInit {
         err => { },
         () => { }
       );
-  }
-
-  openSnackbar(message: string, duration: number = 2500) {
-    this.snackBar.open(message, 'Dismiss', {
-      duration,
-      panelClass: ['snackbar'],
-      horizontalPosition: 'start'
-    });
   }
 }
