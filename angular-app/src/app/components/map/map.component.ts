@@ -122,39 +122,13 @@ export class MapComponent implements OnInit {
     this.loadingBridges = true;
   }
 
-  applySearchExtent(extent) {
-    if (extent) {
-      const latLong = new L.LatLng(extent.lat, extent.lon);
-      this.mapZoom = extent.z;
-      this.mapCenter = latLong;
-      // Force angular change detection to get map up to date
-      this.changeDetector.detectChanges();
-      this.updateUrl(extent.z);
-
-      this.model.overlayLayers.push({
-        id: 'Search result',
-        name: 'Search results',
-        enabled: true,
-        layer: L.marker(latLong, { icon: this.searchMarker }).bindPopup(
-          `<address> <strong> ${extent.displayName} </strong> </address> ` +
-          `<dl> <dt> Lat, Lon: </dt> <dd> ${extent.lat}, ${extent.lon} </dd>` +
-          `<dt> OSM Type: </dt> <dd> ${extent.osmType} </dd> ` +
-          `<dt> Class: </dt> <dd> ${extent.class} </dd> ` +
-          `<dt> Type: </dt> <dd> ${extent.type} </dd> </dl>`
-        )
-
-      });
-      this.apply();
-      this.onZoomChange(extent.z);
-    }
-  }
-
   onMapReady(map: L.Map) {
     this.map = map;
     const showBridges = false;
     this.getRandomBridges(false);
     this.route.queryParamMap.subscribe(
       queryParams => {
+        // Create objects of indices for TypeScript
         const params = 'params';
         const lat = 'lat';
         const lon = 'lon';
@@ -173,29 +147,50 @@ export class MapComponent implements OnInit {
     }
   }
 
+  applySearchExtent(extent) {
+    if (extent) {
+      const latLong = new L.LatLng(extent.lat, extent.lon);
+      this.mapZoom = extent.z;
+      this.mapCenter = latLong;
+      // Force angular change detection to get map up to date
+      this.changeDetector.detectChanges();
+      this.updateUrl(extent.z);
+
+      this.model.overlayLayers.push({
+        id: 'Search result',
+        name: 'Search results',
+        enabled: true,
+        layer: L.marker(latLong, { icon: this.searchMarker }).bindPopup(
+          `<address> <strong> ${extent.displayName} </strong> </address> ` +
+          `<dl> <dt> Latitude, Longitude: </dt> <dd> ` +
+            `${parseFloat(extent.lat).toFixed(4)}, ` +
+            `${parseFloat(extent.lon).toFixed(4)} </dd>` +
+          `<dt> OSM Type: </dt> <dd> ${extent.osmType} </dd> ` +
+          `<dt> Class: </dt> <dd> ${extent.class} </dd> ` +
+          `<dt> Type: </dt> <dd> ${extent.type} </dd> </dl>`
+        )
+
+      });
+      this.apply();
+      this.onZoomChange(extent.z);
+    }
+  }
+
   onZoomChange(zoom: number) {
     this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
       return overlay.id !== 'bridgesGeoJSON';
     });
     this.apply();
 
-    const page = 1;
+    // Get random bridges when zoomed out, get bounding box + padding when zoomed in
     if (zoom >= 8) {
-      this.getBridgesBbox(page, this.map.getBounds().pad(this.padding));
+      this.getBridgesBbox(1, this.map.getBounds().pad(this.padding));
     } else {
       this.getRandomBridges(false);
       this.openSnackbar('Zoom in to view bridges! (19,890 total)', 5000);
     }
     this.mapZoom = zoom;
     this.updateUrl(zoom);
-  }
-
-  openSnackbar(message: string, duration: number = 2500) {
-    this.snackBar.open(message, 'Dismiss', {
-      duration,
-      panelClass: ['snackbar'],
-      horizontalPosition: 'start'
-    });
   }
 
   apply() {
@@ -412,4 +407,13 @@ export class MapComponent implements OnInit {
       this.loadingBridges = false;
     }
   }
+
+  openSnackbar(message: string, duration: number = 2500) {
+    this.snackBar.open(message, 'Dismiss', {
+      duration,
+      panelClass: ['snackbar'],
+      horizontalPosition: 'start'
+    });
+  }
+
 }

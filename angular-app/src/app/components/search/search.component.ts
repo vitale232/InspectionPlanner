@@ -61,7 +61,6 @@ export class SearchComponent implements OnInit {
       lon: -75.3
     };
     this.getSearchLocation(result.searchText);
-    this.driveTimeQueryService.sendMapExtent(this.searchExtent);
   }
 
   getSearchLocation(query: string) {
@@ -96,16 +95,14 @@ export class SearchComponent implements OnInit {
             if (data[0].osm_type) {
               this.searchExtent.osmType = data[0].osm_type;
             }
+            this.driveTimeQueryService.sendMapExtent(this.searchExtent);
+            this.sidenavService.close();
           }
         },
         err => {
 
           console.log(`don't look now... it's an err`);
           console.log(err);
-        },
-        () => {
-          this.driveTimeQueryService.sendMapExtent(this.searchExtent);
-          this.sidenavService.close();
         }
       );
   }
