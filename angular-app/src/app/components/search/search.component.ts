@@ -132,16 +132,13 @@ export class SearchComponent implements OnInit {
 
             return unique;
           }, {}));
-
-          // // Filter addresses for unique values
-          // this.driveTimeQueriesText = searchTextArray.filter((value, index, arr) => {
-          //   // arr.indexOf will return the first occurrence of the value in the
-          //   // original array. If the index is different, it must be a duplicate
-          //   return arr.indexOf(value) === index;
-          // }).slice(0, 10);
         },
         err => { },
         () => { }
       );
+  }
+
+  selectAll($event) {
+    $event.target.select();
   }
 }

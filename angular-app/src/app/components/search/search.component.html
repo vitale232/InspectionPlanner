@@ -5,7 +5,11 @@
         <mat-form-field class="form-field"
                         appearance="outline"
                         color="accent">
-          <input matInput formControlName="searchText" color="warn">
+          <input matInput
+                 formControlName="searchText"
+                 color="warn"
+                 (focus)="selectAll($event)"
+                 (mouseup)="$event.preventDefault()">
           <mat-label>
             Search address or place name
           </mat-label>
