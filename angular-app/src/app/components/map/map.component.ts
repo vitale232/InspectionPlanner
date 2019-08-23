@@ -109,7 +109,7 @@ export class MapComponent implements OnInit {
     private changeDetector: ChangeDetectorRef,
   ) {
     this.apply();
-    this.searchExtentSubscription = this.driveTimeQueryService.getLocationSearchResults()
+    this.searchExtentSubscription = this.driveTimeQueryService.getLocationSearchResults$()
       .pipe(filter(Boolean))
       .subscribe(
         (data) => this.applySearchExtent(data),

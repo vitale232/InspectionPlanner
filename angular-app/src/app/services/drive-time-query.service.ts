@@ -33,7 +33,7 @@ export class DriveTimeQueryService {
     this.locationSearchSubject.next(locationResult);
   }
 
-  getLocationSearchResults() {
+  getLocationSearchResults$() {
     return this.locationSearchSubject.asObservable();
   }
 
