@@ -1,11 +1,12 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { DriveTimeQueryApiResponse, DriveTimeQueryFeature } from '../../models/drive-time-queries.model';
 import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
-import { MatDialog, MatSnackBar } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { UnderConstructionComponent } from '../under-construction/under-construction.component';
 import { FormBuilder } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from 'src/app/services/sidenav.service';
+import { NominatimApiResponse, LocationSearchResult } from '../../models/location-search.model';
 
 
 @Component({
@@ -20,7 +21,7 @@ export class SearchComponent implements OnInit {
   driveTimeQueriesText: Array<string>;
   driveTimeSearchToggle = false;
   selectedTimeInterval = 'fifteenMins';
-  searchExtent = null;
+  locationSearch: LocationSearchResult|null = null;
 
   timeIntervals = [
     {value: 'fifteenMins', viewValue: '15 minutes'},
@@ -66,7 +67,7 @@ export class SearchComponent implements OnInit {
   getSearchLocation(query: string) {
     this.driveTimeQueryService.locationSearch(query)
       .subscribe(
-        (data: any) => {
+        (data: NominatimApiResponse[]) => {
 
           if (data.length === 0) {
             this.notifications.error(
@@ -78,24 +79,24 @@ export class SearchComponent implements OnInit {
                 clickToClose: true
             });
           } else {
-            this.searchExtent = {
+            (this.locationSearch as any) = {
               lat: data[0].lat,
               lon: data[0].lon,
               z: 14
             };
             if (data[0].display_name) {
-              this.searchExtent.displayName = data[0].display_name;
+              this.locationSearch.displayName = data[0].display_name;
             }
             if (data[0].class) {
-              this.searchExtent.class = data[0].class;
+              this.locationSearch.class = data[0].class;
             }
             if (data[0].type) {
-              this.searchExtent.type = data[0].type;
+              this.locationSearch.type = data[0].type;
             }
             if (data[0].osm_type) {
-              this.searchExtent.osmType = data[0].osm_type;
+              this.locationSearch.osmType = data[0].osm_type;
             }
-            this.driveTimeQueryService.sendMapExtent(this.searchExtent);
+            this.driveTimeQueryService.sendLocationSearchResults(this.locationSearch);
             this.sidenavService.close();
           }
         },

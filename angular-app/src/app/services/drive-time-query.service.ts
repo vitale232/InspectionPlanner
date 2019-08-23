@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DriveTimeQueryApiResponse } from '../models/drive-time-queries.model';
 import { Subject } from 'rxjs';
+import { LocationSearchResult } from '../models/location-search.model';
 
 
 @Injectable({
@@ -11,7 +12,7 @@ export class DriveTimeQueryService {
   driveTimeQueryUrl = 'routing/drive-time-queries/';
   nominatimUrl = 'https://nominatim.openstreetmap.org/search';
   photonUrl = 'https://photon.komoot.de/api';
-  private mapExtentSubject = new Subject<any>();
+  locationSearchSubject = new Subject<any>();
 
   constructor(
     private http: HttpClient
@@ -28,12 +29,12 @@ export class DriveTimeQueryService {
     });
   }
 
-  sendMapExtent(extent) {
-    this.mapExtentSubject.next(extent);
+  sendLocationSearchResults(locationResult: LocationSearchResult) {
+    this.locationSearchSubject.next(locationResult);
   }
 
-  getMapExtent() {
-    return this.mapExtentSubject.asObservable();
+  getLocationSearchResults() {
+    return this.locationSearchSubject.asObservable();
   }
 
   locationSearch(query: string) {

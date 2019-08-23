@@ -1,5 +1,4 @@
-import { Component, OnInit, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-// import { tileLayer, latLng, Map, polyline, point, polygon } from 'leaflet';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import * as L from 'leaflet';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
@@ -110,7 +109,7 @@ export class MapComponent implements OnInit {
     private changeDetector: ChangeDetectorRef,
   ) {
     this.apply();
-    this.searchExtentSubscription = this.driveTimeQueryService.getMapExtent()
+    this.searchExtentSubscription = this.driveTimeQueryService.getLocationSearchResults()
       .pipe(filter(Boolean))
       .subscribe(
         (data) => this.applySearchExtent(data),
