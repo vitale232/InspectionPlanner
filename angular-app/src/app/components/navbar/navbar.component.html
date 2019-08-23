@@ -1,22 +1,53 @@
-<mat-toolbar color="primary">
-
-  <div *ngIf="sidenavState$ | async as sidenavVisible; else sidenavClosed">
-    <button mat-icon-button (click)="closeSidenav();" aria-label="Toggle search panel">
-      <mat-icon>close</mat-icon>
+<!-- Desktop navbar -->
+<div fxHide fxShow.gt-xs>
+  <mat-toolbar color="primary">
+  
+    <div *ngIf="sidenavState$ | async as sidenavVisible; else sidenavClosed">
+      <button mat-icon-button (click)="closeSidenav();" aria-label="Toggle search panel">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <ng-template #sidenavClosed>
+      <button mat-icon-button (click)="openSidenav();" aria-label="Toggle search panel">
+        <mat-icon>search</mat-icon>
+      </button>
+    </ng-template>
+  
+    <span class="fill-remaining-space">Inspection Planner Application</span>
+  
+    <button mat-button [matMenuTriggerFor]="menu">
+      <mat-icon>menu</mat-icon>
     </button>
-  </div>
-  <ng-template #sidenavClosed>
-    <button mat-icon-button (click)="openSidenav();" aria-label="Toggle search panel">
-      <mat-icon>search</mat-icon>
-    </button>
-  </ng-template>
-  <span class="fill-remaining-space">Inspection Planner Application</span>
+    <mat-menu #menu="matMenu">
+      <a mat-menu-item href="https://openstreetmap.org">OpenStreetMap.org</a>
+      <a mat-menu-item href="https://timelinetamer.com">TimelineTamer.com</a>
+    </mat-menu>
+  </mat-toolbar>
+</div>
 
-  <button mat-button [matMenuTriggerFor]="menu">
-    <mat-icon>menu</mat-icon>
-  </button>
-  <mat-menu #menu="matMenu">
-    <a mat-menu-item href="https://openstreetmap.org">OpenStreetMap.org</a>
-    <a mat-menu-item href="https://timelinetamer.com">TimelineTamer.com</a>
-  </mat-menu>
-</mat-toolbar>
+<!-- Mobile navbar -->
+<div fxHide fxShow.lt-sm>
+  <mat-toolbar color="primary">
+  
+    <div *ngIf="sidenavState$ | async as sidenavVisible; else sidenavClosed">
+      <button mat-icon-button (click)="closeSidenav();" aria-label="Toggle search panel">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    <ng-template #sidenavClosed>
+      <button mat-icon-button (click)="openSidenav();" aria-label="Toggle search panel">
+        <mat-icon>search</mat-icon>
+      </button>
+    </ng-template>
+  
+    <span class="fill-remaining-space">IPA</span>
+  
+    <button mat-button [matMenuTriggerFor]="menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu">
+      <a mat-menu-item href="https://openstreetmap.org">OpenStreetMap.org</a>
+      <a mat-menu-item href="https://timelinetamer.com">TimelineTamer.com</a>
+    </mat-menu>
+  </mat-toolbar>
+</div>
