@@ -356,6 +356,14 @@ export class MapComponent implements OnInit, OnDestroy {
         this.model.overlayLayers = this.model.overlayLayers
           .filter(overlay => overlay.id !== 'bridgesGeoJSON');
         this.loadingBridges = this.apply();
+        this.notifications.error(
+          'getBridgesBbox()',
+          `Unhandled error: "${err}"`, {
+            timeOut: 10000,
+            showProgressBar: true,
+            pauseOnHover: true,
+            clickToClose: true
+        });
       },
       () => {
         this.model.overlayLayers = this.model.overlayLayers
@@ -394,13 +402,19 @@ export class MapComponent implements OnInit, OnDestroy {
           };
           this.bridges = bridgesGeoJSON;
           this.bridgeBounds = this.bridges.layer.getBounds();
-          // this.openSnackbar(
-          //   `Displaying ${data.results.features.length} of ${data.count} bridges`);
         },
         err => {
           this.model.overlayLayers = this.model.overlayLayers
             .filter(overlay => overlay.id !== 'bridgesGeoJSON');
           this.loadingBridges = this.apply();
+          this.notifications.error(
+            'getRandomBridges()',
+            `Unhandled error: "${err}"`, {
+              timeOut: 10000,
+              showProgressBar: true,
+              pauseOnHover: true,
+              clickToClose: true
+          });
         },
         () => {
           this.model.overlayLayers = this.model.overlayLayers
