@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import {
@@ -20,7 +20,7 @@ import { LocationSearchResult } from 'src/app/models/location-search.model';
   templateUrl: './map.component.html',
   styleUrls: ['./map.component.css']
 })
-export class MapComponent implements OnInit {
+export class MapComponent implements OnInit, OnDestroy {
   title = 'angular-app';
   bboxSubscription: Subscription|null;
   randomSubscription: Subscription|null;
@@ -125,6 +125,11 @@ export class MapComponent implements OnInit {
     this.loadingBridges = true;
   }
 
+  ngOnDestroy() {
+    this.cancelRequests();
+    this.locationSearchSubscription.unsubscribe();
+  }
+
   onMapReady(map: L.Map) {
     this.map = map;
     this.getRandomBridges(false);
@@ -157,7 +162,7 @@ export class MapComponent implements OnInit {
       );
       this.mapZoom = searchResult.z;
       this.mapCenter = latLong;
-      // Force angular change detection to get map up to date
+      // Force angular change detection to update map
       this.changeDetector.detectChanges();
       this.updateUrl(searchResult.z);
 
@@ -245,9 +250,9 @@ export class MapComponent implements OnInit {
     // If not, load data based on zoom
     if (this.model.overlayLayers && zoom) {
       if (zoom > 12) {
+        // Add a little extra padding when its likely the entire
+        // first page of bridges are within the map extent
         padding = this.padding + 0.25;
-      } else {
-        padding = this.padding;
       }
       if (this.bridgeBounds) {
         mapBoundsContained = this.bridgeBounds
