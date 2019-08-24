@@ -17,7 +17,6 @@ import { SearchService } from 'src/app/services/search.service';
 export class SearchComponent implements OnInit {
   detailsPanelOpen = false;
   pastPanelOpen = false;
-  driveTimeQueriesData: DriveTimeQueryFeature;
   driveTimeQueriesText: Array<string>;
   driveTimeSearchToggle = false;
   selectedTimeInterval = 'fifteenMins';
@@ -56,15 +55,10 @@ export class SearchComponent implements OnInit {
     const result = Object.assign({}, this.locationForm.value);
     result.locationForm = Object.assign({}, result.locationForm);
 
-    const locationQuery = {
-      q: result.searchText,
-      lat: 43.0,
-      lon: -75.3
-    };
-    this.getSearchLocation(result.searchText);
+    this.getLocationSearch(result.searchText);
   }
 
-  getSearchLocation(query: string) {
+  getLocationSearch(query: string) {
     this.search.locationSearch(query)
       .subscribe(
         (data: Array<NominatimApiResponse>) => {
@@ -101,9 +95,14 @@ export class SearchComponent implements OnInit {
           }
         },
         err => {
-
-          console.log(`don't look now... it's an err`);
-          console.log(err);
+          this.notifications.error(
+            'Search error',
+            `Unhandled error: "${err}"`, {
+              timeOut: 10000,
+              showProgressBar: true,
+              pauseOnHover: true,
+              clickToClose: true
+          });
         }
       );
   }
@@ -112,8 +111,7 @@ export class SearchComponent implements OnInit {
     this.search.getDriveTimeQueries(1)
       .subscribe(
         (data: DriveTimeQueryApiResponse) => {
-          this.driveTimeQueriesData = (data.results) as any;
-          const uniqueSearchText = (data.results.features) as any;
+          const uniqueSearchText: Array<DriveTimeQueryFeature> = data.results.features;
 
           // Push the first 50 characters of the address to an array
           const searchTextArray = [];
@@ -129,12 +127,19 @@ export class SearchComponent implements OnInit {
             if (!unique[o.shortName]) {
               unique[o.shortName] = o;
             }
-
             return unique;
           }, {}));
         },
-        err => { },
-        () => { }
+        err => {
+          this.notifications.error(
+            'Search error',
+            `Unhandled error: "${err}"`, {
+              timeOut: 10000,
+              showProgressBar: true,
+              pauseOnHover: true,
+              clickToClose: true
+          });
+        }
       );
   }
 
