@@ -23,7 +23,7 @@ export class MapComponent implements OnInit {
   title = 'angular-app';
   bboxSubscription: Subscription|null;
   randomSubscription: Subscription|null;
-  searchExtentSubscription: Subscription|null;
+  locationSearchSubscription: Subscription|null;
   bridges = null;
   bridgeBounds: L.LatLngBounds|null = null;
   map: L.Map;
@@ -112,10 +112,10 @@ export class MapComponent implements OnInit {
     private changeDetector: ChangeDetectorRef,
   ) {
     this.apply();
-    this.searchExtentSubscription = this.search.getLocationSearchResults$()
+    this.locationSearchSubscription = this.search.getLocationSearchResults$()
       .pipe(filter(Boolean))
       .subscribe(
-        (data) => this.applySearchExtent(data),
+        (data) => this.applyLocationSearch(data),
         (err) => console.log('look ma! an error!')
       );
   }
@@ -148,7 +148,7 @@ export class MapComponent implements OnInit {
     }
   }
 
-  applySearchExtent(extent) {
+  applyLocationSearch(extent) {
     if (extent) {
       const latLong = new L.LatLng(extent.lat, extent.lon);
       this.mapZoom = extent.z;
