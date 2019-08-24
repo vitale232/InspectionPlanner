@@ -88,9 +88,9 @@ export class SearchComponent implements OnInit {
         },
         err => {
           this.notifications.error(
-            'Search error',
-            `Unhandled error: "${err}"`, {
-              timeOut: 10000,
+            'Unhandled error',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+              timeOut: 20000,
               showProgressBar: true,
               pauseOnHover: true,
               clickToClose: true
@@ -124,9 +124,9 @@ export class SearchComponent implements OnInit {
         },
         err => {
           this.notifications.error(
-            'Search error',
-            `Unhandled error: "${err}"`, {
-              timeOut: 10000,
+            'Unhandled error',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+              timeOut: 20000,
               showProgressBar: true,
               pauseOnHover: true,
               clickToClose: true

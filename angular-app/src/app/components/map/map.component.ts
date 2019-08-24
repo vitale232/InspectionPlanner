@@ -121,9 +121,9 @@ export class MapComponent implements OnInit, OnDestroy {
         (data: LocationSearchResult) => this.applyLocationSearch(data),
         (err) => {
           this.notifications.error(
-            'Search error',
-            `Unhandled error: "${err}"`, {
-              timeOut: 10000,
+            'Unhandled error',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+              timeOut: 20000,
               showProgressBar: true,
               pauseOnHover: true,
               clickToClose: true
@@ -357,9 +357,9 @@ export class MapComponent implements OnInit, OnDestroy {
           .filter(overlay => overlay.id !== 'bridgesGeoJSON');
         this.loadingBridges = this.apply();
         this.notifications.error(
-          'getBridgesBbox()',
-          `Unhandled error: "${err}"`, {
-            timeOut: 10000,
+          'getBridgesBbox(): Unhandled error',
+          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+            timeOut: 20000,
             showProgressBar: true,
             pauseOnHover: true,
             clickToClose: true
@@ -408,9 +408,9 @@ export class MapComponent implements OnInit, OnDestroy {
             .filter(overlay => overlay.id !== 'bridgesGeoJSON');
           this.loadingBridges = this.apply();
           this.notifications.error(
-            'getRandomBridges()',
-            `Unhandled error: "${err}"`, {
-              timeOut: 10000,
+            'getRandomBridges(): Unhandled error',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+              timeOut: 20000,
               showProgressBar: true,
               pauseOnHover: true,
               clickToClose: true
