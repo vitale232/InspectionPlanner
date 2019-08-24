@@ -35,7 +35,11 @@
       </button>
     </div>
     <ng-template #sidenavClosed>
-      <button mat-icon-button (click)="openSidenav();" aria-label="Toggle search panel">
+      <button mat-icon-button
+              matTooltip="Open search the panel. Also, try pressing the f-key to open the search panel."
+              matTooltipShowDelay="500"
+              (click)="openSidenav();"
+              aria-label="Toggle search panel">
         <mat-icon>search</mat-icon>
       </button>
     </ng-template>
