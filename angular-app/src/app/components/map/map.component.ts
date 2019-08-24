@@ -13,6 +13,7 @@ import { Location } from '@angular/common';
 import { SearchService } from 'src/app/services/search.service';
 import { filter } from 'rxjs/operators';
 import { LocationSearchResult } from 'src/app/models/location-search.model';
+import { NotificationsService } from 'angular2-notifications';
 
 
 @Component({
@@ -111,13 +112,23 @@ export class MapComponent implements OnInit, OnDestroy {
     private router: Router,
     private location: Location,
     private changeDetector: ChangeDetectorRef,
+    private notifications: NotificationsService,
   ) {
     this.apply();
     this.locationSearchSubscription = this.search.getLocationSearchResults$()
       .pipe(filter(Boolean))
       .subscribe(
         (data: LocationSearchResult) => this.applyLocationSearch(data),
-        (err) => console.log('look ma! an error!')
+        (err) => {
+          this.notifications.error(
+            'Search error',
+            `Unhandled error: "${err}"`, {
+              timeOut: 10000,
+              showProgressBar: true,
+              pauseOnHover: true,
+              clickToClose: true
+          });
+        }
       );
   }
 
