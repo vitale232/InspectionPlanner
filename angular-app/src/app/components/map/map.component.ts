@@ -226,8 +226,6 @@ export class MapComponent implements OnInit, OnDestroy {
         lon: centerCoords.lng.toFixed(4),
         z: this.mapZoom
       };
-      const lat = 'lat';
-      const lon = 'lon';
 
       const url = this.router
         .createUrlTree([], {relativeTo: this.route, queryParams })
@@ -313,7 +311,7 @@ export class MapComponent implements OnInit, OnDestroy {
     return enableBridges;
   }
 
-  getBridgesBbox(page: number, bounds: any) {
+  getBridgesBbox(page: number, bounds: L.LatLngBounds) {
     // If a request is already out, cancel it
     this.cancelRequests();
     this.loadingBridges = true;
