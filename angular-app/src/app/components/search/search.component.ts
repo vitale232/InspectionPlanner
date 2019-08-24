@@ -73,23 +73,15 @@ export class SearchComponent implements OnInit {
                 clickToClose: true
             });
           } else {
-            (this.locationSearch as any) = {
+            (this.locationSearch as LocationSearchResult) = {
               lat: data[0].lat,
               lon: data[0].lon,
-              z: 14
+              z: 14,
+              displayName: data[0].display_name,
+              class: data[0].class,
+              type: data[0].type,
+              osmType: data[0].osm_type
             };
-            if (data[0].display_name) {
-              this.locationSearch.displayName = data[0].display_name;
-            }
-            if (data[0].class) {
-              this.locationSearch.class = data[0].class;
-            }
-            if (data[0].type) {
-              this.locationSearch.type = data[0].type;
-            }
-            if (data[0].osm_type) {
-              this.locationSearch.osmType = data[0].osm_type;
-            }
             this.search.sendLocationSearchResults(this.locationSearch);
             this.sidenav.close();
           }

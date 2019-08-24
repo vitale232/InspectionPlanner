@@ -3,9 +3,9 @@ export interface NominatimApiResponse {
     class: string;
     display_name: string;
     importance: number;
-    lat: string|number;
+    lat: string;
     licence: string;
-    lon: string|number;
+    lon: string;
     osm_id: number;
     osm_type: string;
     place_id: string|number;
