@@ -3,6 +3,7 @@
 .gitignore
 .envs/*
 inspection_planner/secrets.py
+launch_ecs_service.py
 
 angular-app/node_modules*
 angular-app/src/assets*

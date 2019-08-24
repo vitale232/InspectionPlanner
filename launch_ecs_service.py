@@ -41,6 +41,7 @@ else:
     if build_angular.lower() in ['y', 'yes', 'yeah', 'yep', 'ok', 'okay', 'sure']:
         build_angular = True
     else:
+        print(f' Skipping ng build due to user input: "{build_angular}"')
         build_angular = False
 
 if build_angular:
@@ -51,6 +52,8 @@ if build_angular:
     ])
 
 print('\nBuilding Docker images')
+# Allow a little time to scan console output
+time.sleep(2)
 os.chdir(BASE_DIR)
 subprocess.call([
     'docker-compose', '-f', 'docker-compose.ecs-local.yml', 'build',
@@ -66,6 +69,7 @@ subprocess.call([
 ])
 
 print('\nLogging in to ECR')
+time.sleep(2)
 ecr_output = subprocess.run(
     [
         'aws', 'ecr', 'get-login',
@@ -88,6 +92,7 @@ docker_login[-1] = docker_login[-1].replace("\\n'", "")
 subprocess.run(docker_login)
 
 print('\nPushing Docker images')
+time.sleep(2)
 subprocess.call([
     'docker', 'push', env['DJANGO_ECR_REPOSITORY']
 ])
@@ -106,16 +111,17 @@ else:
     if launch_ecs.lower() in ['y', 'yes', 'yeah', 'yep', 'ok', 'okay', 'sure']:
         launch_ecs = True
     else:
+        print(f' Launch aborted due to user input: "{launch_ecs}"')
         launch_ecs = False
 
 if launch_ecs:
-    print('\nLaunching the ECS services')
+    print('\nLaunching the ECS service in 5 seconds...')
     os.chdir(BASE_DIR)
-    time.sleep(3)
+    time.sleep(5)
     subprocess.call([
         'ecs-cli', 'compose',
         '--file', 'docker-compose.ecs.yml',
-            '--ecs-params', 'ecs-params.yml',
+        '--ecs-params', 'ecs-params.yml',
             'service', 'up',
         '--create-log-groups', '--cluster-config', 'ipa-config',
         '--ecs-profile', 'ipa-profile',
