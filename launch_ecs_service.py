@@ -15,8 +15,8 @@ start_time = datetime.datetime.now()
 BASE_DIR = os.getcwd()
 
 print(f'Running script    : {os.path.abspath(__file__)}')
-print(f'Begin script at   : {start_time}')
 print(f'Working directory : {BASE_DIR}')
+print(f'Begin script at   : {start_time}')
 
 try:
     # Read secrets from an env file formatted VAR=VALUE
@@ -47,7 +47,7 @@ else:
 if build_angular:
     print('\nBuilding angular app with production flag')
     os.chdir(os.path.join(BASE_DIR, 'angular-app'))
-    subprocess.call([
+    subprocess.check_call([
         'ng', 'build', '--prod',
     ])
 
@@ -55,16 +55,16 @@ print('\nBuilding Docker images')
 # Allow a little time to scan console output
 time.sleep(2)
 os.chdir(BASE_DIR)
-subprocess.call([
+subprocess.check_call([
     'docker-compose', '-f', 'docker-compose.ecs-local.yml', 'build',
 ])
 
 print('\nTagging Docker images')
 time.sleep(2)
-subprocess.call([
+subprocess.check_call([
     'docker', 'tag', 'inspection_planner_django:latest', env['DJANGO_ECR_REPOSITORY']
 ])
-subprocess.call([
+subprocess.check_call([
     'docker', 'tag', 'inspection_planner_nginx:latest', env['NGINX_ECR_REPOSITORY']
 ])
 
@@ -93,10 +93,10 @@ subprocess.run(docker_login)
 
 print('\nPushing Docker images')
 time.sleep(2)
-subprocess.call([
+subprocess.check_call([
     'docker', 'push', env['DJANGO_ECR_REPOSITORY']
 ])
-subprocess.call([
+subprocess.check_call([
     'docker', 'push', env['NGINX_ECR_REPOSITORY']
 ])
 
@@ -118,7 +118,7 @@ if launch_ecs:
     print('\nLaunching the ECS service in 5 seconds... (ctrl+c to cancel)')
     os.chdir(BASE_DIR)
     time.sleep(5)
-    subprocess.call([
+    subprocess.check_call([
         'ecs-cli', 'compose',
         '--file', 'docker-compose.ecs.yml',
         '--ecs-params', 'ecs-params.yml',
