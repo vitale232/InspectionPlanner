@@ -1,13 +1,16 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import * as L from 'leaflet';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
-import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
+import {
+  NewYorkBridgesApiResponse,
+  NewYorkBridgeFeature,
+} from 'src/app/models/new-york-bridges.model';
 import { LeafletLayersModel } from 'src/app/models/leaflet-layers.model';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
-import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
+import { SearchService } from 'src/app/services/search.service';
 import { filter } from 'rxjs/operators';
 
 
@@ -100,8 +103,8 @@ export class MapComponent implements OnInit {
   };
 
   constructor(
-    private newYorkBridgeService: NewYorkBridgeService,
-    private driveTimeQueryService: DriveTimeQueryService,
+    private newYorkBridgeHttp: NewYorkBridgeService,
+    private search: SearchService,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router,
@@ -109,7 +112,7 @@ export class MapComponent implements OnInit {
     private changeDetector: ChangeDetectorRef,
   ) {
     this.apply();
-    this.searchExtentSubscription = this.driveTimeQueryService.getLocationSearchResults$()
+    this.searchExtentSubscription = this.search.getLocationSearchResults$()
       .pipe(filter(Boolean))
       .subscribe(
         (data) => this.applySearchExtent(data),
@@ -123,7 +126,6 @@ export class MapComponent implements OnInit {
 
   onMapReady(map: L.Map) {
     this.map = map;
-    const showBridges = false;
     this.getRandomBridges(false);
     this.route.queryParamMap.subscribe(
       queryParams => {
@@ -194,7 +196,8 @@ export class MapComponent implements OnInit {
 
   apply() {
     // Get the active base layer
-    const baseLayer: any = this.model.baseLayers.find((l: any) => (l.id === this.model.baseLayer));
+    const baseLayer: any = this.model.baseLayers
+      .find((l: any) => (l.id === this.model.baseLayer));
 
     // Get all the active overlay layers
     const newLayers = this.model.overlayLayers
@@ -244,9 +247,9 @@ export class MapComponent implements OnInit {
         padding = this.padding;
       }
       if (this.bridgeBounds) {
-        mapBoundsContained = this.bridgeBounds.pad(padding).contains(
-          this.map.getBounds()
-        );
+        mapBoundsContained = this.bridgeBounds
+          .pad(padding)
+          .contains(this.map.getBounds());
       }
     } else {
       mapBoundsContained = false;
@@ -306,7 +309,8 @@ export class MapComponent implements OnInit {
     // If a request is already out, cancel it
     this.cancelRequests();
     this.loadingBridges = true;
-    this.bboxSubscription = this.newYorkBridgeService.getNewYorkBridgesBounds(1, bounds)
+    this.bboxSubscription = this.newYorkBridgeHttp
+      .getNewYorkBridgesBounds(1, bounds)
       .subscribe(
         (data: NewYorkBridgesApiResponse) => {
 
@@ -328,18 +332,17 @@ export class MapComponent implements OnInit {
           this.bridges = bridgesGeoJSON;
           this.bridgeBounds = this.bridges.layer.getBounds();
           this.openSnackbar(
-            `Displaying ${data.results.features.length} of ${data.count.toLocaleString()} bridges`);
+            `Displaying ${data.results.features.length} ` +
+            `of ${data.count.toLocaleString()} bridges`);
       },
       err => {
-        this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
-          return overlay.id !== 'bridgesGeoJSON';
-        });
+        this.model.overlayLayers = this.model.overlayLayers
+          .filter(overlay => overlay.id !== 'bridgesGeoJSON');
         this.loadingBridges = this.apply();
       },
       () => {
-        this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
-          return overlay.id !== 'bridgesGeoJSON';
-        });
+        this.model.overlayLayers = this.model.overlayLayers
+          .filter(overlay => overlay.id !== 'bridgesGeoJSON');
         this.apply();
         this.model.overlayLayers.push(this.bridges);
         this.layersControl.overlays.Bridges = this.bridges.layer;
@@ -353,47 +356,44 @@ export class MapComponent implements OnInit {
     enable = (typeof enable === 'undefined') ? true : enable;
     this.cancelRequests();
     this.loadingBridges = true;
-    this.randomSubscription = this.newYorkBridgeService.getNewYorkBridgesRandom(1)
-    .subscribe(
-      (data: NewYorkBridgesApiResponse) => {
+    this.randomSubscription = this.newYorkBridgeHttp
+      .getNewYorkBridgesRandom(1)
+      .subscribe(
+        (data: NewYorkBridgesApiResponse) => {
 
-        this.apply();
-        const bridgesGeoJSON = {
-          id: 'bridgesGeoJSON',
-          name: 'Bridges Geo JSON',
-          enabled: enable, // this.bridgesEnabled(),
-          layer: L.geoJSON(
-            (data.results) as any, {
-              onEachFeature: (feature: any, layer: L.Layer) => {
-                layer.bindPopup(this.bridgePopupHtml(feature));
-              },
-              pointToLayer: (feature, latLng) => {
-                return L.marker(latLng, {icon: this.bridgeMarker});
+          this.apply();
+          const bridgesGeoJSON = {
+            id: 'bridgesGeoJSON',
+            name: 'Bridges Geo JSON',
+            enabled: enable, // this.bridgesEnabled(),
+            layer: L.geoJSON(
+              (data.results) as any, {
+                onEachFeature: (feature: any, layer: L.Layer) => {
+                  layer.bindPopup(this.bridgePopupHtml(feature));
+                },
+                pointToLayer: (feature, latLng) => L.marker(latLng, {icon: this.bridgeMarker})
               }
-            }
-          )
-        };
-        this.bridges = bridgesGeoJSON;
-        this.bridgeBounds = this.bridges.layer.getBounds();
-        // this.openSnackbar(
-        //   `Displaying ${data.results.features.length} of ${data.count} bridges`);
-      },
-      err => {
-        this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
-          return overlay.id !== 'bridgesGeoJSON';
-        });
-        this.loadingBridges = this.apply();
-      },
-      () => {
-        this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
-          return overlay.id !== 'bridgesGeoJSON';
-        });
-        this.apply();
-        this.model.overlayLayers.push(this.bridges);
-        this.layersControl.overlays.Bridges = this.bridges.layer;
-        this.loadingBridges = this.apply();
-      }
-    );
+            )
+          };
+          this.bridges = bridgesGeoJSON;
+          this.bridgeBounds = this.bridges.layer.getBounds();
+          // this.openSnackbar(
+          //   `Displaying ${data.results.features.length} of ${data.count} bridges`);
+        },
+        err => {
+          this.model.overlayLayers = this.model.overlayLayers
+            .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+          this.loadingBridges = this.apply();
+        },
+        () => {
+          this.model.overlayLayers = this.model.overlayLayers
+            .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+          this.apply();
+          this.model.overlayLayers.push(this.bridges);
+          this.layersControl.overlays.Bridges = this.bridges.layer;
+          this.loadingBridges = this.apply();
+        }
+      );
   }
 
   cancelRequests() {

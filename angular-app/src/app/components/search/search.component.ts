@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { DriveTimeQueryApiResponse, DriveTimeQueryFeature } from '../../models/drive-time-queries.model';
-import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
 import { MatDialog } from '@angular/material';
 import { UnderConstructionComponent } from '../under-construction/under-construction.component';
 import { FormBuilder } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from 'src/app/services/sidenav.service';
 import { NominatimApiResponse, LocationSearchResult } from '../../models/location-search.model';
+import { SearchService } from 'src/app/services/search.service';
 
 
 @Component({
@@ -37,11 +37,11 @@ export class SearchComponent implements OnInit {
   });
 
   constructor(
-    private driveTimeQueryService: DriveTimeQueryService,
+    private search: SearchService,
     public dialogRef: MatDialog,
     private fb: FormBuilder,
     private notifications: NotificationsService,
-    private sidenavService: SidenavService
+    private sidenav: SidenavService
   ) { }
 
   ngOnInit() {
@@ -65,9 +65,9 @@ export class SearchComponent implements OnInit {
   }
 
   getSearchLocation(query: string) {
-    this.driveTimeQueryService.locationSearch(query)
+    this.search.locationSearch(query)
       .subscribe(
-        (data: NominatimApiResponse[]) => {
+        (data: Array<NominatimApiResponse>) => {
 
           if (data.length === 0) {
             this.notifications.error(
@@ -96,8 +96,8 @@ export class SearchComponent implements OnInit {
             if (data[0].osm_type) {
               this.locationSearch.osmType = data[0].osm_type;
             }
-            this.driveTimeQueryService.sendLocationSearchResults(this.locationSearch);
-            this.sidenavService.close();
+            this.search.sendLocationSearchResults(this.locationSearch);
+            this.sidenav.close();
           }
         },
         err => {
@@ -109,7 +109,7 @@ export class SearchComponent implements OnInit {
   }
 
   getRecentQueries() {
-    this.driveTimeQueryService.getDriveTimeQueries(1)
+    this.search.getDriveTimeQueries(1)
       .subscribe(
         (data: DriveTimeQueryApiResponse) => {
           this.driveTimeQueriesData = (data.results) as any;

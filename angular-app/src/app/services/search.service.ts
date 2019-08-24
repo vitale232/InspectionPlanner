@@ -8,7 +8,7 @@ import { LocationSearchResult } from '../models/location-search.model';
 @Injectable({
   providedIn: 'root'
 })
-export class DriveTimeQueryService {
+export class SearchService {
   driveTimeQueryUrl = 'routing/drive-time-queries/';
   nominatimUrl = 'https://nominatim.openstreetmap.org/search';
   photonUrl = 'https://photon.komoot.de/api';
