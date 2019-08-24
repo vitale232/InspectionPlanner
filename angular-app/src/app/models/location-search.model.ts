@@ -13,8 +13,8 @@ export interface NominatimApiResponse {
 }
 
 export interface LocationSearchResult {
-    lat: string|number;
-    lon: string|number;
+    lat: string;
+    lon: string;
     z: number;
     displayName: string;
     class: string;

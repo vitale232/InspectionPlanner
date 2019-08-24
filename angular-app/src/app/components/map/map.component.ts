@@ -12,6 +12,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { SearchService } from 'src/app/services/search.service';
 import { filter } from 'rxjs/operators';
+import { LocationSearchResult } from 'src/app/models/location-search.model';
 
 
 @Component({
@@ -115,7 +116,7 @@ export class MapComponent implements OnInit {
     this.locationSearchSubscription = this.search.getLocationSearchResults$()
       .pipe(filter(Boolean))
       .subscribe(
-        (data) => this.applyLocationSearch(data),
+        (data: LocationSearchResult) => this.applyLocationSearch(data),
         (err) => console.log('look ma! an error!')
       );
   }
@@ -133,13 +134,13 @@ export class MapComponent implements OnInit {
         const params = 'params';
         const lat = 'lat';
         const lon = 'lon';
-        const z = 'z';
+        const zoom = 'z';
         // If there are query params in the URL, use them to set the map options
         if (queryParams[params][lat] &&
             queryParams[params][lon] &&
-            queryParams[params][z]) {
+            queryParams[params][zoom]) {
 
-          this.mapZoom = queryParams[params][z];
+          this.mapZoom = queryParams[params][zoom];
           this.mapCenter = new L.LatLng(queryParams[params][lat], queryParams[params][lon]);
         }
       });
@@ -148,39 +149,41 @@ export class MapComponent implements OnInit {
     }
   }
 
-  applyLocationSearch(extent) {
-    if (extent) {
-      const latLong = new L.LatLng(extent.lat, extent.lon);
-      this.mapZoom = extent.z;
+  applyLocationSearch(searchResult: LocationSearchResult) {
+    if (searchResult) {
+      const latLong = new L.LatLng(
+        parseFloat(searchResult.lat),
+        parseFloat(searchResult.lon)
+      );
+      this.mapZoom = searchResult.z;
       this.mapCenter = latLong;
       // Force angular change detection to get map up to date
       this.changeDetector.detectChanges();
-      this.updateUrl(extent.z);
+      this.updateUrl(searchResult.z);
 
       this.model.overlayLayers.push({
         id: 'Search result',
         name: 'Search results',
         enabled: true,
         layer: L.marker(latLong, { icon: this.searchMarker }).bindPopup(
-          `<address> <strong> ${extent.displayName} </strong> </address> ` +
+          `<address> <strong> ${searchResult.displayName} </strong> </address> ` +
           `<dl> <dt> Latitude, Longitude: </dt> <dd> ` +
-            `${parseFloat(extent.lat).toFixed(4)}, ` +
-            `${parseFloat(extent.lon).toFixed(4)} </dd>` +
-          `<dt> OSM Type: </dt> <dd> ${extent.osmType} </dd> ` +
-          `<dt> Class: </dt> <dd> ${extent.class} </dd> ` +
-          `<dt> Type: </dt> <dd> ${extent.type} </dd> </dl>`
+            `${parseFloat(searchResult.lat).toFixed(4)}, ` +
+            `${parseFloat(searchResult.lon).toFixed(4)} </dd>` +
+          `<dt> OSM Type: </dt> <dd> ${searchResult.osmType} </dd> ` +
+          `<dt> Class: </dt> <dd> ${searchResult.class} </dd> ` +
+          `<dt> Type: </dt> <dd> ${searchResult.type} </dd> </dl>`
         )
 
       });
       this.apply();
-      this.onZoomChange(extent.z);
+      this.onZoomChange(searchResult.z);
     }
   }
 
   onZoomChange(zoom: number) {
-    this.model.overlayLayers = this.model.overlayLayers.filter(overlay => {
-      return overlay.id !== 'bridgesGeoJSON';
-    });
+    this.model.overlayLayers = this.model.overlayLayers
+      .filter(overlay => overlay.id !== 'bridgesGeoJSON');
     this.apply();
 
     // Get random bridges when zoomed out, get bounding box + padding when zoomed in
