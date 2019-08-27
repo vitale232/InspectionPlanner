@@ -20,15 +20,15 @@ print(f'Begin script at   : {start_time}')
 
 try:
     # Read secrets from an env file formatted VAR=VALUE
-    env_file = '.envs/prod/launch_script'
-    with open(env_file, 'r') as env_file:
+    env_filepath = '.envs/prod/launch_script'
+    with open(env_filepath, 'r') as env_file:
         lines = env_file.readlines()
 
     keys_values = [line.split('=') for line in lines]
     env = {key_value[0]: key_value[1].strip('\n') for key_value in keys_values}
 
 except Exception as exc:
-    print(f'\nERROR: Does the env file exist? : {env_file}\n\n')
+    print(f'\nERROR: Does the env file exist? : {env_filepath}\n\n')
     raise exc
 
 if not require_input:

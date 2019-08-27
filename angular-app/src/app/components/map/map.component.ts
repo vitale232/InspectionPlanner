@@ -51,7 +51,7 @@ export class MapComponent implements OnInit, OnDestroy {
     popupAnchor: [0, -20.5]
   });
   clientLocationMarker = L.icon({
-    iconUrl: 'assets/marker-icon-yellow.png',
+    iconUrl: 'assets/marker-icon-black.png',
     shadowUrl: 'leaflet/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12.5, 41],
@@ -187,13 +187,12 @@ export class MapComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.loadingBridges = true;
-    navigator.geolocation.getCurrentPosition(pos => {
-    });
   }
 
   ngOnDestroy() {
     this.cancelRequests();
     this.locationSearchSubscription.unsubscribe();
+    this.clientLocationSubscription.unsubscribe();
   }
 
   onMapReady(map: L.Map) {

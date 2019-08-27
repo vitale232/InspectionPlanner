@@ -20,13 +20,13 @@ export class ClientLocationService {
     };
     navigator.geolocation.getCurrentPosition(
       pos => {
-        this.sendClientLocation({
+        const clientLocation: ClientLocation = {
           lat: pos.coords.latitude,
           lon: pos.coords.longitude,
           timestamp: pos.timestamp
-      });
+        };
+        this.sendClientLocation(clientLocation);
     }, err => {
-      console.log(err);
       this.notifications.error(
         `Geolocation error`,
         `${err.message}`, {
