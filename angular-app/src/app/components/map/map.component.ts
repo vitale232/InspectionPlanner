@@ -12,8 +12,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { SearchService } from 'src/app/services/search.service';
 import { filter } from 'rxjs/operators';
-import { LocationSearchResult } from 'src/app/models/location-search.model';
+import { LocationSearchResult, ClientLocation } from 'src/app/models/location-search.model';
 import { NotificationsService } from 'angular2-notifications';
+import { ClientLocationService } from 'src/app/services/client-location.service';
 
 
 @Component({
@@ -26,6 +27,7 @@ export class MapComponent implements OnInit, OnDestroy {
   bboxSubscription: Subscription|null;
   randomSubscription: Subscription|null;
   locationSearchSubscription: Subscription|null;
+  clientLocationSubscription: Subscription|null;
   bridges = null;
   bridgeBounds: L.LatLngBounds|null = null;
   map: L.Map;
@@ -43,6 +45,13 @@ export class MapComponent implements OnInit, OnDestroy {
   });
   searchMarker = L.icon({
     iconUrl: 'assets/marker-icon-red.png',
+    shadowUrl: 'leaflet/marker-shadow.png',
+    iconSize: [25, 41],
+    iconAnchor: [12.5, 41],
+    popupAnchor: [0, -20.5]
+  });
+  clientLocationMarker = L.icon({
+    iconUrl: 'assets/marker-icon-yellow.png',
     shadowUrl: 'leaflet/marker-shadow.png',
     iconSize: [25, 41],
     iconAnchor: [12.5, 41],
@@ -70,6 +79,29 @@ export class MapComponent implements OnInit, OnDestroy {
     })
   };
 
+  LAYER_ESRI_WORLD_TOPO = {
+    id: 'esriTopo',
+    name: 'Esri World Topo Map',
+    detectRetina: true,
+    enabled: true,
+    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, ' +
+                   'iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, ' +
+                   'Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+    })
+  };
+
+  LAYER_ESRI_WORLD_IMAGERY = {
+    id: 'esriImagery',
+    name: 'Esri World Imagery',
+    detectRetina: true,
+    enabled: true,
+    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, ' +
+                   'Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    })
+  };
+
   studyArea = {
     id: 'studyarea',
     name: 'Routable Network Extent',
@@ -86,6 +118,8 @@ export class MapComponent implements OnInit, OnDestroy {
     [
       this.LAYER_WIKIMEDIA_MAP,
       this.LAYER_OPEN_STREET_MAP,
+      this.LAYER_ESRI_WORLD_TOPO,
+      this.LAYER_ESRI_WORLD_IMAGERY
     ],
     this.LAYER_WIKIMEDIA_MAP.id,
     [
@@ -98,6 +132,8 @@ export class MapComponent implements OnInit, OnDestroy {
     baseLayers: {
       'Wikimedia Map': this.LAYER_WIKIMEDIA_MAP.layer,
       OpenStreetMap: this.LAYER_OPEN_STREET_MAP.layer,
+      'Esri World Topo': this.LAYER_ESRI_WORLD_TOPO.layer,
+      'Esri World Imagery': this.LAYER_ESRI_WORLD_IMAGERY.layer,
     },
     overlays: {
       'Routable Network Extent': this.studyArea.layer,
@@ -113,6 +149,7 @@ export class MapComponent implements OnInit, OnDestroy {
     private location: Location,
     private changeDetector: ChangeDetectorRef,
     private notifications: NotificationsService,
+    private clientLocation: ClientLocationService,
   ) {
     this.apply();
     this.locationSearchSubscription = this.search.getLocationSearchResults$()
@@ -130,10 +167,28 @@ export class MapComponent implements OnInit, OnDestroy {
           });
         }
       );
+    this.clientLocationSubscription = this.clientLocation.getClientLocation()
+      .subscribe(
+        (data: ClientLocation) => {
+          this.applyClientLocationQuery(data);
+        },
+        (err) => {
+          this.notifications.error(
+            'Unhandled error : applyClientLocationQuery : map',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+              timeOut: 20000,
+              showProgressBar: true,
+              pauseOnHover: true,
+              clickToClose: true
+          });
+        }
+      );
   }
 
   ngOnInit() {
     this.loadingBridges = true;
+    navigator.geolocation.getCurrentPosition(pos => {
+    });
   }
 
   ngOnDestroy() {
@@ -195,6 +250,33 @@ export class MapComponent implements OnInit, OnDestroy {
       this.apply();
       this.onZoomChange(searchResult.z);
     }
+  }
+
+  applyClientLocationQuery(clientLocation: ClientLocation) {
+    const latLong = new L.LatLng(clientLocation.lat, clientLocation.lon);
+
+    this.mapZoom = 14;
+    this.mapCenter = latLong;
+
+    this.changeDetector.detectChanges();
+    this.updateUrl(this.mapZoom);
+
+    this.model.overlayLayers.push({
+      id: 'Current location',
+      name: 'Current location',
+      enabled: true,
+      layer: L.marker(latLong, { icon: this.clientLocationMarker }).bindPopup(
+        `<p><strong>Current browser location</strong></p>` +
+        `<dl> <dt> Latitude, Longitude: </dt> <dd> ` +
+          `${clientLocation.lat.toFixed(4)}, ` +
+          `${clientLocation.lon.toFixed(4)} </dd>` +
+        `<dt> Timestamp: </dt> <dd> ` +
+          `${(new Date(clientLocation.timestamp)).toLocaleString()} </dd> `
+      )
+
+    });
+    this.apply();
+    this.onZoomChange(this.mapZoom);
   }
 
   onZoomChange(zoom: number) {

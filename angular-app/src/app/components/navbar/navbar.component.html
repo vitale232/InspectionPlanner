@@ -13,6 +13,14 @@
       </button>
     </ng-template>
   
+    <button mat-icon-button
+            matTooltip="My current location"
+            matTooltipShowDelay="500"
+            (click)="sendClientLocation()"
+            aria-label="Plot current location on map">
+      <mat-icon>location_searching</mat-icon>
+    </button>
+
     <span class="fill-remaining-space">Inspection Planner Application</span>
   
     <button mat-button [matMenuTriggerFor]="menu">
@@ -43,6 +51,14 @@
         <mat-icon>search</mat-icon>
       </button>
     </ng-template>
+
+    <button mat-icon-button
+            matTooltip="My current location"
+            matTooltipShowDelay="500"
+            (click)="sendClientLocation()"
+            aria-label="Plot current location on map">
+      <mat-icon>location_searching</mat-icon>
+    </button>
   
     <span class="fill-remaining-space">IPA</span>
   

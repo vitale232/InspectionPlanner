@@ -21,3 +21,9 @@ export interface LocationSearchResult {
     type: string;
     osmType: string;
 }
+
+export interface ClientLocation {
+    lat: number;
+    lon: number;
+    timestamp: number;
+}

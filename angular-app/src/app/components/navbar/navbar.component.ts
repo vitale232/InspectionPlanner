@@ -1,6 +1,8 @@
 import { Component, OnDestroy } from '@angular/core';
 import { SidenavService } from 'src/app/services/sidenav.service';
 import { Subscription, Observable } from 'rxjs';
+import { LocationService } from 'src/app/services/location.service';
+import { ClientLocationService } from 'src/app/services/client-location.service';
 
 
 @Component({
@@ -14,6 +16,7 @@ export class NavbarComponent implements OnDestroy {
 
   constructor(
     private sidenavService: SidenavService,
+    private clientLocation: ClientLocationService,
   ) {
     this.sidenavState$ = this.sidenavService.getSidenavState();
   }
@@ -28,5 +31,9 @@ export class NavbarComponent implements OnDestroy {
 
   closeSidenav() {
     this.sidenavService.close();
+  }
+
+  sendClientLocation() {
+    this.clientLocation.queryClientLocation();
   }
 }
