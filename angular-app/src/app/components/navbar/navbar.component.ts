@@ -1,7 +1,6 @@
 import { Component, OnDestroy } from '@angular/core';
 import { SidenavService } from 'src/app/services/sidenav.service';
 import { Subscription, Observable } from 'rxjs';
-import { LocationService } from 'src/app/services/location.service';
 import { ClientLocationService } from 'src/app/services/client-location.service';
 
 
