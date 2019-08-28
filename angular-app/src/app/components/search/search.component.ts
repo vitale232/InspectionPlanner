@@ -46,13 +46,13 @@ export class SearchComponent implements OnInit {
   });
 
   constructor(
-    private search: SearchService,
+    private searchService: SearchService,
     public dialogRef: MatDialog,
     private fb: FormBuilder,
     private notifications: NotificationsService,
-    private sidenav: SidenavService,
-    private clientLocation: ClientLocationService,
-    private mapTools: MapToolsService,
+    private sidenavService: SidenavService,
+    private clientLocationService: ClientLocationService,
+    private mapToolsService: MapToolsService,
   ) { }
 
   ngOnInit() {
@@ -64,7 +64,7 @@ export class SearchComponent implements OnInit {
   }
 
   sendClientLocation() {
-    this.clientLocation.queryClientLocation();
+    this.clientLocationService.queryClientLocation();
   }
 
   sendMapHome() {
@@ -73,7 +73,7 @@ export class SearchComponent implements OnInit {
       lon: -75.3,
       z: 7
     };
-    this.mapTools.sendMapHome(mapExtent);
+    this.mapToolsService.sendMapHome(mapExtent);
   }
 
   onLocationSearch() {
@@ -87,22 +87,18 @@ export class SearchComponent implements OnInit {
     this.getFilterSearch(this.filterForm.value);
   }
 
-  onFilterSearchEnterPress($event) {
-    this.onFilterSearch();
-  }
-
   getFilterSearch(filterSearch: FilterSearch) {
-    this.search.filterSearch(filterSearch)
+    this.searchService.filterSearch(filterSearch)
     .subscribe(
       (data: Array<NominatimApiResponse>) => {
 
         if (data.length === 0) {
-          const query = `street: ${filterSearch.streetAddress}; ` +
-            `city: ${filterSearch.city}; state: ${filterSearch.state}; ` +
-            `country: ${filterSearch.country}`;
+          const query = `street: "${filterSearch.streetAddress}"; ` +
+            `city: "${filterSearch.city}"; state: "${filterSearch.state}"; ` +
+            `country: "${filterSearch.country}"`;
           this.notifications.error(
             'Search error',
-            `No results found for query: "${query}"`, {
+            `No results found for query: ${query}`, {
               timeOut: 10000,
               showProgressBar: true,
               pauseOnHover: true,
@@ -118,8 +114,8 @@ export class SearchComponent implements OnInit {
             type: data[0].type,
             osmType: data[0].osm_type
           };
-          this.search.sendLocationSearchResults(this.locationSearch);
-          this.sidenav.close();
+          this.searchService.sendLocationSearchResult(this.locationSearch);
+          this.sidenavService.close();
         }
       },
       err => {
@@ -136,7 +132,7 @@ export class SearchComponent implements OnInit {
   }
 
   getLocationSearch(query: string) {
-    this.search.locationSearch(query)
+    this.searchService.locationSearch(query)
       .subscribe(
         (data: Array<NominatimApiResponse>) => {
 
@@ -159,8 +155,8 @@ export class SearchComponent implements OnInit {
               type: data[0].type,
               osmType: data[0].osm_type
             };
-            this.search.sendLocationSearchResults(this.locationSearch);
-            this.sidenav.close();
+            this.searchService.sendLocationSearchResult(this.locationSearch);
+            this.sidenavService.close();
           }
         },
         err => {
@@ -177,7 +173,7 @@ export class SearchComponent implements OnInit {
   }
 
   getRecentQueries() {
-    this.search.getDriveTimeQueries(1)
+    this.searchService.getDriveTimeQueries(1)
       .subscribe(
         (data: DriveTimeQueryApiResponse) => {
           const uniqueSearchText: Array<DriveTimeQueryFeature> = data.results.features;

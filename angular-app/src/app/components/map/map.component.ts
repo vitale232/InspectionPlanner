@@ -69,7 +69,8 @@ export class MapComponent implements OnInit, OnDestroy {
     enabled: true,
     layer: L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', {
       maxZoom: 18,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+                   'OpenStreetMap</a> contributors'
     })
   };
   LAYER_OPEN_STREET_MAP = {
@@ -79,7 +80,8 @@ export class MapComponent implements OnInit, OnDestroy {
     enabled: true,
     layer: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 18,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+                   'OpenStreetMap</a> contributors'
     })
   };
 
@@ -88,7 +90,8 @@ export class MapComponent implements OnInit, OnDestroy {
     name: 'Esri World Topo Map',
     detectRetina: true,
     enabled: true,
-    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
+    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' +
+                       'World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, ' +
                    'iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, ' +
                    'Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
@@ -100,9 +103,10 @@ export class MapComponent implements OnInit, OnDestroy {
     name: 'Esri World Imagery',
     detectRetina: true,
     enabled: true,
-    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, ' +
-                   'Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' +
+                       'World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye' +
+                   ', Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     })
   };
 
@@ -146,19 +150,22 @@ export class MapComponent implements OnInit, OnDestroy {
 
   constructor(
     private newYorkBridgeHttp: NewYorkBridgeService,
-    private search: SearchService,
+    private searchService: SearchService,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
     private router: Router,
     private location: Location,
     private changeDetector: ChangeDetectorRef,
     private notifications: NotificationsService,
-    private clientLocation: ClientLocationService,
-    private mapTools: MapToolsService,
-    private sidenav: SidenavService
-  ) {
+    private clientLocationService: ClientLocationService,
+    private mapToolsService: MapToolsService,
+    private sidenavService: SidenavService
+  ) { }
+
+  ngOnInit() {
+    this.loadingBridges = true;
     this.apply();
-    this.locationSearchSubscription = this.search.getLocationSearchResults$()
+    this.locationSearchSubscription = this.searchService.getLocationSearchResult$()
       .pipe(filter(Boolean))
       .subscribe(
         (data: LocationSearchResult) => this.applyLocationSearch(data),
@@ -173,7 +180,7 @@ export class MapComponent implements OnInit, OnDestroy {
           });
         }
       );
-    this.clientLocationSubscription = this.clientLocation.getClientLocation()
+    this.clientLocationSubscription = this.clientLocationService.getClientLocation$()
       .subscribe(
         (data: ClientLocation) => {
           this.applyClientLocationQuery(data);
@@ -189,12 +196,12 @@ export class MapComponent implements OnInit, OnDestroy {
           });
         }
       );
-    this.mapHomeSubscription = this.mapTools.getMapHome()
+    this.mapHomeSubscription = this.mapToolsService.getMapHome$()
       .subscribe(
         (data: MapExtent) => {
           this.mapCenter = new L.LatLng(data.lat, data.lon);
           this.mapZoom = data.z;
-          this.sidenav.close();
+          this.sidenavService.close();
         }, (err) => {
           this.notifications.error(
             'Unhandled error : mapHomeSubscription : map',
@@ -206,10 +213,6 @@ export class MapComponent implements OnInit, OnDestroy {
             });
         }
       );
-  }
-
-  ngOnInit() {
-    this.loadingBridges = true;
   }
 
   ngOnDestroy() {

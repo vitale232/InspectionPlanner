@@ -6,15 +6,15 @@ import { MapExtent } from '../models/map-tools.model';
   providedIn: 'root'
 })
 export class MapToolsService {
-  mapHome$ = new Subject();
+  mapHome = new Subject();
 
   constructor() { }
 
   sendMapHome(extent: MapExtent) {
-    this.mapHome$.next(extent);
+    this.mapHome.next(extent);
   }
 
-  getMapHome() {
-    return this.mapHome$.asObservable();
+  getMapHome$() {
+    return this.mapHome.asObservable();
   }
 }

@@ -29,11 +29,11 @@ export class SearchService {
     });
   }
 
-  sendLocationSearchResults(locationResult: LocationSearchResult) {
+  sendLocationSearchResult(locationResult: LocationSearchResult) {
     this.locationSearchSubject.next(locationResult);
   }
 
-  getLocationSearchResults$() {
+  getLocationSearchResult$() {
     return this.locationSearchSubject.asObservable();
   }
 

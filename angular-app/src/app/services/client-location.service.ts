@@ -8,7 +8,7 @@ import { SidenavService } from './sidenav.service';
   providedIn: 'root'
 })
 export class ClientLocationService {
-  clientLocation$ = new Subject();
+  clientLocation = new Subject();
 
   constructor(
     private notifications: NotificationsService,
@@ -42,10 +42,10 @@ export class ClientLocationService {
   }
 
   sendClientLocation(location: ClientLocation) {
-    this.clientLocation$.next(location);
+    this.clientLocation.next(location);
   }
 
-  getClientLocation() {
-    return this.clientLocation$.asObservable();
+  getClientLocation$() {
+    return this.clientLocation.asObservable();
   }
 }

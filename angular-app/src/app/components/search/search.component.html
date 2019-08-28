@@ -76,7 +76,6 @@
     <!-- <mat-divider></mat-divider> -->
   </div>
 
-
   <mat-expansion-panel (opened)="detailsPanelOpen = true;"
                       (closed)="detailsPanelOpen = false;">
     <mat-expansion-panel-header>
@@ -85,7 +84,7 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
 
-    <form [formGroup]="filterForm" (keydown.enter)="onFilterSearchEnterPress()">
+    <form [formGroup]="filterForm" (keydown.enter)="onFilterSearch()">
       <mat-form-field class="detailed-form-field" color="accent">
         <input matInput formControlName="streetAddress" placeholder="Street address">
       </mat-form-field>
