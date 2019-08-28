@@ -5,11 +5,9 @@ import { UnderConstructionComponent } from '../under-construction/under-construc
 import { FormBuilder } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from 'src/app/services/sidenav.service';
-import { NominatimApiResponse, LocationSearchResult } from '../../models/location-search.model';
+import { NominatimApiResponse, LocationSearchResult, FilterSearch } from '../../models/location-search.model';
 import { SearchService } from 'src/app/services/search.service';
 import { ClientLocationService } from 'src/app/services/client-location.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
 import { MapExtent } from 'src/app/models/map-tools.model';
 import { MapToolsService } from 'src/app/services/map-tools.service';
 
@@ -38,6 +36,13 @@ export class SearchComponent implements OnInit {
 
   locationForm = this.fb.group({
     searchText: ['']
+  });
+
+  filterForm = this.fb.group({
+    streetAddress: [''],
+    city: [''],
+    state: ['NY'],
+    country: ['USA']
   });
 
   constructor(
@@ -76,6 +81,58 @@ export class SearchComponent implements OnInit {
     result.locationForm = Object.assign({}, result.locationForm);
 
     this.getLocationSearch(result.searchText);
+  }
+
+  onFilterSearch() {
+    this.getFilterSearch(this.filterForm.value);
+  }
+
+  onFilterSearchEnterPress($event) {
+    this.onFilterSearch();
+  }
+
+  getFilterSearch(filterSearch: FilterSearch) {
+    this.search.filterSearch(filterSearch)
+    .subscribe(
+      (data: Array<NominatimApiResponse>) => {
+
+        if (data.length === 0) {
+          const query = `street: ${filterSearch.streetAddress}; ` +
+            `city: ${filterSearch.city}; state: ${filterSearch.state}; ` +
+            `country: ${filterSearch.country}`;
+          this.notifications.error(
+            'Search error',
+            `No results found for query: "${query}"`, {
+              timeOut: 10000,
+              showProgressBar: true,
+              pauseOnHover: true,
+              clickToClose: true
+          });
+        } else {
+          (this.locationSearch as LocationSearchResult) = {
+            lat: data[0].lat,
+            lon: data[0].lon,
+            z: 14,
+            displayName: data[0].display_name,
+            class: data[0].class,
+            type: data[0].type,
+            osmType: data[0].osm_type
+          };
+          this.search.sendLocationSearchResults(this.locationSearch);
+          this.sidenav.close();
+        }
+      },
+      err => {
+        this.notifications.error(
+          'Unhandled error',
+          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+            timeOut: 20000,
+            showProgressBar: true,
+            pauseOnHover: true,
+            clickToClose: true
+        });
+      }
+    );
   }
 
   getLocationSearch(query: string) {

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DriveTimeQueryApiResponse } from '../models/drive-time-queries.model';
 import { Subject } from 'rxjs';
-import { LocationSearchResult } from '../models/location-search.model';
+import { LocationSearchResult, FilterSearch } from '../models/location-search.model';
 
 
 @Injectable({
@@ -40,6 +40,20 @@ export class SearchService {
   locationSearch(query: string) {
     const queryParams = {
       q: query,
+      format: 'json'
+    };
+
+    return this.http.get<any>(this.nominatimUrl, {
+      params: queryParams
+    });
+  }
+
+  filterSearch(query: FilterSearch) {
+    const queryParams = {
+      street: query.streetAddress,
+      city: query.city,
+      state: query.state,
+      country: query.country,
       format: 'json'
     };
 

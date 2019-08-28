@@ -85,25 +85,27 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
 
-    <mat-form-field class="detailed-form-field" color="accent">
-      <input matInput placeholder="Street address">
-    </mat-form-field>
-
-    <mat-form-field class="detailed-form-field" color="accent">
-      <input matInput placeholder="City">
-    </mat-form-field>
-
-    <mat-form-field class="detailed-form-field" color="accent">
-      <input matInput value="NY" placeholder="State">
-    </mat-form-field>
-
-    <mat-form-field class="detailed-form-field" color="accent">
-      <input matInput value="USA" placeholder="Country">
-    </mat-form-field>
+    <form [formGroup]="filterForm" (keydown.enter)="onFilterSearchEnterPress()">
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="streetAddress" placeholder="Street address">
+      </mat-form-field>
+  
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="city" placeholder="City">
+      </mat-form-field>
+  
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="state" placeholder="State">
+      </mat-form-field>
+  
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="country" placeholder="Country">
+      </mat-form-field>
+    </form>
 
     <button mat-flat-button
             color="primary"
-            (click)="onClick()"
+            (click)="onFilterSearch()"
             class="center-button">
       Search
     </button>

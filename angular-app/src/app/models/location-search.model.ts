@@ -27,3 +27,10 @@ export interface ClientLocation {
     lon: number;
     timestamp: number;
 }
+
+export interface FilterSearch {
+    streetAddress: string;
+    city: string;
+    state: string;
+    country: string;
+}
