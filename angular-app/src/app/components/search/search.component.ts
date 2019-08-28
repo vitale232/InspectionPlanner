@@ -7,6 +7,11 @@ import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from 'src/app/services/sidenav.service';
 import { NominatimApiResponse, LocationSearchResult } from '../../models/location-search.model';
 import { SearchService } from 'src/app/services/search.service';
+import { ClientLocationService } from 'src/app/services/client-location.service';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Location } from '@angular/common';
+import { MapExtent } from 'src/app/models/map-tools.model';
+import { MapToolsService } from 'src/app/services/map-tools.service';
 
 
 @Component({
@@ -40,7 +45,9 @@ export class SearchComponent implements OnInit {
     public dialogRef: MatDialog,
     private fb: FormBuilder,
     private notifications: NotificationsService,
-    private sidenav: SidenavService
+    private sidenav: SidenavService,
+    private clientLocation: ClientLocationService,
+    private mapTools: MapToolsService,
   ) { }
 
   ngOnInit() {
@@ -49,6 +56,19 @@ export class SearchComponent implements OnInit {
 
   onClick(): void {
     this.dialogRef.open(UnderConstructionComponent);
+  }
+
+  sendClientLocation() {
+    this.clientLocation.queryClientLocation();
+  }
+
+  sendMapHome() {
+    const mapExtent: MapExtent = {
+      lat: 43.0,
+      lon: -75.3,
+      z: 7
+    };
+    this.mapTools.sendMapHome(mapExtent);
   }
 
   onLocationSearch() {

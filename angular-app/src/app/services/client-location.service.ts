@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { ClientLocation } from '../models/location-search.model';
 import { NotificationsService } from 'angular2-notifications';
+import { SidenavService } from './sidenav.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,7 @@ export class ClientLocationService {
 
   constructor(
     private notifications: NotificationsService,
+    private sidenav: SidenavService
   ) { }
 
   queryClientLocation() {
@@ -26,6 +28,7 @@ export class ClientLocationService {
           timestamp: pos.timestamp
         };
         this.sendClientLocation(clientLocation);
+        this.sidenav.close();
     }, err => {
       this.notifications.error(
         `Geolocation error`,

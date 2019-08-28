@@ -15,6 +15,9 @@ import { filter } from 'rxjs/operators';
 import { LocationSearchResult, ClientLocation } from 'src/app/models/location-search.model';
 import { NotificationsService } from 'angular2-notifications';
 import { ClientLocationService } from 'src/app/services/client-location.service';
+import { MapToolsService } from 'src/app/services/map-tools.service';
+import { MapExtent } from 'src/app/models/map-tools.model';
+import { SidenavService } from 'src/app/services/sidenav.service';
 
 
 @Component({
@@ -28,6 +31,7 @@ export class MapComponent implements OnInit, OnDestroy {
   randomSubscription: Subscription|null;
   locationSearchSubscription: Subscription|null;
   clientLocationSubscription: Subscription|null;
+  mapHomeSubscription: Subscription|null;
   bridges = null;
   bridgeBounds: L.LatLngBounds|null = null;
   map: L.Map;
@@ -150,6 +154,8 @@ export class MapComponent implements OnInit, OnDestroy {
     private changeDetector: ChangeDetectorRef,
     private notifications: NotificationsService,
     private clientLocation: ClientLocationService,
+    private mapTools: MapToolsService,
+    private sidenav: SidenavService
   ) {
     this.apply();
     this.locationSearchSubscription = this.search.getLocationSearchResults$()
@@ -181,6 +187,23 @@ export class MapComponent implements OnInit, OnDestroy {
               pauseOnHover: true,
               clickToClose: true
           });
+        }
+      );
+    this.mapHomeSubscription = this.mapTools.getMapHome()
+      .subscribe(
+        (data: MapExtent) => {
+          this.mapCenter = new L.LatLng(data.lat, data.lon);
+          this.mapZoom = data.z;
+          this.sidenav.close();
+        }, (err) => {
+          this.notifications.error(
+            'Unhandled error : mapHomeSubscription : map',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+              timeOut: 20000,
+              showProgressBar: true,
+              pauseOnHover: true,
+              clickToClose: true
+            });
         }
       );
   }

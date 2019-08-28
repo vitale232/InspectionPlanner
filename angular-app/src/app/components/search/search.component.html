@@ -49,8 +49,31 @@
 
     <mat-slide-toggle [(ngModel)]="driveTimeSearchToggle" class="selection-input">
       Drive Time Search
-      </mat-slide-toggle>
+    </mat-slide-toggle>
 
+  </div>
+
+  <div class="tools">
+    <!-- <mat-divider></mat-divider> -->
+    <button mat-stroked-button
+          color="accent"
+          matTooltip="Map my current location"
+          matTooltipShowDelay="500"
+          (click)="sendClientLocation()"
+          aria-label="Plot current location on map">
+      <mat-icon>location_searching</mat-icon>
+    </button>
+
+
+    <button mat-stroked-button
+            color="accent"
+            matTooltip="Center map on New York State"
+            matTooltipShowDelay="500"
+            (click)="sendMapHome()"
+            aria-label="Return map to default position">
+      <mat-icon>home</mat-icon>
+    </button>
+    <!-- <mat-divider></mat-divider> -->
   </div>
 
 
