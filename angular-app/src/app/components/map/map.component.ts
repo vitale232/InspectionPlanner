@@ -32,6 +32,7 @@ export class MapComponent implements OnInit, OnDestroy {
   locationSearchSubscription: Subscription|null;
   clientLocationSubscription: Subscription|null;
   mapHomeSubscription: Subscription|null;
+  clearMarkersSubscription: Subscription|null;
   bridges = null;
   bridgeBounds: L.LatLngBounds|null = null;
   map: L.Map;
@@ -213,6 +214,13 @@ export class MapComponent implements OnInit, OnDestroy {
             });
         }
       );
+    this.clearMarkersSubscription = this.mapToolsService.getClearMarkers$()
+      .subscribe(
+        (data: boolean) => {
+          this.filterOverlays('Search result');
+          this.filterOverlays('Current location', true);
+        }
+      );
   }
 
   ngOnDestroy() {
@@ -305,8 +313,9 @@ export class MapComponent implements OnInit, OnDestroy {
   }
 
   onZoomChange(zoom: number) {
-    this.model.overlayLayers = this.model.overlayLayers
-      .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+    // this.model.overlayLayers = this.model.overlayLayers
+    //   .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+    this.filterOverlays('bridgesGeoJSON');
     this.apply();
 
     // Get random bridges when zoomed out, get bounding box + padding when zoomed in
@@ -334,6 +343,14 @@ export class MapComponent implements OnInit, OnDestroy {
     this.layers = newLayers;
 
     return false;
+  }
+
+  filterOverlays(layerId: string, applyNow: boolean = false) {
+    this.model.overlayLayers = this.model.overlayLayers
+      .filter(overlay => overlay.id !== layerId);
+    if (applyNow) {
+      this.onZoomChange(this.mapZoom);
+    }
   }
 
   updateUrl(zoom: number|null) {
@@ -460,8 +477,9 @@ export class MapComponent implements OnInit, OnDestroy {
             `of ${data.count.toLocaleString()} bridges`);
       },
       err => {
-        this.model.overlayLayers = this.model.overlayLayers
-          .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+        // this.model.overlayLayers = this.model.overlayLayers
+        //   .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+        this.filterOverlays('bridgesGeoJSON');
         this.loadingBridges = this.apply();
         this.notifications.error(
           'getBridgesBbox(): Unhandled error',
@@ -473,8 +491,9 @@ export class MapComponent implements OnInit, OnDestroy {
         });
       },
       () => {
-        this.model.overlayLayers = this.model.overlayLayers
-          .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+        // this.model.overlayLayers = this.model.overlayLayers
+        //   .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+        this.filterOverlays('bridgesGeoJSON');
         this.apply();
         this.model.overlayLayers.push(this.bridges);
         this.layersControl.overlays.Bridges = this.bridges.layer;
@@ -511,8 +530,9 @@ export class MapComponent implements OnInit, OnDestroy {
           this.bridgeBounds = this.bridges.layer.getBounds();
         },
         err => {
-          this.model.overlayLayers = this.model.overlayLayers
-            .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+          // this.model.overlayLayers = this.model.overlayLayers
+          //   .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+          this.filterOverlays('bridgesGeoJSON');
           this.loadingBridges = this.apply();
           this.notifications.error(
             'getRandomBridges(): Unhandled error',
@@ -524,8 +544,9 @@ export class MapComponent implements OnInit, OnDestroy {
           });
         },
         () => {
-          this.model.overlayLayers = this.model.overlayLayers
-            .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+          // this.model.overlayLayers = this.model.overlayLayers
+          //   .filter(overlay => overlay.id !== 'bridgesGeoJSON');
+          this.filterOverlays('bridgesGeoJSON');
           this.apply();
           this.model.overlayLayers.push(this.bridges);
           this.layersControl.overlays.Bridges = this.bridges.layer;

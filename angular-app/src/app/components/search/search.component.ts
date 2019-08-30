@@ -83,6 +83,10 @@ export class SearchComponent implements OnInit {
     this.getLocationSearch(result.searchText);
   }
 
+  onClearMarkers() {
+    this.mapToolsService.sendClearMarkers(true);
+  }
+
   onFilterSearch() {
     this.getFilterSearch(this.filterForm.value);
   }
@@ -178,7 +182,8 @@ export class SearchComponent implements OnInit {
         (data: DriveTimeQueryApiResponse) => {
           const uniqueSearchText: Array<DriveTimeQueryFeature> = data.results.features;
 
-          // Push the first 50 characters of the address to an array
+          // Create an array of objects with two properties:
+          // 1) first 61 characters of address  2) full address
           const searchTextArray = [];
           uniqueSearchText.forEach((feature) => {
             searchTextArray.push({

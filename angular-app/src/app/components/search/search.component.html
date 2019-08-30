@@ -73,6 +73,14 @@
             aria-label="Return map to default position">
       <mat-icon>home</mat-icon>
     </button>
+
+    <button mat-stroked-button
+            color="accent"
+            matTooltip="Clear search markers"
+            (click)="onClearMarkers()"
+            aria-label="Remove search result markers from map">
+      <mat-icon>layers_clear</mat-icon>
+    </button>
     <!-- <mat-divider></mat-divider> -->
   </div>
 

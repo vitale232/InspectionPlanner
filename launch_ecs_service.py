@@ -115,7 +115,10 @@ else:
         launch_ecs = False
 
 if launch_ecs:
-    print('\nLaunching the ECS service in 5 seconds... (ctrl+c to cancel)')
+    print(
+        '\n[!!DOWNTIME WARNING!!] Launching the ECS ' +
+        'service in 5 seconds... (ctrl+c to cancel)'
+    )
     os.chdir(BASE_DIR)
     time.sleep(5)
     subprocess.check_call([

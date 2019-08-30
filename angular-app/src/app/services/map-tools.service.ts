@@ -7,6 +7,7 @@ import { MapExtent } from '../models/map-tools.model';
 })
 export class MapToolsService {
   mapHome = new Subject();
+  clearMarkers = new Subject();
 
   constructor() { }
 
@@ -16,5 +17,13 @@ export class MapToolsService {
 
   getMapHome$() {
     return this.mapHome.asObservable();
+  }
+
+  sendClearMarkers(bool: boolean) {
+    this.clearMarkers.next(bool);
+  }
+
+  getClearMarkers$() {
+    return this.clearMarkers.asObservable();
   }
 }
