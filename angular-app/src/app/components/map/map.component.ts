@@ -205,7 +205,7 @@ export class MapComponent implements OnInit, OnDestroy {
           this.sidenavService.close();
         }, (err) => {
           this.notifications.error(
-            'Unhandled error : mapHomeSubscription : map',
+            'Unhandled error : mapHomeSubscription : MapComponent',
             `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
               timeOut: 20000,
               showProgressBar: true,
@@ -219,6 +219,17 @@ export class MapComponent implements OnInit, OnDestroy {
         (data: boolean) => {
           this.filterOverlays('Search result');
           this.filterOverlays('Current location', true);
+          this.sidenavService.close();
+        }, (err) => {
+          this.notifications.error(
+            'Unhandled error: clearMarkersSubscription: MapComponent',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+              timeOut: 20000,
+              showProgressBar: true,
+              pauseOnHover: true,
+              clickToClose: true,
+            }
+          );
         }
       );
   }
