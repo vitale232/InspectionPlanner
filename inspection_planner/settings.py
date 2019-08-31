@@ -20,9 +20,9 @@ if all([var in os.environ for var in env_variables]):
     ALLOWED_HOSTS = allowed_hosts.split(';')
 
     if debug == 'TRUE':
-        debug = True
+        DEBUG = True
     else:
-        debug = False
+        DEBUG = False
 else:
     print('import from secrets.py')
     from .secrets import (
@@ -30,7 +30,7 @@ else:
         database_password, database_user, secret_key,
         ALLOWED_HOSTS
     )
-    debug = True
+    DEBUG = True
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -178,3 +178,4 @@ LOGGING = {
 }
 
 print(f'Here are your allowed hosts: {ALLOWED_HOSTS}')
+print(f'Debug={DEBUG}')
