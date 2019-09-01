@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { ClientLocation } from '../models/location-search.model';
 import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from './sidenav.service';
@@ -8,14 +8,14 @@ import { SidenavService } from './sidenav.service';
   providedIn: 'root'
 })
 export class ClientLocationService {
-  clientLocation = new Subject();
+  clientLocation = new Subject<ClientLocation>();
 
   constructor(
     private notifications: NotificationsService,
     private sidenav: SidenavService
   ) { }
 
-  queryClientLocation() {
+  queryClientLocation(): void {
     const options = {
       enableHighAccuracy: true,
       timeout: 10000
@@ -41,11 +41,11 @@ export class ClientLocationService {
     });
   }
 
-  sendClientLocation(location: ClientLocation) {
+  sendClientLocation(location: ClientLocation): void {
     this.clientLocation.next(location);
   }
 
-  getClientLocation$() {
+  getClientLocation$(): Observable<ClientLocation> {
     return this.clientLocation.asObservable();
   }
 }

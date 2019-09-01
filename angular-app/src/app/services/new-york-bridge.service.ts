@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NewYorkBridgesApiResponse } from '../models/new-york-bridges.model';
 import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +14,7 @@ export class NewYorkBridgeService {
     private http: HttpClient
   ) { }
 
-  getNewYorkBridgesBounds(pageNumber: number, bounds) {
+  getNewYorkBridgesBounds(pageNumber: number, bounds): Observable<NewYorkBridgesApiResponse> {
     const queryParams: any = { };
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
@@ -29,7 +30,7 @@ export class NewYorkBridgeService {
     return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, { params: queryParams });
   }
 
-  getNewYorkBridgesRandom(pageNumber: number) {
+  getNewYorkBridgesRandom(pageNumber: number): Observable<NewYorkBridgesApiResponse> {
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
     }

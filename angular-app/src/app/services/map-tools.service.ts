@@ -1,29 +1,30 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { MapExtent } from '../models/map-tools.model';
+import { LocationSearchResult } from '../models/location-search.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MapToolsService {
-  mapHome = new Subject();
-  clearMarkers = new Subject();
+  mapHome = new Subject<MapExtent>();
+  clearMarkers = new Subject<boolean>();
 
   constructor() { }
 
-  sendMapHome(extent: MapExtent) {
+  sendMapHome(extent: MapExtent): void {
     this.mapHome.next(extent);
   }
 
-  getMapHome$() {
+  getMapHome$(): Observable<MapExtent> {
     return this.mapHome.asObservable();
   }
 
-  sendClearMarkers(bool: boolean) {
+  sendClearMarkers(bool: boolean): void {
     this.clearMarkers.next(bool);
   }
 
-  getClearMarkers$() {
+  getClearMarkers$(): Observable<boolean> {
     return this.clearMarkers.asObservable();
   }
 }

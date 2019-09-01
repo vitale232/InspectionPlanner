@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { DriveTimeQueryApiResponse } from '../models/drive-time-queries.model';
-import { Subject } from 'rxjs';
-import { LocationSearchResult, FilterSearch } from '../models/location-search.model';
+import { Subject, Observable } from 'rxjs';
+import { LocationSearchResult, FilterSearch, NominatimApiResponse } from '../models/location-search.model';
 
 
 @Injectable({
@@ -12,13 +12,13 @@ export class SearchService {
   driveTimeQueryUrl = 'routing/drive-time-queries/';
   nominatimUrl = 'https://nominatim.openstreetmap.org/search';
   photonUrl = 'https://photon.komoot.de/api';
-  locationSearchSubject = new Subject<any>();
+  locationSearchSubject: Subject<LocationSearchResult> = new Subject<any>();
 
   constructor(
     private http: HttpClient
   ) { }
 
-  getDriveTimeQueries(pageNumber: number|null = null) {
+  getDriveTimeQueries(pageNumber: number|null = null): Observable<DriveTimeQueryApiResponse> {
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
     }
@@ -33,22 +33,22 @@ export class SearchService {
     this.locationSearchSubject.next(locationResult);
   }
 
-  getLocationSearchResult$() {
+  getLocationSearchResult$(): Observable<LocationSearchResult> {
     return this.locationSearchSubject.asObservable();
   }
 
-  locationSearch(query: string) {
+  locationSearch(query: string): Observable<NominatimApiResponse[]> {
     const queryParams = {
       q: query,
       format: 'json'
     };
 
-    return this.http.get<any>(this.nominatimUrl, {
+    return this.http.get<NominatimApiResponse[]>(this.nominatimUrl, {
       params: queryParams
     });
   }
 
-  filterSearch(query: FilterSearch) {
+  filterSearch(query: FilterSearch): Observable<NominatimApiResponse[]> {
     const queryParams = {
       street: query.streetAddress,
       city: query.city,
@@ -57,7 +57,7 @@ export class SearchService {
       format: 'json'
     };
 
-    return this.http.get<any>(this.nominatimUrl, {
+    return this.http.get<NominatimApiResponse[]>(this.nominatimUrl, {
       params: queryParams
     });
   }
