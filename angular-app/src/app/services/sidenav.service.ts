@@ -7,7 +7,7 @@ import { Subject, Observable } from 'rxjs';
 })
 export class SidenavService {
   private sidenav: MatSidenav;
-  private sidenavOpen$ = new Subject<boolean>();
+  private sidenavOpen = new Subject<boolean>();
 
   public setSidenav(sidenav: MatSidenav): void {
     this.sidenav = sidenav;
@@ -37,11 +37,11 @@ export class SidenavService {
     this.sidenav.toggle();
  }
 
- public getSidenavState(): Observable<boolean> {
-   return this.sidenavOpen$.asObservable();
+ public getSidenavState$(): Observable<boolean> {
+   return this.sidenavOpen.asObservable();
  }
 
  public sendSidenavState(openBool: boolean): void {
-   this.sidenavOpen$.next(openBool);
+   this.sidenavOpen.next(openBool);
  }
 }

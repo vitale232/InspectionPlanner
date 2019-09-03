@@ -12,7 +12,7 @@ export class SearchService {
   driveTimeQueryUrl = 'routing/drive-time-queries/';
   nominatimUrl = 'https://nominatim.openstreetmap.org/search';
   photonUrl = 'https://photon.komoot.de/api';
-  locationSearchSubject: Subject<LocationSearchResult> = new Subject<any>();
+  locationSearchSubject = new Subject<LocationSearchResult>();
 
   constructor(
     private http: HttpClient
