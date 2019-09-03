@@ -33,6 +33,7 @@ export class MapComponent implements OnInit, OnDestroy {
   clientLocationSubscription: Subscription|null;
   mapHomeSubscription: Subscription|null;
   clearMarkersSubscription: Subscription|null;
+  binSearchSubscription: Subscription|null;
   bridges = null;
   bridgeBounds: L.LatLngBounds|null = null;
   map: L.Map;
@@ -62,7 +63,6 @@ export class MapComponent implements OnInit, OnDestroy {
     iconAnchor: [12.5, 41],
     popupAnchor: [0, -20.5]
   });
-
   LAYER_WIKIMEDIA_MAP = {
     id: 'wikimediamap',
     name: 'Wikimedia Map',
@@ -150,7 +150,7 @@ export class MapComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private newYorkBridgeHttp: NewYorkBridgeService,
+    private newYorkBridgeService: NewYorkBridgeService,
     private searchService: SearchService,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
@@ -214,11 +214,28 @@ export class MapComponent implements OnInit, OnDestroy {
             });
         }
       );
+    this.binSearchSubscription = this.newYorkBridgeService.getBridgeFeature$()
+      .subscribe(
+        (data: NewYorkBridgeFeature) => {
+          this.applyBinSearch(data);
+          this.sidenavService.close();
+        }, (err) => {
+          this.notifications.error(
+            'Unhandled error : BinSearchSubscription : MapComponent',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+              timeOut: 20000,
+              showProgressBar: true,
+              pauseOnHover: true,
+              clickToClose: true
+            });
+        }
+      );
     this.clearMarkersSubscription = this.mapToolsService.getClearMarkers$()
       .subscribe(
         (data: boolean) => {
           this.filterOverlays('Search result');
           this.filterOverlays('Current location', true);
+          this.filterOverlays('BIN result');
           this.sidenavService.close();
         }, (err) => {
           this.notifications.error(
@@ -238,6 +255,8 @@ export class MapComponent implements OnInit, OnDestroy {
     this.cancelRequests();
     this.locationSearchSubscription.unsubscribe();
     this.clientLocationSubscription.unsubscribe();
+    this.binSearchSubscription.unsubscribe();
+    this.mapHomeSubscription.unsubscribe();
   }
 
   onMapReady(map: L.Map) {
@@ -296,6 +315,35 @@ export class MapComponent implements OnInit, OnDestroy {
     }
   }
 
+  applyBinSearch(feature: NewYorkBridgeFeature) {
+    this.mapCenter = new L.LatLng(
+      feature.geometry.coordinates[1],
+      feature.geometry.coordinates[0]
+    );
+    this.mapZoom = 14;
+
+    this.changeDetector.detectChanges();
+    this.updateUrl(this.mapZoom);
+
+    const binSearchResult = {
+      id: `BIN result`,
+      name: `BIN ${feature.properties.bin}`,
+      enabled: true,
+      layer: L.circleMarker(this.mapCenter, {
+        radius: 8,
+        color: '#FFC23D',
+        weight: 4,
+        fill: true,
+        fillColor: '#FFC23D',
+        fillOpacity: 0.5,
+      }).bindPopup(this.bridgePopupHtml(feature))
+      .openPopup()
+    };
+    this.model.overlayLayers.push(binSearchResult);
+    this.apply();
+    this.onZoomChange(this.mapZoom);
+  }
+
   applyClientLocationQuery(clientLocation: ClientLocation) {
     const latLong = new L.LatLng(clientLocation.lat, clientLocation.lon);
 
@@ -317,7 +365,6 @@ export class MapComponent implements OnInit, OnDestroy {
         `<dt> Timestamp: </dt> <dd> ` +
           `${(new Date(clientLocation.timestamp)).toLocaleString()} </dd> `
       )
-
     });
     this.apply();
     this.onZoomChange(this.mapZoom);
@@ -461,7 +508,7 @@ export class MapComponent implements OnInit, OnDestroy {
     // If a request is already out, cancel it
     this.cancelRequests();
     this.loadingBridges = true;
-    this.bboxSubscription = this.newYorkBridgeHttp
+    this.bboxSubscription = this.newYorkBridgeService
       .getNewYorkBridgesBounds(1, bounds)
       .subscribe(
         (data: NewYorkBridgesApiResponse) => {
@@ -518,7 +565,7 @@ export class MapComponent implements OnInit, OnDestroy {
     enable = (typeof enable === 'undefined') ? true : enable;
     this.cancelRequests();
     this.loadingBridges = true;
-    this.randomSubscription = this.newYorkBridgeHttp
+    this.randomSubscription = this.newYorkBridgeService
       .getNewYorkBridgesRandom(1)
       .subscribe(
         (data: NewYorkBridgesApiResponse) => {
@@ -533,7 +580,7 @@ export class MapComponent implements OnInit, OnDestroy {
                 onEachFeature: (feature: any, layer: L.Layer) => {
                   layer.bindPopup(this.bridgePopupHtml(feature));
                 },
-                pointToLayer: (feature, latLng) => L.marker(latLng, {icon: this.bridgeMarker})
+                pointToLayer: (_FEATURE, latLng) => L.marker(latLng, {icon: this.bridgeMarker})
               }
             )
           };

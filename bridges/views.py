@@ -1,14 +1,17 @@
+from rest_framework import filters
 from rest_framework import generics
 from rest_framework_gis.filters import InBBoxFilter
 
 from bridges.models import NewYorkBridge
 from bridges.serializers import NewYorkBridgeSerializer
 
+
 class NewYorkBridgeList(generics.ListAPIView):
     queryset = NewYorkBridge.objects.all().order_by('pk')
     serializer_class = NewYorkBridgeSerializer
     bbox_filter_field = 'the_geom'
-    filter_backends = (InBBoxFilter, )
+    filter_backends = (InBBoxFilter, filters.SearchFilter, )
+    search_fields = ('^bin', )
 
 class NewYorkBridgeDetail(generics.RetrieveAPIView):
     queryset = NewYorkBridge.objects.all()

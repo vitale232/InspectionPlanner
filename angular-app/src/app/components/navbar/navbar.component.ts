@@ -15,7 +15,7 @@ export class NavbarComponent implements OnDestroy {
   constructor(
     private sidenavService: SidenavService,
   ) {
-    this.sidenavState$ = this.sidenavService.getSidenavState();
+    this.sidenavState$ = this.sidenavService.getSidenavState$();
   }
 
   ngOnDestroy() {

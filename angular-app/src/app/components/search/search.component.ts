@@ -10,6 +10,7 @@ import { SearchService } from 'src/app/services/search.service';
 import { ClientLocationService } from 'src/app/services/client-location.service';
 import { MapExtent } from 'src/app/models/map-tools.model';
 import { MapToolsService } from 'src/app/services/map-tools.service';
+import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 
 
 @Component({
@@ -53,6 +54,7 @@ export class SearchComponent implements OnInit {
     private sidenavService: SidenavService,
     private clientLocationService: ClientLocationService,
     private mapToolsService: MapToolsService,
+    private newYorkBridgeService: NewYorkBridgeService
   ) { }
 
   ngOnInit() {
@@ -76,13 +78,6 @@ export class SearchComponent implements OnInit {
     this.mapToolsService.sendMapHome(mapExtent);
   }
 
-  onLocationSearch() {
-    const result = Object.assign({}, this.locationForm.value);
-    result.locationForm = Object.assign({}, result.locationForm);
-
-    this.getLocationSearch(result.searchText);
-  }
-
   onClearMarkers() {
     this.mapToolsService.sendClearMarkers(true);
   }
@@ -93,46 +88,65 @@ export class SearchComponent implements OnInit {
 
   getFilterSearch(filterSearch: FilterSearch) {
     this.searchService.filterSearch(filterSearch)
-    .subscribe(
-      (data: Array<NominatimApiResponse>) => {
+      .subscribe(
+        (data: Array<NominatimApiResponse>) => {
 
-        if (data.length === 0) {
-          const query = `street: "${filterSearch.streetAddress}"; ` +
-            `city: "${filterSearch.city}"; state: "${filterSearch.state}"; ` +
-            `country: "${filterSearch.country}"`;
+          if (data.length === 0) {
+            const query = `street: "${filterSearch.streetAddress}"; ` +
+              `city: "${filterSearch.city}"; state: "${filterSearch.state}"; ` +
+              `country: "${filterSearch.country}"`;
+            this.notifications.error(
+              'Search error',
+              `No results found for query: ${query}`, {
+                timeOut: 10000,
+                showProgressBar: true,
+                pauseOnHover: true,
+                clickToClose: true
+            });
+          } else {
+            (this.locationSearch as LocationSearchResult) = {
+              lat: data[0].lat,
+              lon: data[0].lon,
+              z: 14,
+              displayName: data[0].display_name,
+              class: data[0].class,
+              type: data[0].type,
+              osmType: data[0].osm_type
+            };
+            this.searchService.sendLocationSearchResult(this.locationSearch);
+            this.sidenavService.close();
+          }
+        },
+        err => {
           this.notifications.error(
-            'Search error',
-            `No results found for query: ${query}`, {
-              timeOut: 10000,
+            'Unhandled error',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+              timeOut: 20000,
               showProgressBar: true,
               pauseOnHover: true,
               clickToClose: true
           });
-        } else {
-          (this.locationSearch as LocationSearchResult) = {
-            lat: data[0].lat,
-            lon: data[0].lon,
-            z: 14,
-            displayName: data[0].display_name,
-            class: data[0].class,
-            type: data[0].type,
-            osmType: data[0].osm_type
-          };
-          this.searchService.sendLocationSearchResult(this.locationSearch);
-          this.sidenavService.close();
         }
-      },
-      err => {
-        this.notifications.error(
-          'Unhandled error',
-          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-            timeOut: 20000,
-            showProgressBar: true,
-            pauseOnHover: true,
-            clickToClose: true
-        });
-      }
-    );
+      );
+  }
+
+  onLocationSearch() {
+    const result = Object.assign({}, this.locationForm.value);
+    result.locationForm = Object.assign({}, result.locationForm);
+
+    const binRegex = /^\d{4,7}$/;
+    const match = binRegex.test(result.searchText);
+    if (match) {
+      this.getBinSearch(result.searchText);
+    } else {
+      this.getLocationSearch(result.searchText);
+    }
+  }
+
+  getBinSearch(bin: string): void {
+    this.newYorkBridgeService.searchNewYorkBridgesBin(bin)
+      .subscribe((data) => this.newYorkBridgeService
+        .sendBridgeFeature(data.results.features[0]));
   }
 
   getLocationSearch(query: string) {
