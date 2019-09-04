@@ -330,11 +330,11 @@ export class MapComponent implements OnInit, OnDestroy {
       name: `BIN ${feature.properties.bin}`,
       enabled: true,
       layer: L.circleMarker(this.mapCenter, {
-        radius: 8,
+        radius: 10,
         color: '#FFC23D',
-        weight: 4,
+        weight: 5,
         fill: true,
-        fillColor: '#FFC23D',
+        fillColor: '#2A82CB',
         fillOpacity: 0.5,
       }).bindPopup(this.bridgePopupHtml(feature))
       .openPopup()
