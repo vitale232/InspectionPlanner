@@ -5,11 +5,16 @@ import sys
 import time
 
 
-cli_arg = sys.argv[-1]
+cli_args = sys.argv[1:]
 
 require_input = True
-if cli_arg == '--no-input':
-    require_input = False
+use_cache = True
+for arg in cli_args:
+    if arg == '--no-input':
+        require_input = False
+    if arg == '--no-cache':
+        use_cache = False
+
 
 start_time = datetime.datetime.now()
 BASE_DIR = os.getcwd()
@@ -55,9 +60,12 @@ print('\nBuilding Docker images')
 # Allow a little time to scan console output
 time.sleep(2)
 os.chdir(BASE_DIR)
-subprocess.check_call([
+docker_build_command = [
     'docker-compose', '-f', 'docker-compose.ecs-local.yml', 'build',
-])
+]
+if not use_cache:
+    docker_build_command += ['--no-cache']
+subprocess.check_call(docker_build_command)
 
 print('\nTagging Docker images')
 time.sleep(2)
