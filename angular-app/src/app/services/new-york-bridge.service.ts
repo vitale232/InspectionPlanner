@@ -59,7 +59,7 @@ export class NewYorkBridgeService {
     return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, {
       params: {
         page: `${pageNumber}`,
-        search: bin
+        bin
       }
     });
   }
