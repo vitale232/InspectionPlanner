@@ -17,7 +17,7 @@ for arg in cli_args:
 
 
 start_time = datetime.datetime.now()
-BASE_DIR = os.getcwd()
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 print(f'Running script    : {os.path.abspath(__file__)}')
 print(f'Working directory : {BASE_DIR}')
@@ -25,7 +25,10 @@ print(f'Begin script at   : {start_time}')
 
 try:
     # Read secrets from an env file formatted VAR=VALUE
-    env_filepath = '.envs/prod/launch_script'
+    env_filepath = os.path.join(
+        BASE_DIR,
+        '.envs/prod/launch_script'
+    )
     with open(env_filepath, 'r') as env_file:
         lines = env_file.readlines()
 
