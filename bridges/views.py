@@ -1,3 +1,4 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from rest_framework import generics
 from rest_framework_gis.filters import InBBoxFilter
@@ -10,8 +11,9 @@ class NewYorkBridgeList(generics.ListAPIView):
     queryset = NewYorkBridge.objects.all().order_by('pk')
     serializer_class = NewYorkBridgeSerializer
     bbox_filter_field = 'the_geom'
-    filter_backends = (InBBoxFilter, filters.SearchFilter, )
-    search_fields = ('^bin', )
+    filter_backends = (InBBoxFilter, filters.SearchFilter, DjangoFilterBackend, )
+    # search_fields = ('^bin', )
+    filterset_fields = ('bin', 'carried', 'county_name', 'common_name', )
 
 class NewYorkBridgeDetail(generics.RetrieveAPIView):
     queryset = NewYorkBridge.objects.all()

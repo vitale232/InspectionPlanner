@@ -64,7 +64,6 @@
       <mat-icon>location_searching</mat-icon>
     </button>
 
-
     <button mat-stroked-button
             color="accent"
             matTooltip="Center map on New York State"
@@ -92,30 +91,71 @@
       </mat-panel-title>
     </mat-expansion-panel-header>
 
-    <form [formGroup]="filterForm" (keydown.enter)="onFilterSearch()">
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="streetAddress" placeholder="Street address">
-      </mat-form-field>
-  
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="city" placeholder="City">
-      </mat-form-field>
-  
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="state" placeholder="State">
-      </mat-form-field>
-  
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="country" placeholder="Country">
-      </mat-form-field>
-    </form>
+    <section class="mat-typography space-below">
+      Use the toggle to switch between searching for an address or a bridge.
+    </section>
+    <mat-slide-toggle [(ngModel)]="bridgeSearchToggle" class="selection-input">
+      Search Bridges
+    </mat-slide-toggle>
 
-    <button mat-flat-button
-            color="primary"
-            (click)="onFilterSearch()"
-            class="center-button">
-      Search
-    </button>
+    <div *ngIf="!bridgeSearchToggle; else bridgeSearch">
+
+      <form [formGroup]="filterForm" (keydown.enter)="onFilterSearch()">
+        <mat-form-field class="detailed-form-field" color="accent">
+          <input matInput formControlName="streetAddress" placeholder="Street address">
+        </mat-form-field>
+    
+        <mat-form-field class="detailed-form-field" color="accent">
+          <input matInput formControlName="city" placeholder="City">
+        </mat-form-field>
+    
+        <mat-form-field class="detailed-form-field" color="accent">
+          <input matInput formControlName="state" placeholder="State">
+        </mat-form-field>
+    
+        <mat-form-field class="detailed-form-field" color="accent">
+          <input matInput formControlName="country" placeholder="Country">
+        </mat-form-field>
+      </form>
+  
+      <button mat-flat-button
+              color="primary"
+              (click)="onFilterSearch()"
+              class="center-button">
+        Search
+      </button>
+    </div>
+
+    <ng-template #bridgeSearch>
+      <section class="mat-typography space-above">
+        Fill out one, some, or all fields to find a single bridge.
+      </section>
+    
+      <form [formGroup]="bridgeForm" (keydown.enter)="onBridgeSearch()">
+        <mat-form-field class="detailed-form-field" color="accent">
+          <input matInput formControlName="bin" placeholder="BIN">
+        </mat-form-field>
+    
+        <mat-form-field class="detailed-form-field" color="accent">
+          <input matInput formControlName="carried" placeholder="Carried">
+        </mat-form-field>
+    
+        <mat-form-field class="detailed-form-field" color="accent">
+          <input matInput formControlName="county" placeholder="County">
+        </mat-form-field>
+    
+        <mat-form-field class="detailed-form-field" color="accent">
+          <input matInput formControlName="commonName" placeholder="Common Name">
+        </mat-form-field>
+      </form>
+  
+      <button mat-flat-button
+              color="primary"
+              (click)="onBridgeSearch()"
+              class="center-button">
+        Search
+      </button>
+    </ng-template>
   </mat-expansion-panel>
 
   <div *ngIf="driveTimeQueriesText">

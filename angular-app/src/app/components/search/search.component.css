@@ -3,6 +3,14 @@
     height: 98%;
 }
 
+.space-below {
+    padding-bottom: 5px;
+}
+
+.space-above {
+    padding-top: 5px;
+}
+
 .tools {
     width: 325px;
     padding-top: 15px;

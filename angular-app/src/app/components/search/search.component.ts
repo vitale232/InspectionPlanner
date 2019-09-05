@@ -11,6 +11,7 @@ import { ClientLocationService } from 'src/app/services/client-location.service'
 import { MapExtent } from 'src/app/models/map-tools.model';
 import { MapToolsService } from 'src/app/services/map-tools.service';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
+import { BridgeQuery } from 'src/app/models/bridge-query.model';
 
 
 @Component({
@@ -23,6 +24,7 @@ export class SearchComponent implements OnInit {
   pastPanelOpen = false;
   driveTimeQueriesText: Array<string>;
   driveTimeSearchToggle = false;
+  bridgeSearchToggle = false;
   selectedTimeInterval = 'fifteenMins';
   locationSearch: LocationSearchResult|null = null;
 
@@ -44,6 +46,13 @@ export class SearchComponent implements OnInit {
     city: [''],
     state: ['NY'],
     country: ['USA']
+  });
+
+  bridgeForm = this.fb.group({
+    bin: [''],
+    carried: [''],
+    county: [''],
+    commonName: [''],
   });
 
   constructor(
@@ -131,16 +140,57 @@ export class SearchComponent implements OnInit {
   }
 
   onLocationSearch() {
-    const result = Object.assign({}, this.locationForm.value);
-    result.locationForm = Object.assign({}, result.locationForm);
+    const location = Object.assign({}, this.locationForm.value);
+    location.locationForm = Object.assign({}, location.locationForm);
 
-    const binRegex = /^\d{4,7}$/;
-    const match = binRegex.test(result.searchText);
+    const binRegex = /^\d{6,7}$/;
+    const match = binRegex.test(location.searchText);
+    console.log(`${location.searchText} is a match: ${match}`);
     if (match) {
-      this.getBinSearch(result.searchText);
+      this.getBinSearch(location.searchText);
     } else {
-      this.getLocationSearch(result.searchText);
+      this.getLocationSearch(location.searchText);
     }
+  }
+
+  onBridgeSearch(): void {
+    this.getBridgeSearch(this.bridgeForm.value);
+  }
+
+  getBridgeSearch(bridgeQuery: BridgeQuery): void {
+    this.newYorkBridgeService.searchNewYorkBridgesQuery(bridgeQuery)
+      .subscribe(data => {
+        if (data.count === 0) {
+          const query = `bin: "${bridgeQuery.bin}"; ` +
+            `carried: "${bridgeQuery.carried}"; ` +
+            `county: "${bridgeQuery.county}"; ` +
+            `common_name: "${bridgeQuery.commonName}"; `;
+          this.notifications.error(
+            'Search error',
+            `No results found for query: "${query}"`, {
+              timeOut: 10000,
+              showProgressBar: true,
+              pauseOnHover: true,
+              clickToClose: true
+          });
+        } else {
+          if (data.count > 1) {
+
+            this.notifications.info(
+              'Returned many records',
+              `Displaying 1 of ${data.count} possible results`, {
+                timeOut: 10000,
+                showProgressBar: true,
+                pauseOnHover: true,
+                clickToClose: true
+            });
+          }
+          this.newYorkBridgeService
+            .sendBridgeFeature(data.results.features[0]);
+        }
+
+      }
+    );
   }
 
   getBinSearch(bin: string): void {

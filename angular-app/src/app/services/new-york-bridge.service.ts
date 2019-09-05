@@ -3,6 +3,7 @@ import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from '../models/new-y
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
 import { MapExtent } from '../models/map-tools.model';
+import { BridgeQuery } from '../models/bridge-query.model';
 
 @Injectable({
   providedIn: 'root'
@@ -59,6 +60,34 @@ export class NewYorkBridgeService {
       params: {
         page: `${pageNumber}`,
         search: bin
+      }
+    });
+  }
+
+  searchNewYorkBridgesQuery(query: BridgeQuery): Observable<NewYorkBridgesApiResponse> {
+    function toTitleCase(str: string): string {
+      if (str === '') {
+        return '';
+      } else {
+        return str.split(' ')
+          .map(w => w[0].toUpperCase() + w.substr(1).toLowerCase())
+          .join(' ');
+      }
+    }
+
+    function defString(str: string): string {
+      if (typeof str === undefined || typeof str === null) {
+        return '';
+      } else {
+        return str;
+      }
+    }
+    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, {
+      params: {
+        bin: defString(query.bin),
+        carried: defString(query.carried).toUpperCase(),
+        county_name: defString(query.county).toUpperCase(),
+        common_name: toTitleCase(defString(query.commonName)),
       }
     });
   }
