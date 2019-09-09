@@ -202,7 +202,7 @@ export class MapComponent implements OnInit, OnDestroy {
         (data: MapExtent) => {
           this.mapCenter = new L.LatLng(data.lat, data.lon);
           this.mapZoom = data.z;
-          this.sidenavService.close();
+          // this.sidenavService.close();
         }, (err) => {
           this.notifications.error(
             'Unhandled error : mapHomeSubscription : MapComponent',
@@ -236,7 +236,7 @@ export class MapComponent implements OnInit, OnDestroy {
           this.filterOverlays('Search result');
           this.filterOverlays('Current location', true);
           this.filterOverlays('BIN result');
-          this.sidenavService.close();
+          // this.sidenavService.close();
         }, (err) => {
           this.notifications.error(
             'Unhandled error: clearMarkersSubscription: MapComponent',
