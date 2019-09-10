@@ -87,7 +87,7 @@ export class NewYorkBridgeService {
         bin: defString(query.bin),
         carried: defString(query.carried).toUpperCase(),
         county_name: defString(query.county).toUpperCase(),
-        common_name: toTitleCase(defString(query.commonName)),
+        search: toTitleCase(defString(query.commonName)),
       }
     });
   }
