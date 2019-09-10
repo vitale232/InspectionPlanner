@@ -150,17 +150,17 @@ export class MapComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private newYorkBridgeService: NewYorkBridgeService,
-    private searchService: SearchService,
-    private snackBar: MatSnackBar,
-    private route: ActivatedRoute,
-    private router: Router,
-    private location: Location,
-    private changeDetector: ChangeDetectorRef,
-    private notifications: NotificationsService,
-    private clientLocationService: ClientLocationService,
-    private mapToolsService: MapToolsService,
-    private sidenavService: SidenavService
+    public newYorkBridgeService: NewYorkBridgeService,
+    public searchService: SearchService,
+    public snackBar: MatSnackBar,
+    public route: ActivatedRoute,
+    public router: Router,
+    public location: Location,
+    public changeDetector: ChangeDetectorRef,
+    public notifications: NotificationsService,
+    public clientLocationService: ClientLocationService,
+    public mapToolsService: MapToolsService,
+    public sidenavService: SidenavService
   ) { }
 
   ngOnInit() {
