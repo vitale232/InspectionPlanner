@@ -66,12 +66,11 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
 
     def get(self, request, format=None):
         return_bridges = request.query_params.get('return_bridges', 'false')
-        param = request.query_params.get('return_bridges')
-
-        if return_bridges.lower() in ['true', 'True', 'TRUE', 't', 'T', True]:
-            return_bridges = True
-        else:
-            return_bridges = False
+        if not type(return_bridges) == bool:
+            if return_bridges.lower() in ['true', 'True', 'TRUE', 't', 'T']:
+                return_bridges = True
+            else:
+                return_bridges = False
 
         # If a general query string is provided, null out other search parameters
         # If detailed parameters are provided, null out the q param
@@ -91,7 +90,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             search_text = ', '.join([street, city, state, country])
 
         # If the desired drive time is not specified, default to 15 mins.
-        drive_time_hours = request.query_params.get('drive_time', 0.25)
+        drive_time_hours = request.query_params.get('drive_time_hours', 0.25)
         nominatim_query_params = {
             'q': query,
             'street': street,
@@ -101,6 +100,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             'format': 'json',
         }
 
+        print(f'nominatim_query_params={nominatim_query_params}')
         nominatim_request = requests.get(
             'https://nominatim.openstreetmap.org/search',
             params=nominatim_query_params
@@ -117,8 +117,11 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             # Check for previous searches on this address. If exists, reuse the objects
             place_id = data['place_id']
             try:
+                print(f'drive_time_hours={drive_time_hours}')
                 existing_drive_time_query = DriveTimeQuery.objects.filter(
                     place_id=place_id
+                ).filter(
+                    drive_time_hours=drive_time_hours
                 ).order_by(
                     '-created_time'
                 )[:1].get()
@@ -131,9 +134,13 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 drive_time_query = existing_drive_time_query
             except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist):
                 existing_drive_time_query = None
+            
+            print(f'existing_drive_time_query={existing_drive_time_query}')
 
             if not existing_drive_time_query:
+
                 data.pop('licence', None)
+                data['drive_time_hours'] = drive_time_hours
                 data['bounding_box'] = data.pop('boundingbox', None)
                 data['osm_class'] = data.pop('class', None)
                 data['osm_type'] = data.pop('type', None)
@@ -144,6 +151,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 osm_id = data.get('osm_id', None)
                 # Remove nominatim fields that are not modeled
                 allowed_fields = [field.name for field in DriveTimeQuery._meta.fields]
+                print(f'allowed_fields={allowed_fields}')
                 data = {key: value for key, value in data.items() if key in allowed_fields}
                 from pprint import pprint
                 pprint(data)
