@@ -99,6 +99,9 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 return False
         if isinstance(param, bool):
             return param
+        
+        # Fall back to default value if not string, int, or boolean
+        return default
 
     def get(self, request, format=None):
         print(f'\nStart QueryDriveTime.get() at {datetime.datetime.now()}')
