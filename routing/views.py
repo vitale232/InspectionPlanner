@@ -1,3 +1,6 @@
+import datetime
+from dateutil.relativedelta import relativedelta
+
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 from rest_framework import generics
@@ -25,52 +28,81 @@ class DriveTimeNodeList(generics.ListAPIView):
     queryset = DriveTimeNode.objects.all()
     serializer_class = DriveTimeNodeSerializer
 
+
 class DriveTimeNodeDetail(generics.RetrieveAPIView):
     queryset = DriveTimeNode.objects.all()
     serializer_class = DriveTimeNodeSerializer
+
 
 class DriveTimePolygonList(generics.ListAPIView):
     queryset = DriveTimePolygon.objects.all()
     serializer_class = DriveTimePolygonSerializer
 
+
 class DriveTimePolygonDetail(generics.RetrieveAPIView):
     queryset = DriveTimePolygon.objects.all()
     serializer_class = DriveTimePolygonSerializer
+
 
 class DriveTimeQueryList(generics.ListAPIView):
     queryset = DriveTimeQuery.objects.all().order_by('-created_time')
     serializer_class = DriveTimeQuerySerializer
 
+
 class DriveTimeQueryDetail(generics.RetrieveAPIView):
     queryset = DriveTimeQuery.objects.all()
     serializer_class = DriveTimeQuerySerializer
+
 
 class WaysList(generics.ListAPIView):
     queryset =  Ways.objects.all()
     serializer_class = WaysSerializer
 
+
 class WaysDetail(generics.RetrieveAPIView):
     queryset =  Ways.objects.all()
     serializer_class = WaysSerializer
+
 
 class WaysVerticesPgrList(generics.ListAPIView):
     queryset = WaysVerticesPgr.objects.all()
     serializer_class = WaysVerticesPgrSerializer
 
+
 class WaysVerticesPgrDetail(generics.RetrieveAPIView):
     queryset = WaysVerticesPgr.objects.all()
     serializer_class = WaysVerticesPgrSerializer
 
+
 class QueryDriveTime(APIView, DriveTimePaginationMixin):
     pagination_class = GeoJsonPagination
 
-    def get(self, request, format=None):
-        return_bridges = request.query_params.get('return_bridges', 'false')
-        if not type(return_bridges) == bool:
-            if return_bridges.lower() in ['true', 'True', 'TRUE', 't', 'T']:
-                return_bridges = True
+    def paginate_queryset(self, queryset, request, view=None):
+        paginate_response = self.resolve_boolean_param(request, 'paginate_response', True)
+        if paginate_response:
+            return super().paginate_queryset(queryset)
+        else:
+            return None
+
+    def resolve_boolean_param(self, request, param_name, default=False):
+        param = request.query_params.get(param_name, default)
+
+        if isinstance(param, str):
+            if param.lower() in ['true', 't', '1']:
+                return True
             else:
-                return_bridges = False
+                return False
+        if isinstance(param, int):
+            if param == 1:
+                return True
+            else:
+                return False
+        if isinstance(param, bool):
+            return param
+
+    def get(self, request, format=None):
+        print(f'\nStart QueryDriveTime.get() at {datetime.datetime.now()}')
+        return_bridges = self.resolve_boolean_param(request, 'return_bridges', False)
 
         # If a general query string is provided, null out other search parameters
         # If detailed parameters are provided, null out the q param
@@ -90,7 +122,16 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             search_text = ', '.join([street, city, state, country])
 
         # If the desired drive time is not specified, default to 15 mins.
+        # If the inspection_years is not specified, default to 2 years.
         drive_time_hours = request.query_params.get('drive_time_hours', 0.25)
+        inspection_years = request.query_params.get('inspection_years', 2)
+        if isinstance(inspection_years, str):
+            try:
+                inspection_years = int(inspection_years)
+            except ValueError:
+                inspection_years = 2
+        inspection_date = datetime.datetime.now() - relativedelta(years=inspection_years)
+
         nominatim_query_params = {
             'q': query,
             'street': street,
@@ -100,7 +141,6 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             'format': 'json',
         }
 
-        print(f'nominatim_query_params={nominatim_query_params}')
         nominatim_request = requests.get(
             'https://nominatim.openstreetmap.org/search',
             params=nominatim_query_params
@@ -117,7 +157,6 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             # Check for previous searches on this address. If exists, reuse the objects
             place_id = data['place_id']
             try:
-                print(f'drive_time_hours={drive_time_hours}')
                 existing_drive_time_query = DriveTimeQuery.objects.filter(
                     place_id=place_id
                 ).filter(
@@ -125,36 +164,36 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 ).order_by(
                     '-created_time'
                 )[:1].get()
+
                 drive_time_polygon = DriveTimePolygon.objects.filter(
                     drive_time_query=existing_drive_time_query
                 ).order_by(
                     '-created_time'
                 )[:1].get()
-                print(f'found drive_time_polygon: {drive_time_polygon}')
+
                 drive_time_query = existing_drive_time_query
+                print('Using cached results')
+
             except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist):
+                print('Generating new results')
                 existing_drive_time_query = None
-            
-            print(f'existing_drive_time_query={existing_drive_time_query}')
 
             if not existing_drive_time_query:
-
+                lon = data.get('lon', None)
+                lat = data.get('lat', None)
                 data.pop('licence', None)
                 data['drive_time_hours'] = drive_time_hours
                 data['bounding_box'] = data.pop('boundingbox', None)
                 data['osm_class'] = data.pop('class', None)
                 data['osm_type'] = data.pop('type', None)
-                lon = data.get('lon', None)
-                lat = data.get('lat', None)
                 data['the_geom'] = f'POINT({lon} {lat})'
                 data['search_text'] = query
                 osm_id = data.get('osm_id', None)
+
                 # Remove nominatim fields that are not modeled
                 allowed_fields = [field.name for field in DriveTimeQuery._meta.fields]
-                print(f'allowed_fields={allowed_fields}')
                 data = {key: value for key, value in data.items() if key in allowed_fields}
-                from pprint import pprint
-                pprint(data)
+
                 # Query the Ways table with the osm_id returned by Nominatim API
                 # If it wasn't a way object, it won't exist. Instead use the lat/lon from
                 # the nominatim response to build a buffer polygon and capture the
@@ -176,13 +215,12 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                     ).order_by(
                         'distance'
                     )[:1].get()
-                    print(f'way gid: {way.gid}')
-                    print(f'way osm_id: {way.osm_id}')
-                    # print(f'ways tag: {way.tag}')
-                    
+
+
                 ways_vertices_pgr = WaysVerticesPgr.objects.get(
                     id=way.source.pk
                 )
+
                 drive_time_query = DriveTimeQuery.objects.create(
                     **data,
                     ways_vertices_pgr_source=ways_vertices_pgr
@@ -196,33 +234,37 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 rows = drive_time.execute_sql()
                 models = drive_time.to_models(drive_time_query=drive_time_query)
                 DriveTimeNode.objects.bulk_create(models)
-                print(f'len(models): {len(models)}')
-                print('computing drive time polygon')
+
                 drive_time_polygon = drive_time.to_polygon(
                     alpha=30,
                     drive_time_query=drive_time_query
                 )
 
-            if not return_bridges:
-                serializer = DriveTimePolygonSerializer(drive_time_polygon)
-            else:
-                try:
-                    bridges = NewYorkBridge.objects.filter(
-                        the_geom__intersects=drive_time_polygon.the_geom
-                    ).order_by(
-                        'bin'
-                    )
-                except AttributeError:
-                    # TODO: return drive time query here for development
-                    # return Response()
-                    serializer = DriveTimeQuerySerializer(drive_time_query)
-                    print('oops')
-                    return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
-                paginated_bridges = self.paginate_queryset(bridges)
-                if paginated_bridges is not None:
-                    serializer = NewYorkBridgeSerializer(paginated_bridges, many=True)
-                    return self.get_paginated_response(serializer.data)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            try:
+                bridges = NewYorkBridge.objects.filter(
+                    the_geom__intersects=drive_time_polygon.the_geom
+                ).filter(
+                    inspection__lte=inspection_date
+                ).order_by(
+                    'bin'
+                )
+            except AttributeError:
+                # TODO: return drive time query here for development
+                dtq_serializer = DriveTimeQuerySerializer(drive_time_query)
+                return Response(dtq_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+            response_bridges = self.paginate_queryset(bridges, request, view=QueryDriveTime)
+            if not response_bridges:
+                response_bridges = bridges
+            if response_bridges is not None:
+                bridges_serializer = NewYorkBridgeSerializer(response_bridges, many=True)
+                print(f'Bridges returned at: {datetime.datetime.now()}')
+                return Response(bridges_serializer.data, status=status.HTTP_200_OK)
+
+            polygon_serializer = DriveTimePolygonSerializer(drive_time_polygon)
+            print(f'Bridges returned at: {datetime.datetime.now()}')
+            return Response(polygon_serializer.data, status=status.HTTP_200_OK)
 
         json_data = nominatim_request.json()
+        print(f'400 returned at: {datetime.datetime.now()}')
         return Response(json_data, status=status.HTTP_400_BAD_REQUEST)
