@@ -17,7 +17,6 @@ import {
     MatSlideToggleModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatTabsModule
 } from '@angular/material';
 
 @NgModule({
@@ -39,7 +38,6 @@ import {
     MatSlideToggleModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatTabsModule
   ]
 })
 export class MaterialModule {}

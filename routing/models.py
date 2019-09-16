@@ -191,6 +191,7 @@ class DriveTimeQuery(models.Model):
         return str(self.place_id)
 
     search_text = models.CharField(blank=False, null=False, max_length=300)
+    drive_time_hours = models.FloatField(null=True)
     place_id = models.BigIntegerField(blank=True, null=True)
     osm_type = models.CharField(blank=True, null=True)
     osm_id = models.BigIntegerField(blank=True, null=True)
