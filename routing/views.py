@@ -106,6 +106,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
     def get(self, request, format=None):
         print(f'\nStart QueryDriveTime.get() at {datetime.datetime.now()}')
         return_bridges = self.resolve_boolean_param(request, 'return_bridges', False)
+        print(f'return_bridges={return_bridges}')
 
         # If a general query string is provided, null out other search parameters
         # If detailed parameters are provided, null out the q param
@@ -243,6 +244,9 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                     drive_time_query=drive_time_query
                 )
 
+            if not return_bridges:
+                dtq_serializer = DriveTimeQuerySerializer(drive_time_query)
+                return Response(dtq_serializer.data, status=status.HTTP_200_OK)
             try:
                 bridges = NewYorkBridge.objects.filter(
                     the_geom__intersects=drive_time_polygon.the_geom
