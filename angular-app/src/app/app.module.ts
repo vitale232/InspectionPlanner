@@ -18,7 +18,7 @@ import { UnderConstructionComponent } from './components/under-construction/unde
 import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { SimpleNotificationsModule } from 'angular2-notifications';
-import { DriveTimeResultsMapComponent } from './components/drive-time-results-map/drive-time-results-map.component';
+
 
 const cookieConfig: NgcCookieConsentConfig = {
   cookie: {
@@ -44,7 +44,6 @@ const cookieConfig: NgcCookieConsentConfig = {
     SearchComponent,
     UnderConstructionComponent,
     NotFoundComponent,
-    DriveTimeResultsMapComponent,
   ],
   imports: [
     BrowserModule,
