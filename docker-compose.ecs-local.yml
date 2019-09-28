@@ -4,7 +4,11 @@ services:
   django: &django
     build: .
     command:
-      gunicorn inspection_planner.wsgi:application --bind 0.0.0.0:8000 --worker-class=gevent --workers=3 --threads=6 --timeout 180 --log-level=DEBUG
+      "gunicorn --bind 0.0.0.0:8000 \
+      --worker-class=gevent --workers=3 --threads=6 \
+      --timeout=600 --graceful-timeout=600 \
+      --log-level=DEBUG \
+      inspection_planner.wsgi:application"
     ports:
       - 8000
     env_file:

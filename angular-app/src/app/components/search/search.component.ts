@@ -278,6 +278,6 @@ export class SearchComponent implements OnInit {
   }
 
   selectAll($event) {
-    $event.target.select();
+    // $event.target.select();
   }
 }
