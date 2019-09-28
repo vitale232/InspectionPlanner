@@ -3,10 +3,13 @@ service: new-drive-time-query
 provider:
   name: aws
   runtime: python3.7
+  memorySize: 256
 
 functions:
-  hello:
+  index:
     handler: handler.hello
+    events:
+      - http: GET hello
 
 plugins:
   - serverless-python-requirements
