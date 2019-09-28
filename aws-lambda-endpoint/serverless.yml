@@ -4,7 +4,7 @@ provider:
   name: aws
   runtime: python3.7
 
-  functions:
+functions:
   hello:
     handler: handler.hello
 
