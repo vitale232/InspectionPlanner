@@ -1,0 +1,16 @@
+service: new-drive-time-query
+
+provider:
+  name: aws
+  runtime: python3.7
+
+  functions:
+  hello:
+    handler: handler.hello
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true

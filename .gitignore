@@ -19,3 +19,5 @@ static/*
 /angular-app/out-tsc
 
 /angular_app/node_modules
+aws-lambda-endpoint/node_modules
+
