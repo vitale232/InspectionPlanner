@@ -2,7 +2,8 @@ import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular
 import { MatSidenav } from '@angular/material';
 import { SidenavService } from './services/sidenav.service';
 import { NgcCookieConsentService } from 'ngx-cookieconsent';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
+import { LoadingIndicatorService } from './services/loading-indicator.service';
 
 
 @Component({
@@ -12,15 +13,19 @@ import { Subscription } from 'rxjs';
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   popupOpenSubscription: Subscription;
+  loadingIndicator$: Observable<boolean>;
+
   @ViewChild('sidenav', { static: false }) public sidenav: MatSidenav;
 
   constructor(
     private sidenavService: SidenavService,
-    private ccService: NgcCookieConsentService
+    private ccService: NgcCookieConsentService,
+    private loadingIndicatorService: LoadingIndicatorService
   ) { }
 
   ngOnInit() {
     this.popupOpenSubscription = this.ccService.popupOpen$.subscribe();
+    this.loadingIndicator$ = this.loadingIndicatorService.getLoadingIndicatorState$();
   }
   ngAfterViewInit() {
     this.sidenavService.setSidenav(this.sidenav);

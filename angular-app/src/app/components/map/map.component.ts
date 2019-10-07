@@ -18,6 +18,7 @@ import { ClientLocationService } from 'src/app/services/client-location.service'
 import { MapToolsService } from 'src/app/services/map-tools.service';
 import { MapExtent } from 'src/app/models/map-tools.model';
 import { SidenavService } from 'src/app/services/sidenav.service';
+import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
 
 
 @Component({
@@ -160,11 +161,13 @@ export class MapComponent implements OnInit, OnDestroy {
     public notifications: NotificationsService,
     public clientLocationService: ClientLocationService,
     public mapToolsService: MapToolsService,
-    public sidenavService: SidenavService
+    public sidenavService: SidenavService,
+    public loadingIndicatorService: LoadingIndicatorService,
   ) { }
 
   ngOnInit() {
-    this.loadingBridges = true;
+    // this.loadingBridges = true;
+    this.loadingIndicatorService.sendLoadingIndicatorState(true);
     this.apply();
     this.locationSearchSubscription = this.searchService.getLocationSearchResult$()
       .pipe(filter(Boolean))
@@ -452,7 +455,7 @@ export class MapComponent implements OnInit, OnDestroy {
       }
     } else {
       mapBoundsContained = false;
-      this.loadingBridges = true;
+      this.loadingIndicatorService.sendLoadingIndicatorState(true);
     }
 
     if (!mapBoundsContained) {
@@ -507,7 +510,7 @@ export class MapComponent implements OnInit, OnDestroy {
   getBridgesBbox(page: number, bounds: L.LatLngBounds) {
     // If a request is already out, cancel it
     this.cancelRequests();
-    this.loadingBridges = true;
+    this.loadingIndicatorService.sendLoadingIndicatorState(true);
     this.bboxSubscription = this.newYorkBridgeService
       .getNewYorkBridgesBounds(1, bounds)
       .subscribe(
@@ -538,7 +541,7 @@ export class MapComponent implements OnInit, OnDestroy {
         // this.model.overlayLayers = this.model.overlayLayers
         //   .filter(overlay => overlay.id !== 'bridgesGeoJSON');
         this.filterOverlays('bridgesGeoJSON');
-        this.loadingBridges = this.apply();
+        this.loadingIndicatorService.sendLoadingIndicatorState(this.apply());
         this.notifications.error(
           'getBridgesBbox(): Unhandled error',
           `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
@@ -555,7 +558,7 @@ export class MapComponent implements OnInit, OnDestroy {
         this.apply();
         this.model.overlayLayers.push(this.bridges);
         this.layersControl.overlays.Bridges = this.bridges.layer;
-        this.loadingBridges = this.apply();
+        this.loadingIndicatorService.sendLoadingIndicatorState(this.apply());
       }
     );
   }
@@ -564,7 +567,7 @@ export class MapComponent implements OnInit, OnDestroy {
     // If a pan/zoom getBridges request exists, might as well cancel it
     enable = (typeof enable === 'undefined') ? true : enable;
     this.cancelRequests();
-    this.loadingBridges = true;
+    this.loadingIndicatorService.sendLoadingIndicatorState(true);
     this.randomSubscription = this.newYorkBridgeService
       .getNewYorkBridgesRandom(1)
       .subscribe(
@@ -591,7 +594,7 @@ export class MapComponent implements OnInit, OnDestroy {
           // this.model.overlayLayers = this.model.overlayLayers
           //   .filter(overlay => overlay.id !== 'bridgesGeoJSON');
           this.filterOverlays('bridgesGeoJSON');
-          this.loadingBridges = this.apply();
+          this.loadingIndicatorService.sendLoadingIndicatorState(this.apply());
           this.notifications.error(
             'getRandomBridges(): Unhandled error',
             `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
@@ -608,7 +611,7 @@ export class MapComponent implements OnInit, OnDestroy {
           this.apply();
           this.model.overlayLayers.push(this.bridges);
           this.layersControl.overlays.Bridges = this.bridges.layer;
-          this.loadingBridges = this.apply();
+          this.loadingIndicatorService.sendLoadingIndicatorState(this.apply());
         }
       );
   }
@@ -616,11 +619,12 @@ export class MapComponent implements OnInit, OnDestroy {
   cancelRequests() {
     if (this.bboxSubscription) {
       this.bboxSubscription.unsubscribe();
-      this.loadingBridges = false;
+      this.loadingIndicatorService.sendLoadingIndicatorState(false);
+
     }
     if (this.randomSubscription) {
       this.randomSubscription.unsubscribe();
-      this.loadingBridges = false;
+      this.loadingIndicatorService.sendLoadingIndicatorState(false);
     }
   }
 

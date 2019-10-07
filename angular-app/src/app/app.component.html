@@ -2,6 +2,9 @@
      fxLayoutAlign="start none">
 
   <app-navbar></app-navbar>
+  <div *ngIf="loadingIndicator$ | async as loading">
+    <mat-progress-bar mode="query" color="accent"></mat-progress-bar>
+  </div>
 
   <mat-sidenav-container fxFlex [hasBackdrop]="false">
     <mat-sidenav #sidenav mode="over" (keydown.escape)="escape($event)" (document:keydown.f)="fKey($event)">
