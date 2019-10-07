@@ -7,3 +7,6 @@ launch_ecs_service.py
 
 angular-app/node_modules*
 angular-app/src/assets*
+
+/aws-lambda-endpoint/node_modules*
+/aws-lambda-endpoint/.serverless*
