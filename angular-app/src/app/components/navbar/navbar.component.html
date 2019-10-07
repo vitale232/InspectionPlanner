@@ -2,12 +2,22 @@
   <mat-toolbar color="primary">
   
     <div *ngIf="sidenavState$ | async as sidenavVisible; else sidenavClosed">
-      <button mat-icon-button (click)="closeSidenav();" aria-label="Toggle search panel">
+      <button mat-icon-button
+              (click)="closeSidenav();"
+              aria-label="Toggle search panel"
+              matTooltip="Close search panel (try using 'esc' key)"
+              matTooltipShowDelay="250"
+              >
         <mat-icon>close</mat-icon>
       </button>
     </div>
     <ng-template #sidenavClosed>
-      <button mat-icon-button (click)="openSidenav();" aria-label="Toggle search panel">
+      <button mat-icon-button
+              (click)="openSidenav();"
+              aria-label="Toggle search panel"
+              matTooltip="Open search panel (try using the 'f' key)"
+              matTooltipShowDelay="250"
+              >
         <mat-icon>search</mat-icon>
       </button>
     </ng-template>
