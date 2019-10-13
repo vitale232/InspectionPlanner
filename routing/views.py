@@ -23,6 +23,7 @@ from routing.serializers import (
     DriveTimeQuerySerializer, WaysSerializer,
     WaysVerticesPgrSerializer
 )
+from routing.tasks import add
 
 class DriveTimeNodeList(generics.ListAPIView):
     queryset = DriveTimeNode.objects.all()
@@ -107,6 +108,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
         print(f'\nStart QueryDriveTime.get() at {datetime.datetime.now()}')
         return_bridges = self.resolve_boolean_param(request, 'return_bridges', False)
         print(f'return_bridges={return_bridges}')
+        add.delay(6, 6)
 
         # If a general query string is provided, null out other search parameters
         # If detailed parameters are provided, null out the q param
