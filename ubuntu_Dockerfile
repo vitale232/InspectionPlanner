@@ -1,4 +1,4 @@
-FROM python:3.7-slim-buster
+FROM ubuntu:18.04
 
 RUN apt-get update \
     && apt-get dist-upgrade -y
@@ -6,7 +6,7 @@ RUN apt-get update \
 RUN apt-get install -y \
     apt-utils \
     binutils libproj-dev gdal-bin \
-    libcurl4-gnutls-dev libssl-dev gcc python3.7-dev
+    libcurl4-gnutls-dev libssl-dev gcc python3.7-dev python3-pip
 
 RUN mkdir /usr/src/app
 WORKDIR /usr/src/app
@@ -14,10 +14,11 @@ WORKDIR /usr/src/app
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV PYCURL_SSL_LIBRARY nss
+ENV PYTHONPATH /usr/local/bin/python3.7:$PYTHONPATH
 
 COPY requirements.txt /usr/src/app
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+RUN pip3 install --upgrade pip
+RUN pip3 install -r requirements.txt
 
 COPY . /usr/src/app/
 

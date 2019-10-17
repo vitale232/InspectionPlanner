@@ -23,7 +23,7 @@ from routing.serializers import (
     DriveTimeQuerySerializer, WaysSerializer,
     WaysVerticesPgrSerializer
 )
-from routing.tasks import add
+from routing.tasks import new_drive_time_query
 
 class DriveTimeNodeList(generics.ListAPIView):
     queryset = DriveTimeNode.objects.all()
@@ -108,7 +108,6 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
         print(f'\nStart QueryDriveTime.get() at {datetime.datetime.now()}')
         return_bridges = self.resolve_boolean_param(request, 'return_bridges', False)
         print(f'return_bridges={return_bridges}')
-        add.delay(6, 6)
 
         # If a general query string is provided, null out other search parameters
         # If detailed parameters are provided, null out the q param
@@ -194,57 +193,17 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 data['osm_type'] = data.pop('type', None)
                 data['the_geom'] = f'POINT({lon} {lat})'
                 data['search_text'] = query
-                osm_id = data.get('osm_id', None)
 
-                # Remove nominatim fields that are not modeled
-                allowed_fields = [field.name for field in DriveTimeQuery._meta.fields]
-                data = {key: value for key, value in data.items() if key in allowed_fields}
+                new_drive_time_query.delay(data)
 
-                # Query the Ways table with the osm_id returned by Nominatim API
-                # If it wasn't a way object, it won't exist. Instead use the lat/lon from
-                # the nominatim response to build a buffer polygon and capture the
-                # nearest Ways object. If the lat/lon is too far from a road
-                # or outside of the routable area, there will be a 500 error
-                # TODO: Use osm_class from nominatim to more efficiently handle osm_ids
-                # from OSM types relation and node, and don't return 500 errors. This is
-                # the least of our performace concerns, so not worth it yet
-                try:
-                    way = Ways.objects.get(osm_id=osm_id)
-                except (Ways.DoesNotExist, Ways.MultipleObjectsReturned) as exc:
-                    if not lat or not lon:
-                        raise exc
-                    nominatim_point = Point(float(lon), float(lat), srid=4326)
-                    way = Ways.objects.filter(
-                        the_geom__intersects=nominatim_point.buffer(0.01)
-                    ).annotate(
-                        distance=Distance('the_geom', nominatim_point)
-                    ).order_by(
-                        'distance'
-                    )[:1].get()
-
-
-                ways_vertices_pgr = WaysVerticesPgr.objects.get(
-                    id=way.source.pk
-                )
-
-                drive_time_query = DriveTimeQuery.objects.create(
-                    **data,
-                    ways_vertices_pgr_source=ways_vertices_pgr
-                )
-                drive_time_query.save()
-
-                drive_time = DriveTime(
-                    ways_vertices_pgr.id,
-                    drive_time_hours
-                )
-                rows = drive_time.execute_sql()
-                models = drive_time.to_models(drive_time_query=drive_time_query)
-                DriveTimeNode.objects.bulk_create(models)
-
-                drive_time_polygon = drive_time.to_polygon(
-                    alpha=30,
-                    drive_time_query=drive_time_query
-                )
+                accepted_payload = {
+                    'msg': 'The request has been added to the queue',
+                    'search_text': query,
+                    'lat': data['lat'],
+                    'lon': data['lon'],
+                    'display_name': data['display_name']
+                }
+                return Response(accepted_payload, status=status.HTTP_202_ACCEPTED)
 
             if not return_bridges:
                 dtq_serializer = DriveTimeQuerySerializer(drive_time_query)

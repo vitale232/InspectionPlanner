@@ -15,6 +15,29 @@ services:
       - ./.envs/prod/django
     volumes:
       - static_volume:/usr/src/app/static
+    links:
+      - rabbit
+  
+  rabbit:
+    hostname: rabbit
+    image: rabbitmq:3-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    env_file:
+      - ./.envs/prod/django
+
+  celery_worker:
+    <<: *django
+    build: .
+    env_file:
+      - ./.envs/prod/django
+    user: nobody
+    command: ['celery', '-A', 'inspection_planner', 'worker', '-l', 'debug']
+    links:
+      - rabbit
+    depends_on:
+      - rabbit
 
   nginx:
     build: ./nginx

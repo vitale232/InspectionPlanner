@@ -5,6 +5,7 @@ import sys
 env_variables = [
     'RDS_DB_NAME', 'RDS_USERNAME', 'RDS_HOSTNAME',
     'RDS_PASSWORD', 'RDS_PORT', 'SECRET_KEY', 'DEBUG', 'ALLOWED_HOSTS',
+    'CELERY_BROKER_URL'
 ]
 
 if all([var in os.environ for var in env_variables]):
@@ -23,6 +24,8 @@ if all([var in os.environ for var in env_variables]):
         DEBUG = True
     else:
         DEBUG = False
+    
+    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
 else:
     print('import from secrets.py')
     from .secrets import (
@@ -30,7 +33,9 @@ else:
         database_password, database_user, secret_key,
         ALLOWED_HOSTS
     )
+
     DEBUG = True
+
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -38,7 +43,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = secret_key
-
 
 # Application definition
 
@@ -180,3 +184,4 @@ LOGGING = {
 
 print(f'Here are your allowed hosts: {ALLOWED_HOSTS}')
 print(f'Debug={DEBUG}')
+print(f'CELERY_BROKER_URL={CELERY_BROKER_URL}')
