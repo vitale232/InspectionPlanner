@@ -1,5 +1,6 @@
 docker-compose.ecs.yml
 *docker-compose.ecs.yml
+*docker-compose.ecs-dev.yml
 
 .coverage
 
