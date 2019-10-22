@@ -3,6 +3,7 @@ from dateutil.relativedelta import relativedelta
 
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django_q.tasks import async_task
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
@@ -162,6 +163,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             # Check for previous searches on this address. If exists, reuse the objects
             place_id = data['place_id']
             try:
+                print('ill try')
                 existing_drive_time_query = DriveTimeQuery.objects.filter(
                     place_id=place_id
                 ).filter(
@@ -169,6 +171,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 ).order_by(
                     '-created_time'
                 )[:1].get()
+                print(f'existing_drive_time_query: {existing_drive_time_query}')
 
                 drive_time_polygon = DriveTimePolygon.objects.filter(
                     drive_time_query=existing_drive_time_query
@@ -179,7 +182,8 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 drive_time_query = existing_drive_time_query
                 print('Using cached results')
 
-            except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist):
+            except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist) as exc:
+                print(exc)
                 print('Generating new results')
                 existing_drive_time_query = None
 
@@ -193,12 +197,18 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 data['osm_type'] = data.pop('type', None)
                 data['the_geom'] = f'POINT({lon} {lat})'
                 data['search_text'] = query
+                data['place_id'] = place_id
 
-                new_drive_time_query.delay(data)
+                # new_drive_time_query.delay(data)
+                task_id = async_task(new_drive_time_query, data)
+                print(f'task_id: {task_id}')
 
                 accepted_payload = {
                     'msg': 'The request has been added to the queue',
                     'search_text': query,
+                    'drive_time_hours': drive_time_hours,
+                    'return_bridges': return_bridges,
+                    'inspection_years': inspection_years,
                     'lat': data['lat'],
                     'lon': data['lon'],
                     'display_name': data['display_name']

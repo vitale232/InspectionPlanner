@@ -5,7 +5,7 @@ import sys
 env_variables = [
     'RDS_DB_NAME', 'RDS_USERNAME', 'RDS_HOSTNAME',
     'RDS_PASSWORD', 'RDS_PORT', 'SECRET_KEY', 'DEBUG', 'ALLOWED_HOSTS',
-    'CELERY_BROKER_URL'
+    'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'
 ]
 
 if all([var in os.environ for var in env_variables]):
@@ -19,19 +19,20 @@ if all([var in os.environ for var in env_variables]):
     debug = os.environ.get('DEBUG', 'FALSE')
     allowed_hosts = os.environ.get('ALLOWED_HOSTS')
     ALLOWED_HOSTS = allowed_hosts.split(';')
+    aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
+    aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
 
     if debug == 'TRUE':
         DEBUG = True
     else:
         DEBUG = False
     
-    CELERY_BROKER_URL = os.environ.get('CELERY_BROKER_URL')
 else:
     print('import from secrets.py')
     from .secrets import (
         database_host, database_name, database_port,
         database_password, database_user, secret_key,
-        ALLOWED_HOSTS
+        ALLOWED_HOSTS, aws_access_key_id, aws_secret_access_key
     )
 
     DEBUG = True
@@ -59,7 +60,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_gis',
     'django_filters',
-    'django_celery_results',
+    'django_q',
 
     'inspection_planner',
     'routing',
@@ -178,10 +179,23 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG'
+        'level': 'INFO'
+    }
+}
+
+Q_CLUSTER = {
+    'name': 'ipa-queue',
+    'workers': 1,
+    'timeout': 600,
+    'retry': 90,
+    'queue_limit': 100,
+    'bulk': 5,
+    'sqs': {
+        'aws_region': 'us-east-1',
+        'aws_access_key_id': aws_access_key_id,
+        'aws_secret_access_key': aws_secret_access_key,
     }
 }
 
 print(f'Here are your allowed hosts: {ALLOWED_HOSTS}')
 print(f'Debug={DEBUG}')
-print(f'CELERY_BROKER_URL={CELERY_BROKER_URL}')
