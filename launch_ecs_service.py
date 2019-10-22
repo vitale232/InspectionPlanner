@@ -137,7 +137,8 @@ if launch_ecs:
         '--file', 'docker-compose.ecs.yml',
         '--ecs-params', 'ecs-params.yml',
             'service', 'up',
-        '--create-log-groups', '--cluster-config', 'ipa-config',
+        '--create-log-groups',
+        '--cluster-config', 'ipa-config-small',
         '--ecs-profile', 'ipa-profile',
     ])
 
