@@ -47,31 +47,39 @@ def new_drive_time_query(request_data):
     # from OSM types relation and node, and don't return 500 errors. This is
     # the least of our performace concerns, so not worth it yet
     try:
+        no_way = False
         print(f'[{datetime.now()}] finding way')
         way = Ways.objects.get(osm_id=osm_id)
     except (Ways.DoesNotExist, Ways.MultipleObjectsReturned) as exc:
-        print(' not found')
+        print(f'[{datetime.now()}]  not found')
         if not lat or not lon:
             raise exc
         nominatim_point = Point(float(lon), float(lat), srid=4326)
         print(f'[{datetime.now()}] nominatim point: {nominatim_point}')
-        way = Ways.objects.filter(
-            the_geom__intersects=nominatim_point.buffer(0.01)
-        ).annotate(
-            distance=Distance('the_geom', nominatim_point)
-        ).order_by(
-            'distance'
-        )[:1].get()
-        print(f'[{datetime.now()}]  generated way from distance: {way}')
-
+        try:
+            way = Ways.objects.filter(
+                the_geom__intersects=nominatim_point.buffer(0.01)
+            ).annotate(
+                distance=Distance('the_geom', nominatim_point)
+            ).order_by(
+                'distance'
+            )[:1].get()
+            print(f'[{datetime.now()}]  generated way from distance: {way}')
+        except:
+            no_way = True
+            pass
+    
     # Remove nominatim fields that are not modeled
     allowed_fields = [field.name for field in DriveTimeQuery._meta.fields]
     model_data = {key: value for key, value in request_data.items() if key in allowed_fields}
 
-    ways_vertices_pgr = WaysVerticesPgr.objects.get(
-        id=way.source.pk
-    )
-    print(f'[{datetime.now()}] ways_vertices_pgr: {ways_vertices_pgr}')
+    if no_way:
+        ways_vertices_pgr = None
+    else:
+        ways_vertices_pgr = WaysVerticesPgr.objects.get(
+            id=way.source.pk
+        )
+        print(f'[{datetime.now()}] ways_vertices_pgr: {ways_vertices_pgr}')
 
     drive_time_query = DriveTimeQuery.objects.create(
         **model_data,
@@ -79,6 +87,9 @@ def new_drive_time_query(request_data):
     )
     print(f'[{datetime.now()}] drive_time_query: {drive_time_query}')
     drive_time_query.save()
+
+    if no_way:
+        return True
 
     print(f'[{datetime.now()}] calling db func')
     drive_time = DriveTime(
