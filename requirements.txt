@@ -53,6 +53,7 @@ scipy==1.3.0
 Shapely==1.6.4.post2
 six==1.12.0
 sqlparse==0.3.0
+tqdm==4.36.1
 traitlets==4.3.2
 urllib3==1.25.3
 vine==1.3.0

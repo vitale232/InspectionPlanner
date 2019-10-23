@@ -4,6 +4,8 @@ import subprocess
 import sys
 import time
 
+from tqdm import tqdm
+
 
 def print_and_check_call(cmd):
     print('  {command}'.format(command=' '.join(cmd)))
@@ -132,10 +134,13 @@ else:
 if launch_ecs:
     print(
         '\n[!!DOWNTIME WARNING!!] Launching the ECS ' +
-        'service in 5 seconds... (ctrl+c to cancel)'
+        'service in 10 seconds... (ctrl+c to cancel)'
     )
     os.chdir(BASE_DIR)
-    time.sleep(5)
+
+    for i in tqdm(range(10)):
+        time.sleep(1)
+
     print_and_check_call([
         'ecs-cli', 'compose',
         '--file', 'docker-compose.ecs.yml',
