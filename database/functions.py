@@ -1,3 +1,4 @@
+from datetime import datetime
 import math
 
 from django.db import connection
@@ -54,6 +55,7 @@ class DriveTime:
         return self.models
     
     def to_polygon(self, alpha=1, drive_time_query=None):
+        print(f'[{datetime.now()}] Starting polygon calc. Buckle up that RAM.')
         points = [loads(node.the_geom.wkt) for node in self.models]
         
         # Skip triangles
@@ -91,4 +93,5 @@ class DriveTime:
             the_geom=concave_hull.buffer(0.005).wkt
         )
         self.drive_time_polygon.save()
+        print(f'[{datetime.now()}] I did it!')
         return self.drive_time_polygon

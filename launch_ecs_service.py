@@ -4,6 +4,12 @@ import subprocess
 import sys
 import time
 
+from tqdm import tqdm
+
+
+def print_and_check_call(cmd):
+    print('  {command}'.format(command=' '.join(cmd)))
+    subprocess.check_call(cmd)
 
 cli_args = sys.argv[1:]
 
@@ -55,7 +61,7 @@ else:
 if build_angular:
     print('\nBuilding angular app with production flag')
     os.chdir(os.path.join(BASE_DIR, 'angular-app'))
-    subprocess.check_call([
+    print_and_check_call([
         'ng', 'build', '--prod',
     ])
 
@@ -68,14 +74,14 @@ docker_build_command = [
 ]
 if not use_cache:
     docker_build_command += ['--no-cache']
-subprocess.check_call(docker_build_command)
+print_and_check_call(docker_build_command)
 
 print('\nTagging Docker images')
 time.sleep(2)
-subprocess.check_call([
+print_and_check_call([
     'docker', 'tag', 'inspection_planner_django:latest', env['DJANGO_ECR_REPOSITORY']
 ])
-subprocess.check_call([
+print_and_check_call([
     'docker', 'tag', 'inspection_planner_nginx:latest', env['NGINX_ECR_REPOSITORY']
 ])
 
@@ -104,10 +110,10 @@ subprocess.run(docker_login)
 
 print('\nPushing Docker images')
 time.sleep(2)
-subprocess.check_call([
+print_and_check_call([
     'docker', 'push', env['DJANGO_ECR_REPOSITORY']
 ])
-subprocess.check_call([
+print_and_check_call([
     'docker', 'push', env['NGINX_ECR_REPOSITORY']
 ])
 
@@ -128,16 +134,20 @@ else:
 if launch_ecs:
     print(
         '\n[!!DOWNTIME WARNING!!] Launching the ECS ' +
-        'service in 5 seconds... (ctrl+c to cancel)'
+        'service in 10 seconds... (ctrl+c to cancel)'
     )
     os.chdir(BASE_DIR)
-    time.sleep(5)
-    subprocess.check_call([
+
+    for i in tqdm(range(10)):
+        time.sleep(1)
+
+    print_and_check_call([
         'ecs-cli', 'compose',
         '--file', 'docker-compose.ecs.yml',
         '--ecs-params', 'ecs-params.yml',
             'service', 'up',
-        '--create-log-groups', '--cluster-config', 'ipa-config',
+        '--create-log-groups',
+        '--cluster-config', 'ipa-config-small',
         '--ecs-profile', 'ipa-profile',
     ])
 

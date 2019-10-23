@@ -1,8 +1,9 @@
-import datetime
+from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
 from django.contrib.gis.db.models.functions import Distance
-from django.contrib.gis.geos import Point
+from django.contrib.gis.geos import Point, Polygon
+from django_q.tasks import async_task
 from rest_framework import generics
 from rest_framework import status
 from rest_framework.response import Response
@@ -105,9 +106,9 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
         return default
 
     def get(self, request, format=None):
-        print(f'\nStart QueryDriveTime.get() at {datetime.datetime.now()}')
+        print(f'[{datetime.now()}] Start QueryDriveTime.get()')
         return_bridges = self.resolve_boolean_param(request, 'return_bridges', False)
-        print(f'return_bridges={return_bridges}')
+        print(f'[{datetime.now()}] return_bridges={return_bridges}')
 
         # If a general query string is provided, null out other search parameters
         # If detailed parameters are provided, null out the q param
@@ -135,7 +136,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 inspection_years = int(inspection_years)
             except ValueError:
                 inspection_years = 2
-        inspection_date = datetime.datetime.now() - relativedelta(years=inspection_years)
+        inspection_date = datetime.now() - relativedelta(years=inspection_years)
 
         nominatim_query_params = {
             'q': query,
@@ -169,6 +170,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 ).order_by(
                     '-created_time'
                 )[:1].get()
+                print(f'[{datetime.now()}] existing_drive_time_query: {existing_drive_time_query}')
 
                 drive_time_polygon = DriveTimePolygon.objects.filter(
                     drive_time_query=existing_drive_time_query
@@ -177,15 +179,38 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 )[:1].get()
 
                 drive_time_query = existing_drive_time_query
-                print('Using cached results')
+                print(f'[{datetime.now()}] Using cached results')
 
-            except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist):
-                print('Generating new results')
+            except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist) as exc:
+                print(f'[{datetime.now()}] {str(exc)}: Calculating new drive-time')
                 existing_drive_time_query = None
 
+            # Ensure the request lies within the routable network extent before sending it to the queue.
+            # This avoids endless loops on the queue, and is a more logical behavior
             if not existing_drive_time_query:
                 lon = data.get('lon', None)
                 lat = data.get('lat', None)
+                if lon and lat:
+                    query_point_location = Point(float(lon), float(lat))
+                    routable_network_extent = Polygon.from_bbox((-78.3377, 41.5679, -72.7328, 44.2841))
+                    print(f'[{datetime.now()}] Point contained: {routable_network_extent.contains(query_point_location)}')
+                    if not routable_network_extent.contains(query_point_location):
+                        rejected_payload = {
+                            'msg': (
+                                'The search location does not line within the routable network extent. ' +
+                                'Cannot calculate a drive time query.'
+                            ),
+                            'search_text': query,
+                            'drive_time_hours': drive_time_hours,
+                            'return_bridges': return_bridges,
+                            'inspection_years': inspection_years,
+                            'lat': data['lat'],
+                            'lon': data['lon'],
+                            'display_name': data['display_name']
+                        }
+                        print(f'[{datetime.now()}] rejected_palyload: {rejected_payload}')
+                        return Response(rejected_payload, status=status.HTTP_400_BAD_REQUEST)
+
                 data.pop('licence', None)
                 data['drive_time_hours'] = drive_time_hours
                 data['bounding_box'] = data.pop('boundingbox', None)
@@ -193,12 +218,18 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 data['osm_type'] = data.pop('type', None)
                 data['the_geom'] = f'POINT({lon} {lat})'
                 data['search_text'] = query
+                data['place_id'] = place_id
 
-                new_drive_time_query.delay(data)
+                # new_drive_time_query.delay(data)
+                task_id = async_task(new_drive_time_query, data)
+                print(f'[{datetime.now()}] task_id: {task_id}')
 
                 accepted_payload = {
                     'msg': 'The request has been added to the queue',
                     'search_text': query,
+                    'drive_time_hours': drive_time_hours,
+                    'return_bridges': return_bridges,
+                    'inspection_years': inspection_years,
                     'lat': data['lat'],
                     'lon': data['lon'],
                     'display_name': data['display_name']
@@ -226,13 +257,13 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 response_bridges = bridges
             if response_bridges is not None:
                 bridges_serializer = NewYorkBridgeSerializer(response_bridges, many=True)
-                print(f'Bridges returned at: {datetime.datetime.now()}')
+                print(f'[{datetime.now()}] Bridges returned')
                 return Response(bridges_serializer.data, status=status.HTTP_200_OK)
 
             polygon_serializer = DriveTimePolygonSerializer(drive_time_polygon)
-            print(f'Bridges returned at: {datetime.datetime.now()}')
+            print(f'[{datetime.now()}] Polygon returned')
             return Response(polygon_serializer.data, status=status.HTTP_200_OK)
 
         json_data = nominatim_request.json()
-        print(f'400 returned at: {datetime.datetime.now()}')
+        print(f'[{datetime.now()}] 400 returned')
         return Response(json_data, status=status.HTTP_400_BAD_REQUEST)
