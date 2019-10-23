@@ -5,6 +5,10 @@ import sys
 import time
 
 
+def print_and_check_call(cmd):
+    print('  {command}'.format(command=' '.join(cmd)))
+    subprocess.check_call(cmd)
+
 cli_args = sys.argv[1:]
 
 require_input = True
@@ -55,7 +59,7 @@ else:
 if build_angular:
     print('\nBuilding angular app with production flag')
     os.chdir(os.path.join(BASE_DIR, 'angular-app'))
-    subprocess.check_call([
+    print_and_check_call([
         'ng', 'build', '--prod',
     ])
 
@@ -68,14 +72,14 @@ docker_build_command = [
 ]
 if not use_cache:
     docker_build_command += ['--no-cache']
-subprocess.check_call(docker_build_command)
+print_and_check_call(docker_build_command)
 
 print('\nTagging Docker images')
 time.sleep(2)
-subprocess.check_call([
+print_and_check_call([
     'docker', 'tag', 'inspection_planner_django:latest', env['DJANGO_ECR_REPOSITORY']
 ])
-subprocess.check_call([
+print_and_check_call([
     'docker', 'tag', 'inspection_planner_nginx:latest', env['NGINX_ECR_REPOSITORY']
 ])
 
@@ -104,10 +108,10 @@ subprocess.run(docker_login)
 
 print('\nPushing Docker images')
 time.sleep(2)
-subprocess.check_call([
+print_and_check_call([
     'docker', 'push', env['DJANGO_ECR_REPOSITORY']
 ])
-subprocess.check_call([
+print_and_check_call([
     'docker', 'push', env['NGINX_ECR_REPOSITORY']
 ])
 
@@ -132,7 +136,7 @@ if launch_ecs:
     )
     os.chdir(BASE_DIR)
     time.sleep(5)
-    subprocess.check_call([
+    print_and_check_call([
         'ecs-cli', 'compose',
         '--file', 'docker-compose.ecs.yml',
         '--ecs-params', 'ecs-params.yml',

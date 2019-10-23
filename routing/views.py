@@ -106,9 +106,9 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
         return default
 
     def get(self, request, format=None):
-        print(f'\nStart QueryDriveTime.get() at {datetime.datetime.now()}')
+        print(f'[{datetime.datetime.now()}] Start QueryDriveTime.get()')
         return_bridges = self.resolve_boolean_param(request, 'return_bridges', False)
-        print(f'return_bridges={return_bridges}')
+        print(f'[{datetime.datetime.now()}] return_bridges={return_bridges}')
 
         # If a general query string is provided, null out other search parameters
         # If detailed parameters are provided, null out the q param
@@ -163,7 +163,6 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             # Check for previous searches on this address. If exists, reuse the objects
             place_id = data['place_id']
             try:
-                print('ill try')
                 existing_drive_time_query = DriveTimeQuery.objects.filter(
                     place_id=place_id
                 ).filter(
@@ -171,7 +170,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 ).order_by(
                     '-created_time'
                 )[:1].get()
-                print(f'existing_drive_time_query: {existing_drive_time_query}')
+                print(f'[{datetime.datetime.now()}] existing_drive_time_query: {existing_drive_time_query}')
 
                 drive_time_polygon = DriveTimePolygon.objects.filter(
                     drive_time_query=existing_drive_time_query
@@ -180,11 +179,10 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 )[:1].get()
 
                 drive_time_query = existing_drive_time_query
-                print('Using cached results')
+                print(f'[{datetime.datetime.now()}] Using cached results')
 
             except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist) as exc:
-                print(exc)
-                print('Generating new results')
+                print(f'[{datetime.datetime.now()}] {str(exc)}: Calculating new drive-time')
                 existing_drive_time_query = None
 
             if not existing_drive_time_query:
@@ -201,7 +199,7 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
 
                 # new_drive_time_query.delay(data)
                 task_id = async_task(new_drive_time_query, data)
-                print(f'task_id: {task_id}')
+                print(f'[{datetime.datetime.now()}] task_id: {task_id}')
 
                 accepted_payload = {
                     'msg': 'The request has been added to the queue',
@@ -236,13 +234,13 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 response_bridges = bridges
             if response_bridges is not None:
                 bridges_serializer = NewYorkBridgeSerializer(response_bridges, many=True)
-                print(f'Bridges returned at: {datetime.datetime.now()}')
+                print(f'[{datetime.datetime.now()}] Bridges returned')
                 return Response(bridges_serializer.data, status=status.HTTP_200_OK)
 
             polygon_serializer = DriveTimePolygonSerializer(drive_time_polygon)
-            print(f'Bridges returned at: {datetime.datetime.now()}')
+            print(f'[{datetime.datetime.now()}] Polygon returned')
             return Response(polygon_serializer.data, status=status.HTTP_200_OK)
 
         json_data = nominatim_request.json()
-        print(f'400 returned at: {datetime.datetime.now()}')
+        print(f'[{datetime.datetime.now()}] 400 returned')
         return Response(json_data, status=status.HTTP_400_BAD_REQUEST)
