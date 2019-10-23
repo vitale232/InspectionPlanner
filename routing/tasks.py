@@ -67,8 +67,6 @@ def new_drive_time_query(request_data):
     # Remove nominatim fields that are not modeled
     allowed_fields = [field.name for field in DriveTimeQuery._meta.fields]
     model_data = {key: value for key, value in request_data.items() if key in allowed_fields}
-    print(allowed_fields)
-    print(model_data)
 
     ways_vertices_pgr = WaysVerticesPgr.objects.get(
         id=way.source.pk
