@@ -208,7 +208,7 @@ class DriveTimeQuery(models.Model):
 
     the_geom = gis_models.GeometryField()
     ways_vertices_pgr_source = models.ForeignKey(
-        'WaysVerticesPgr', models.CASCADE
+        'WaysVerticesPgr', models.CASCADE, null=True
     )
 
 
