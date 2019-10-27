@@ -186,14 +186,17 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 existing_drive_time_query = None
 
             # Ensure the request lies within the routable network extent before sending it to the queue.
-            # This avoids endless loops on the queue, and is a more logical behavior
+            # This avoids endless loops on the queue, and allows for a more logical response with a 400 status
             if not existing_drive_time_query:
                 lon = data.get('lon', None)
                 lat = data.get('lat', None)
                 if lon and lat:
                     query_point_location = Point(float(lon), float(lat))
                     routable_network_extent = Polygon.from_bbox((-78.3377, 41.5679, -72.7328, 44.2841))
-                    print(f'[{datetime.now()}] Point contained: {routable_network_extent.contains(query_point_location)}')
+                    print(
+                        f'[{datetime.now()}] {query_point_location} contained in {routable_network_extent}: ' +
+                        f'{routable_network_extent.contains(query_point_location)}'
+                    )
                     if not routable_network_extent.contains(query_point_location):
                         rejected_payload = {
                             'msg': (
@@ -219,8 +222,8 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 data['the_geom'] = f'POINT({lon} {lat})'
                 data['search_text'] = query
                 data['place_id'] = place_id
+                print(f'[{datetime.now()}] data: {data}')
 
-                # new_drive_time_query.delay(data)
                 task_id = async_task(new_drive_time_query, data)
                 print(f'[{datetime.now()}] task_id: {task_id}')
 

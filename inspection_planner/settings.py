@@ -167,6 +167,12 @@ REST_FRAMEWORK = {
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+if DEBUG == False:
+    # SECURE_SSL_REDIRECT = True
+    # SECURE_HSTS_SECONDS = 60
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    
 
 # Extra logging from django server or green unicorn
 LOGGING = {
@@ -184,10 +190,10 @@ LOGGING = {
 }
 
 Q_CLUSTER = {
-    'name': 'ipa-queue',
+    'name': 'ipa-queue-2',
     'workers': 1,
     'timeout': 600,
-    'retry': 90,
+    'retry': 180,
     'queue_limit': 100,
     'bulk': 5,
     'sqs': {

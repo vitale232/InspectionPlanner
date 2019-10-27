@@ -141,6 +141,7 @@ if launch_ecs:
     for i in tqdm(range(10)):
         time.sleep(1)
 
+    print('')
     print_and_check_call([
         'ecs-cli', 'compose',
         '--file', 'docker-compose.ecs.yml',

@@ -29,8 +29,13 @@ def new_drive_time_query(request_data):
         ).order_by(
             '-created_time'
         )[:1].get()
-        allowed_fields = [field.name for field in DriveTimeQuery._meta.fields]
-        model_data = {key: value for key, value in request_data.items() if key in allowed_fields}
+
+        drive_time_polygon = DriveTimePolygon.objects.filter(
+            drive_time_query=existing_drive_time_query
+        ).order_by(
+            '-created_time'
+        )[:1].get()
+
         # Query is already cached in db. Exit.
         print(f'[{datetime.now()}] Early exit. {place_id} with drive_time_hours {drive_time_hours} exists.')
         return True

@@ -57,6 +57,8 @@ class DriveTime:
     def to_polygon(self, alpha=1, drive_time_query=None):
         print(f'[{datetime.now()}] Starting polygon calc. Buckle up that RAM.')
         points = [loads(node.the_geom.wkt) for node in self.models]
+        lens = [len(node.the_geom.wkt.encode('utf-8')) for node in self.models]
+        print(f'message size in bytes: {sum(lens)}. too big? {sum(lens)>256000}')
         
         # Skip triangles
         if len(points) < 4:
