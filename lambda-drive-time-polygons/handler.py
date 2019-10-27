@@ -121,6 +121,11 @@ def main(event, context):
     print(f'[{datetime.now()}] main(): event: {event}')
     print(f'[{datetime.now()}] main(): {context}')
 
+    # SQS sends an event as a dict with a list of `Records`. Batch is currently
+    # disallowed, so take the first and only element of the list (another dict),
+    # which has a `body` key, that corresponds to the
+    # `sqs.send_message` call from `routing.tasks`. Split that text on =,
+    # and take the first element, which is the drive_time_query_id
     drive_time_query_id = int(event['Records'][0]['body'].split('=')[1])
 
     print(f'[{datetime.now()}] main(): drive_time_query_id={drive_time_query_id}')
