@@ -6,6 +6,7 @@ docker-compose.ecs.yml
 
 secrets.py
 .envs
+*.lambda-env
 static/*
 
 .vscode

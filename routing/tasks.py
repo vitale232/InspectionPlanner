@@ -1,6 +1,8 @@
 from datetime import datetime
 import traceback
 
+import boto3
+from django.conf import settings
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
 
@@ -106,16 +108,16 @@ def new_drive_time_query(request_data):
     models = drive_time.to_models(drive_time_query=drive_time_query)
     DriveTimeNode.objects.bulk_create(models)
 
-    drive_time_polygon = drive_time.to_polygon(
-        alpha=30,
-        drive_time_query=drive_time_query
+    print(f'[{datetime.now()}] SQS_URL: {settings.SQS_URL}')
+    sqs = boto3.client('sqs')
+    response = sqs.send_message(
+        QueueUrl=settings.SQS_URL,
+        DelaySeconds=5,
+        MessageBody=f'drive_time_query_id={drive_time_query.id}'
     )
-    if 'LINESTRING' in str(drive_time_polygon):
-        DriveTimePolygon.objects.create(
-            drive_time_query=drive_time_query,
-            the_geom=drive_time_query.the_geom.buffer(0.05)
-        )
-    print(f'[{datetime.now()}] drive_time_polygon: {drive_time_polygon}')
+
+    message_id = response['MessageId']
+    print(f'[{datetime.now()}] Message sent to lambda with id {message_id}')
     print(f'[{datetime.now()}] completed in {datetime.now()-start_time}')
 
     return True

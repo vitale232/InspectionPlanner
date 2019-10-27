@@ -5,7 +5,7 @@ import sys
 env_variables = [
     'RDS_DB_NAME', 'RDS_USERNAME', 'RDS_HOSTNAME',
     'RDS_PASSWORD', 'RDS_PORT', 'SECRET_KEY', 'DEBUG', 'ALLOWED_HOSTS',
-    'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY'
+    'AWS_ACCESS_KEY_ID', 'AWS_SECRET_ACCESS_KEY', 'SQS_URL',
 ]
 
 if all([var in os.environ for var in env_variables]):
@@ -21,6 +21,7 @@ if all([var in os.environ for var in env_variables]):
     ALLOWED_HOSTS = allowed_hosts.split(';')
     aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
     aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    SQS_URL = os.environ.get('SQS_URL')
 
     if debug == 'TRUE':
         DEBUG = True
@@ -32,7 +33,8 @@ else:
     from .secrets import (
         database_host, database_name, database_port,
         database_password, database_user, secret_key,
-        ALLOWED_HOSTS, aws_access_key_id, aws_secret_access_key
+        ALLOWED_HOSTS, aws_access_key_id, aws_secret_access_key,
+        SQS_URL
     )
 
     DEBUG = True
