@@ -23,7 +23,9 @@ def new_drive_time_query(request_data):
     drive_time_hours = request_data.get('drive_time_hours', 0.25)
     inspection_years = request_data.get('inspection_years', 2)
     place_id = request_data['place_id']
+
     try:
+        polygon_pending = False
         existing_drive_time_query = DriveTimeQuery.objects.filter(
             place_id=place_id
         ).filter(
@@ -32,18 +34,25 @@ def new_drive_time_query(request_data):
             '-created_time'
         )[:1].get()
 
+        polygon_pending = existing_drive_time_query.polygon_pending
+
         drive_time_polygon = DriveTimePolygon.objects.filter(
             drive_time_query=existing_drive_time_query
         ).order_by(
             '-created_time'
         )[:1].get()
-
-        # Query is already cached in db. Exit.
-        print(f'[{datetime.now()}] Early exit. {place_id} with drive_time_hours {drive_time_hours} exists.')
-        return True
-    except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist) as exc:
+    except DriveTimeQuery.DoesNotExist as exc:
         print(f'[{datetime.now()}] Exception: {exc}')
         print(f'[{datetime.now()}] Generating new results')
+    except DriveTimePolygon.DoesNotExist as exc:
+        print(f'[{datetime.now()}] DriveTimeQuery {existing_drive_time_query.id}  polygon_pending: {polygon_pending}')
+        if polygon_pending:
+            print(f'[{datetime.now()}] Early exit. Polygon is in the queue, pending creation.')
+            return True
+        print(f'[{datetime.now()}] No polygon in the queue. Processing query.')
+    else:
+        print(f'[{datetime.now()}] Early exit. {place_id} with drive_time_hours {drive_time_hours} exists.')
+        return True
 
     # Query the Ways table with the osm_id returned by Nominatim API
     # If it wasn't a way object, it won't exist. Instead use the lat/lon from
@@ -104,9 +113,18 @@ def new_drive_time_query(request_data):
         drive_time_hours
     )
     print(f'[{datetime.now()}]  drive_time: {drive_time}')
-    rows = drive_time.execute_sql()
-    models = drive_time.to_models(drive_time_query=drive_time_query)
-    DriveTimeNode.objects.bulk_create(models)
+    drive_time.execute_sql()
+    DriveTimeNode.objects.bulk_create(
+        drive_time.to_models(drive_time_query=drive_time_query)
+    )
+
+    drive_time_query.polygon_pending = True
+    drive_time_query.save()
+
+    print(
+        f'[{datetime.now()}] Set DriveTimeQuery.pending_' +
+        f'polygon to: {drive_time_query.polygon_pending}'
+    )
 
     print(f'[{datetime.now()}] SQS_URL: {settings.SQS_URL}')
     sqs = boto3.client('sqs')
