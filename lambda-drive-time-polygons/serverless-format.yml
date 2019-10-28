@@ -1,4 +1,4 @@
-service: lambda-drive-time-polygons
+service: lambda-drive-time-polygons-2
 
 provider:
   name: aws
@@ -14,7 +14,7 @@ provider:
 functions:
   create_drive_time_polygon:
     handler: handler.main
-    timeout: 180
+    timeout: 300
     events:
       - sqs: 
           arn: {queue_arn}
