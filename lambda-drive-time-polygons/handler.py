@@ -53,9 +53,19 @@ def get_nodes_and_make_polygon(drive_time_query_id):
         drive_time_query_id=drive_time_query_id,
         created_time=datetime.now()
     )
-    id_ = session.add(new_drive_time_polygon)
+    session.add(new_drive_time_polygon)
+
+    drive_time_query.polygon_pending = False
+    session.add(drive_time_query)
+
+    print(
+        f'[{datetime.now()}] get_nodes_and_make_polygon(): Set DriveTimeQuery' +
+        f'.polygon_pending to {drive_time_query.polygon_pending}'
+    )
+
     session.flush()
     session.commit()
+    print(f'[{datetime.now()}] get_nodes_and_make_polygon(): Committed changes to db')
 
     return True
 
