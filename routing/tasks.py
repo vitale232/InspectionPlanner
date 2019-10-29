@@ -5,6 +5,7 @@ import boto3
 from django.conf import settings
 from django.contrib.gis.db.models.functions import Distance
 from django.contrib.gis.geos import Point
+from django.utils import timezone
 
 from routing.models import (
     DriveTimeNode, DriveTimePolygon, DriveTimeQuery, Ways, WaysVerticesPgr,
@@ -47,7 +48,7 @@ def new_drive_time_query(request_data):
     except DriveTimePolygon.DoesNotExist as exc:
         print(f'[{datetime.now()}] DriveTimeQuery {existing_drive_time_query.id}  polygon_pending: {polygon_pending}')
         stale_timedelta = timedelta(minutes=15)
-        polygon_calculation_age = datetime.now()-existing_drive_time_query.edited_time
+        polygon_calculation_age = timezone.now()-existing_drive_time_query.edited_time
         print(f'[{datetime.now()}] DTQ last edited {existing_drive_time_query.edited_time}')
         if polygon_pending and polygon_calculation_age < stale_timedelta:
             print(f'[{datetime.now()}] Early exit. Polygon is in the queue, pending creation.')
