@@ -3,7 +3,7 @@ service: lambda-drive-time-polygons-2
 provider:
   name: aws
   runtime: python3.6
-  memorySize: 2028
+  memorySize: 3008
   vpc:
     securityGroupIds:
       - {security_group}
@@ -14,7 +14,7 @@ provider:
 functions:
   create_drive_time_polygon:
     handler: handler.main
-    timeout: 300
+    timeout: 600
     events:
       - sqs: 
           arn: {queue_arn}
