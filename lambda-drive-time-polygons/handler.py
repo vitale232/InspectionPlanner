@@ -128,6 +128,7 @@ def to_polygon(points, alpha=1, drive_time_query=None):
     return concave_hull
 
 def main(event, context):
+    start_time = datetime.now()
     print(f'[{datetime.now()}] main(): event: {event}')
     print(f'[{datetime.now()}] main(): {context}')
 
@@ -143,6 +144,7 @@ def main(event, context):
     success = get_nodes_and_make_polygon(drive_time_query_id)
 
     print(f'[{datetime.now()}] main(): Success? {success}. Way to go, slugger.')
+    print(f'[{datetime.now()}] main() ran for {datetime.now()-start_time}')
 
 
 if __name__ == "__main__":

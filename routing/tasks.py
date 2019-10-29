@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import traceback
 
 import boto3
@@ -46,9 +46,18 @@ def new_drive_time_query(request_data):
         print(f'[{datetime.now()}] Generating new results')
     except DriveTimePolygon.DoesNotExist as exc:
         print(f'[{datetime.now()}] DriveTimeQuery {existing_drive_time_query.id}  polygon_pending: {polygon_pending}')
-        if polygon_pending:
+        stale_timedelta = timedelta(minutes=15)
+        polygon_calculation_age = datetime.now()-existing_drive_time_query.edited_time
+        print(f'[{datetime.now()}] DTQ last edited {existing_drive_time_query.edited_time}')
+        if polygon_pending and polygon_calculation_age < stale_timedelta:
             print(f'[{datetime.now()}] Early exit. Polygon is in the queue, pending creation.')
             return True
+        if polygon_calculation_age > stale_timedelta:
+            print(f'[{datetime.now()}] Polygon has not finished in {str(stale_timedelta)}. Trying again')
+            polygon_pending = False
+            existing_drive_time_query.polygon_pending = polygon_pending
+            existing_drive_time_query.save()
+            print(f'[{datetime.now()}] {existing_drive_time_query} polygon_pending set to False')
         print(f'[{datetime.now()}] No polygon in the queue. Processing query.')
     else:
         print(f'[{datetime.now()}] Early exit. {place_id} with drive_time_hours {drive_time_hours} exists.')
