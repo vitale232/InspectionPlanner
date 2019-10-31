@@ -1,0 +1,29 @@
+service: lambda-drive-time-polygons-2
+
+provider:
+  name: aws
+  runtime: python3.6
+  memorySize: 3008
+  vpc:
+    securityGroupIds:
+      - {security_group}
+    subnetIds:
+      - {subnet_a}
+      - {subnet_b}
+
+functions:
+  create_drive_time_polygon:
+    handler: handler.main
+    timeout: 600
+    events:
+      - sqs: 
+          arn: {queue_arn}
+          batchSize: 1
+          enabled: true
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true

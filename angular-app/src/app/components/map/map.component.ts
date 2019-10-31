@@ -20,6 +20,7 @@ import { MapExtent } from 'src/app/models/map-tools.model';
 import { SidenavService } from 'src/app/services/sidenav.service';
 import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
 
+import * as mapConfig from './map-config';
 
 @Component({
   selector: 'app-map',
@@ -43,86 +44,19 @@ export class MapComponent implements OnInit, OnDestroy {
   mapZoom = 7;
   mapCenter = L.latLng(43.0, -75.3);
 
-  bridgeMarker = L.icon({
-    iconUrl: 'leaflet/marker-icon.png',
-    shadowUrl: 'leaflet/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12.5, 41],
-    popupAnchor: [0, -20.5]
-  });
-  searchMarker = L.icon({
-    iconUrl: 'assets/marker-icon-red.png',
-    shadowUrl: 'leaflet/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12.5, 41],
-    popupAnchor: [0, -20.5]
-  });
-  clientLocationMarker = L.icon({
-    iconUrl: 'assets/marker-icon-black.png',
-    shadowUrl: 'leaflet/marker-shadow.png',
-    iconSize: [25, 41],
-    iconAnchor: [12.5, 41],
-    popupAnchor: [0, -20.5]
-  });
-  LAYER_WIKIMEDIA_MAP = {
-    id: 'wikimediamap',
-    name: 'Wikimedia Map',
-    detectRetina: true,
-    enabled: true,
-    layer: L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">' +
-                   'OpenStreetMap</a> contributors'
-    })
-  };
-  LAYER_OPEN_STREET_MAP = {
-    id: 'openstreetmap',
-    name: 'OpenStreetMap',
-    detectRetina: true,
-    enabled: true,
-    layer: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 18,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">' +
-                   'OpenStreetMap</a> contributors'
-    })
-  };
+  // import marker icons from ./map-config.ts
+  bridgeMarker = mapConfig.bridgeMarker;
+  searchMarker = mapConfig.searchMarker;
+  clientLocationMarker = mapConfig.clientLocationMarker;
 
-  LAYER_ESRI_WORLD_TOPO = {
-    id: 'esriTopo',
-    name: 'Esri World Topo Map',
-    detectRetina: true,
-    enabled: true,
-    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' +
-                       'World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, ' +
-                   'iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, ' +
-                   'Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
-    })
-  };
+  // Import basemap configs from ./map-config.ts
+  LAYER_WIKIMEDIA_MAP = mapConfig.LAYER_WIKIMEDIA_MAP;
+  LAYER_OPEN_STREET_MAP = mapConfig.LAYER_OPEN_STREET_MAP;
+  LAYER_ESRI_WORLD_TOPO = mapConfig.LAYER_ESRI_WORLD_TOPO;
+  LAYER_ESRI_WORLD_IMAGERY = mapConfig.LAYER_ESRI_WORLD_IMAGERY;
 
-  LAYER_ESRI_WORLD_IMAGERY = {
-    id: 'esriImagery',
-    name: 'Esri World Imagery',
-    detectRetina: true,
-    enabled: true,
-    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' +
-                       'World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye' +
-                   ', Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
-    })
-  };
-
-  studyArea = {
-    id: 'studyarea',
-    name: 'Routable Network Extent',
-    enabled: true,
-    layer: L.polygon([
-      [41.5679, -78.3377],
-      [41.5679, -72.7328],
-      [44.2841, -72.7328],
-      [44.2841, -78.3377]
-    ]).setStyle({fillOpacity: 0.0})
-  };
+  // Import routable network area polygon from ./map-config.txt
+  studyArea = mapConfig.studyArea;
 
   model = new LeafletLayersModel(
     [

@@ -203,6 +203,8 @@ class DriveTimeQuery(models.Model):
     osm_type = models.CharField(blank=True, max_length=30)
     importance = models.FloatField(null=True)
 
+    polygon_pending = models.BooleanField(default=False)
+
     created_time = models.DateTimeField(auto_now_add=True)
     edited_time = models.DateTimeField(auto_now=True)
 
