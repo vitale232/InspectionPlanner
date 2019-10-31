@@ -76,7 +76,7 @@
       </div> 
   </ng-template>
 
-  <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50"></mat-spinner>
+  <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
 
   <mat-slide-toggle [(ngModel)]="driveTimeSearchToggle" class="selection-input">
     Drive Time Search
@@ -119,7 +119,7 @@
       </mat-form-field>
     </form>
 
-    <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50"></mat-spinner>
+    <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
 
     <button mat-flat-button
             color="primary"
@@ -158,7 +158,7 @@
             class="center-button">
       Search
     </button>
-    <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50"></mat-spinner>
+    <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
   </ng-template>
 </mat-expansion-panel>
 
