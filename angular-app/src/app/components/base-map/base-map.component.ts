@@ -25,7 +25,6 @@ import * as mapConfig from './map-config';
 @Component({
   selector: 'app-base-map',
   templateUrl: './base-map.component.html',
-  // styleUrls: ['./base-map.component.css']
 })
 export class BaseMapComponent implements OnInit, OnDestroy {
   title = 'angular-app';
@@ -121,6 +120,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     this.clientLocationSubscription = this.clientLocationService.getClientLocation$()
       .subscribe(
         (data: ClientLocation) => {
+          console.log('hi');
           this.applyClientLocationQuery(data);
         },
         (err) => {

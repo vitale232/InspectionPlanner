@@ -13,7 +13,7 @@ export class NavbarComponent implements OnDestroy {
   sidenavState$: Observable<boolean>|null;
 
   constructor(
-    private sidenavService: SidenavService,
+    public sidenavService: SidenavService,
   ) {
     this.sidenavState$ = this.sidenavService.getSidenavState$();
   }

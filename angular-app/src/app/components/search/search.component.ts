@@ -25,6 +25,7 @@ export class SearchComponent implements OnInit {
   driveTimeQueriesText: Array<string>;
   driveTimeSearchToggle = false;
   bridgeSearchToggle = false;
+  searchLoading = false;
   selectedTimeInterval = 'fifteenMins';
   locationSearch: LocationSearchResult|null = null;
 
@@ -96,6 +97,7 @@ export class SearchComponent implements OnInit {
   }
 
   getFilterSearch(filterSearch: FilterSearch) {
+    this.searchLoading = true;
     this.searchService.filterSearch(filterSearch)
       .subscribe(
         (data: Array<NominatimApiResponse>) => {
@@ -135,7 +137,9 @@ export class SearchComponent implements OnInit {
               pauseOnHover: true,
               clickToClose: true
           });
-        }
+          this.searchLoading = false;
+        },
+        () => this.searchLoading = false
       );
   }
 
@@ -158,6 +162,7 @@ export class SearchComponent implements OnInit {
   }
 
   getBridgeSearch(bridgeQuery: BridgeQuery): void {
+    this.searchLoading = true;
     this.newYorkBridgeService.searchNewYorkBridgesQuery(bridgeQuery)
       .subscribe(data => {
         if (data.count === 0) {
@@ -189,17 +194,24 @@ export class SearchComponent implements OnInit {
             .sendBridgeFeature(data.results.features[0]);
         }
 
-      }
+      },
+      err => this.searchLoading = false,
+      () => this.searchLoading = false
     );
   }
 
   getBinSearch(bin: string): void {
+    this.searchLoading = true;
     this.newYorkBridgeService.searchNewYorkBridgesBin(bin)
-      .subscribe((data) => this.newYorkBridgeService
-        .sendBridgeFeature(data.results.features[0]));
+      .subscribe(
+        (data) => this.newYorkBridgeService.sendBridgeFeature(data.results.features[0]),
+        err => this.searchLoading = false,
+        () => this.searchLoading = false
+      );
   }
 
   getLocationSearch(query: string) {
+    this.searchLoading = true;
     this.searchService.locationSearch(query)
       .subscribe(
         (data: Array<NominatimApiResponse>) => {
@@ -236,7 +248,8 @@ export class SearchComponent implements OnInit {
               pauseOnHover: true,
               clickToClose: true
           });
-        }
+          this.searchLoading = false;
+        }, () => this.searchLoading = false
       );
   }
 

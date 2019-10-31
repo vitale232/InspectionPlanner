@@ -1,5 +1,4 @@
 import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import * as L from 'leaflet';
 import { BaseMapComponent } from '../base-map/base-map.component';
 import { MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,6 +10,7 @@ import { LoadingIndicatorService } from 'src/app/services/loading-indicator.serv
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { SearchService } from 'src/app/services/search.service';
 import { Location } from '@angular/common';
+
 
 @Component({
   selector: 'app-map',
@@ -50,6 +50,10 @@ export class MapComponent extends BaseMapComponent implements OnInit, OnDestroy 
   }
 
   ngOnInit() {
-    console.log(this.layersControl);
+    super.ngOnInit();
+  }
+
+  ngOnDestroy() {
+    super.ngOnDestroy();
   }
 }

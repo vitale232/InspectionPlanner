@@ -1,182 +1,187 @@
 <div class="search-panel">
-    <div class="tools">
-        <!-- <mat-divider></mat-divider> -->
-        <button mat-stroked-button
+  <div class="tools">
+      <!-- <mat-divider></mat-divider> -->
+      <button mat-stroked-button
+            color="accent"
+            matTooltip="Map my current location"
+            matTooltipShowDelay="500"
+            (click)="sendClientLocation()"
+            aria-label="Plot current location on map">
+        <mat-icon>location_searching</mat-icon>
+      </button>
+  
+      <button mat-stroked-button
               color="accent"
-              matTooltip="Map my current location"
+              matTooltip="Center map on New York State"
               matTooltipShowDelay="500"
-              (click)="sendClientLocation()"
-              aria-label="Plot current location on map">
-          <mat-icon>location_searching</mat-icon>
-        </button>
-    
-        <button mat-stroked-button
-                color="accent"
-                matTooltip="Center map on New York State"
-                matTooltipShowDelay="500"
-                (click)="sendMapHome()"
-                aria-label="Return map to default position">
-          <mat-icon>home</mat-icon>
-        </button>
-    
-        <button mat-stroked-button
-                color="accent"
-                matTooltip="Clear search markers"
-                (click)="onClearMarkers()"
-                aria-label="Remove search result markers from map">
-          <mat-icon>layers_clear</mat-icon>
-        </button>
-        <!-- <mat-divider></mat-divider> -->
-      </div>
-  <div *ngIf="!detailsPanelOpen">
-    <div *ngIf="!driveTimeSearchToggle; else elseBlock">
-      <form [formGroup]="locationForm">
-        <mat-form-field class="form-field"
-                        appearance="outline"
-                        color="accent">
-          <input matInput
-                 formControlName="searchText"
-                 color="warn"
-                 (focus)="selectAll($event)"
-                 (mouseup)="$event.preventDefault()">
-          <mat-label>
-            Search address, BIN, or place name
-          </mat-label>
-          <button matSuffix
-                  mat-icon-button
-                  (click)="onLocationSearch()"
-                  aria-label="Execute search">
-            <mat-icon>search</mat-icon>
-          </button>
-        </mat-form-field>
-      </form>
+              (click)="sendMapHome()"
+              aria-label="Return map to default position">
+        <mat-icon>home</mat-icon>
+      </button>
+  
+      <button mat-stroked-button
+              color="accent"
+              matTooltip="Clear search markers"
+              (click)="onClearMarkers()"
+              aria-label="Remove search result markers from map">
+        <mat-icon>layers_clear</mat-icon>
+      </button>
+      <!-- <mat-divider></mat-divider> -->
     </div>
-    <ng-template #elseBlock>
-      <mat-form-field class="form-field" appearance="outline" color="accent">
-        <input matInput placeholder="Input">
+<div *ngIf="!detailsPanelOpen">
+  <div *ngIf="!driveTimeSearchToggle; else elseBlock">
+    <form [formGroup]="locationForm">
+      <mat-form-field class="form-field"
+                      appearance="outline"
+                      color="accent">
+        <input matInput
+               formControlName="searchText"
+               color="warn"
+               (focus)="selectAll($event)"
+               (mouseup)="$event.preventDefault()">
         <mat-label>
-          Search address or place name
+          Search address, BIN, or place name
         </mat-label>
+        <button matSuffix
+                mat-icon-button
+                (click)="onLocationSearch()"
+                aria-label="Execute search">
+          <mat-icon>search</mat-icon>
+        </button>
       </mat-form-field>
-          <!-- <form> -->
-      <mat-form-field appearance="outline" color="accent" class="form-field">
-        <mat-label>Max drive time </mat-label>
-        <mat-select [(ngModel)]="selectedTimeInterval" name="time">
-          <mat-option *ngFor="let time of timeIntervals" [value]="time.value">
-            {{time.viewValue}}
-          </mat-option>
-        </mat-select>
+    </form>
+  </div>
+  <ng-template #elseBlock>
+    <mat-form-field class="form-field" appearance="outline" color="accent">
+      <input matInput placeholder="Input">
+      <mat-label>
+        Search address or place name
+      </mat-label>
+    </mat-form-field>
+        <!-- <form> -->
+    <mat-form-field appearance="outline" color="accent" class="form-field">
+      <mat-label>Max drive time </mat-label>
+      <mat-select [(ngModel)]="selectedTimeInterval" name="time">
+        <mat-option *ngFor="let time of timeIntervals" [value]="time.value">
+          {{time.viewValue}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+      <!-- </form> -->
+      <div class="pad-button">
+        <button mat-flat-button 
+                (click)="onClick()"
+                color="primary"
+                class="center-button"> Search </button>
+      </div> 
+  </ng-template>
+
+  <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
+
+  <mat-slide-toggle [(ngModel)]="driveTimeSearchToggle" class="selection-input">
+    Drive Time Search
+  </mat-slide-toggle>
+
+</div>
+
+<mat-expansion-panel (opened)="detailsPanelOpen = true;"
+                    (closed)="detailsPanelOpen = false;">
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Search filters
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+
+  <section class="mat-typography space-below">
+    Use the toggle to switch between searching for an address or a bridge.
+  </section>
+  <mat-slide-toggle [(ngModel)]="bridgeSearchToggle" class="selection-input">
+    Search Bridges
+  </mat-slide-toggle>
+
+  <div *ngIf="!bridgeSearchToggle; else bridgeSearch">
+
+    <form [formGroup]="filterForm" (keydown.enter)="onFilterSearch()">
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="streetAddress" placeholder="Street address">
       </mat-form-field>
-        <!-- </form> -->
-        <div class="pad-button">
-          <button mat-flat-button 
-                  (click)="onClick()"
-                  color="primary"
-                  class="center-button"> Search </button>
-        </div> 
-    </ng-template>
+  
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="city" placeholder="City">
+      </mat-form-field>
+  
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="state" placeholder="State">
+      </mat-form-field>
+  
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="country" placeholder="Country">
+      </mat-form-field>
+    </form>
 
-    <mat-slide-toggle [(ngModel)]="driveTimeSearchToggle" class="selection-input">
-      Drive Time Search
-    </mat-slide-toggle>
+    <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
 
+    <button mat-flat-button
+            color="primary"
+            (click)="onFilterSearch()"
+            class="center-button">
+      Search
+    </button>
   </div>
 
-  <mat-expansion-panel (opened)="detailsPanelOpen = true;"
-                      (closed)="detailsPanelOpen = false;">
+  <ng-template #bridgeSearch>
+    <section class="mat-typography space-above">
+      Fill out one, some, or all fields to find a single bridge.
+    </section>
+  
+    <form [formGroup]="bridgeForm" (keydown.enter)="onBridgeSearch()">
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="bin" placeholder="BIN">
+      </mat-form-field>
+  
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="carried" placeholder="Carried">
+      </mat-form-field>
+  
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="county" placeholder="County">
+      </mat-form-field>
+  
+      <mat-form-field class="detailed-form-field" color="accent">
+        <input matInput formControlName="commonName" placeholder="Common Name">
+      </mat-form-field>
+    </form>
+
+    <button mat-flat-button
+            color="primary"
+            (click)="onBridgeSearch()"
+            class="center-button">
+      Search
+    </button>
+    <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
+  </ng-template>
+</mat-expansion-panel>
+
+<div *ngIf="driveTimeQueriesText">
+  <mat-expansion-panel
+    (opened)="pastPanelOpen = true;"
+    (closed)="pastPanelOpen = false;">
     <mat-expansion-panel-header>
       <mat-panel-title>
-        Search filters
+        Search history
       </mat-panel-title>
     </mat-expansion-panel-header>
-
-    <section class="mat-typography space-below">
-      Use the toggle to switch between searching for an address or a bridge.
-    </section>
-    <mat-slide-toggle [(ngModel)]="bridgeSearchToggle" class="selection-input">
-      Search Bridges
-    </mat-slide-toggle>
-
-    <div *ngIf="!bridgeSearchToggle; else bridgeSearch">
-
-      <form [formGroup]="filterForm" (keydown.enter)="onFilterSearch()">
-        <mat-form-field class="detailed-form-field" color="accent">
-          <input matInput formControlName="streetAddress" placeholder="Street address">
-        </mat-form-field>
-    
-        <mat-form-field class="detailed-form-field" color="accent">
-          <input matInput formControlName="city" placeholder="City">
-        </mat-form-field>
-    
-        <mat-form-field class="detailed-form-field" color="accent">
-          <input matInput formControlName="state" placeholder="State">
-        </mat-form-field>
-    
-        <mat-form-field class="detailed-form-field" color="accent">
-          <input matInput formControlName="country" placeholder="Country">
-        </mat-form-field>
-      </form>
-  
-      <button mat-flat-button
-              color="primary"
-              (click)="onFilterSearch()"
-              class="center-button">
-        Search
+    <mat-action-list>
+      <button mat-list-item
+              class="small-font"
+              matTooltip="{{ name.longName }}"
+              matTooltipShowDelay="1000"
+              (click)="onClick()"
+              *ngFor="let name of driveTimeQueriesText">
+        {{ name.shortName }}
       </button>
-    </div>
-
-    <ng-template #bridgeSearch>
-      <section class="mat-typography space-above">
-        Fill out one, some, or all fields to find a single bridge.
-      </section>
-    
-      <form [formGroup]="bridgeForm" (keydown.enter)="onBridgeSearch()">
-        <mat-form-field class="detailed-form-field" color="accent">
-          <input matInput formControlName="bin" placeholder="BIN">
-        </mat-form-field>
-    
-        <mat-form-field class="detailed-form-field" color="accent">
-          <input matInput formControlName="carried" placeholder="Carried">
-        </mat-form-field>
-    
-        <mat-form-field class="detailed-form-field" color="accent">
-          <input matInput formControlName="county" placeholder="County">
-        </mat-form-field>
-    
-        <mat-form-field class="detailed-form-field" color="accent">
-          <input matInput formControlName="commonName" placeholder="Common Name">
-        </mat-form-field>
-      </form>
-  
-      <button mat-flat-button
-              color="primary"
-              (click)="onBridgeSearch()"
-              class="center-button">
-        Search
-      </button>
-    </ng-template>
+    </mat-action-list>
   </mat-expansion-panel>
-
-  <div *ngIf="driveTimeQueriesText">
-    <mat-expansion-panel
-      (opened)="pastPanelOpen = true;"
-      (closed)="pastPanelOpen = false;">
-      <mat-expansion-panel-header>
-        <mat-panel-title>
-          Search history
-        </mat-panel-title>
-      </mat-expansion-panel-header>
-      <mat-action-list>
-        <button mat-list-item
-                class="small-font"
-                matTooltip="{{ name.longName }}"
-                matTooltipShowDelay="1000"
-                (click)="onClick()"
-                *ngFor="let name of driveTimeQueriesText">
-          {{ name.shortName }}
-        </button>
-      </mat-action-list>
-    </mat-expansion-panel>
-  </div>
+</div>
 
 </div>
