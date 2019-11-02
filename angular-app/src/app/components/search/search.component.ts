@@ -12,6 +12,7 @@ import { MapExtent } from 'src/app/models/map-tools.model';
 import { MapToolsService } from 'src/app/services/map-tools.service';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { BridgeQuery } from 'src/app/models/bridge-query.model';
+import { take } from 'rxjs/operators';
 
 
 @Component({
@@ -257,6 +258,7 @@ export class SearchComponent implements OnInit {
     this.searchService.getDriveTimeQueries(1)
       .subscribe(
         (data: DriveTimeQueryApiResponse) => {
+          console.log(data.results);
           const uniqueSearchText: Array<DriveTimeQueryFeature> = data.results.features;
 
           // Create an array of objects with two properties:

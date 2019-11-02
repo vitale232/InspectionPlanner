@@ -20,7 +20,7 @@ import { MapExtent } from 'src/app/models/map-tools.model';
 import { SidenavService } from 'src/app/services/sidenav.service';
 import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
 
-import * as mapConfig from './map-config';
+import * as baseMapConfig from './base-map-config';
 
 @Component({
   selector: 'app-base-map',
@@ -44,18 +44,18 @@ export class BaseMapComponent implements OnInit, OnDestroy {
   mapCenter = L.latLng(43.0, -75.3);
 
   // import marker icons from ./map-config.ts
-  bridgeMarker = mapConfig.bridgeMarker;
-  searchMarker = mapConfig.searchMarker;
-  clientLocationMarker = mapConfig.clientLocationMarker;
+  bridgeMarker = baseMapConfig.bridgeMarker;
+  searchMarker = baseMapConfig.searchMarker;
+  clientLocationMarker = baseMapConfig.clientLocationMarker;
 
   // Import basemap configs from ./map-config.ts
-  LAYER_WIKIMEDIA_MAP = mapConfig.LAYER_WIKIMEDIA_MAP;
-  LAYER_OPEN_STREET_MAP = mapConfig.LAYER_OPEN_STREET_MAP;
-  LAYER_ESRI_WORLD_TOPO = mapConfig.LAYER_ESRI_WORLD_TOPO;
-  LAYER_ESRI_WORLD_IMAGERY = mapConfig.LAYER_ESRI_WORLD_IMAGERY;
+  LAYER_WIKIMEDIA_MAP = baseMapConfig.LAYER_WIKIMEDIA_MAP;
+  LAYER_OPEN_STREET_MAP = baseMapConfig.LAYER_OPEN_STREET_MAP;
+  LAYER_ESRI_WORLD_TOPO = baseMapConfig.LAYER_ESRI_WORLD_TOPO;
+  LAYER_ESRI_WORLD_IMAGERY = baseMapConfig.LAYER_ESRI_WORLD_IMAGERY;
 
   // Import routable network area polygon from ./map-config.txt
-  studyArea = mapConfig.studyArea;
+  studyArea = baseMapConfig.studyArea;
 
   model = new LeafletLayersModel(
     [
@@ -399,7 +399,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         this.getRandomBridges(false);
       }
     }
-    this.updateUrl(null);
+    this.updateUrl(zoom);
   }
 
   bridgePopupHtml(feature: NewYorkBridgeFeature) {
