@@ -10,13 +10,17 @@ const routes: Routes = [
     component: MapComponent,
   },
   {
+    path: 'drive-time',
+    loadChildren: () => import('./components/drive-time-display/drive-time-display.module').then(m => m.DriveTimeDisplayModule)
+  },
+  {
     path: '404',
     component: NotFoundComponent
   },
   {
     path: '**',
     component: NotFoundComponent
-  }
+  },
 ];
 
 @NgModule({
