@@ -137,7 +137,7 @@ def main(event, context):
     # which has a `body` key, that corresponds to the
     # `sqs.send_message` call from `routing.tasks`. Split that text on =,
     # and take the first element, which is the drive_time_query_id
-    drive_time_query_id = int(event['Records'][0]['body'].split('=')[1])
+    drive_time_query_id = int(event['drive_time_query'])
 
     print(f'[{datetime.now()}] main(): drive_time_query_id={drive_time_query_id}')
 
@@ -149,9 +149,7 @@ def main(event, context):
 
 if __name__ == "__main__":
     test_event = {
-        'Records': [{
-            'body': 'drive_time_query_id=290'
-        }]
+        'drive_time_query': 369
     }
     print(f'[{datetime.now()}] Calling main() from __main__')
     main(test_event, '')

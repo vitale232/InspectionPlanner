@@ -21,7 +21,7 @@ if all([var in os.environ for var in env_variables]):
     ALLOWED_HOSTS = allowed_hosts.split(';')
     aws_access_key_id = os.environ.get('AWS_ACCESS_KEY_ID')
     aws_secret_access_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
-    SQS_URL = os.environ.get('SQS_URL')
+    LAMBDA_NAME = os.environ.get('LAMBDA_NAME')
 
     if debug == 'TRUE':
         DEBUG = True
@@ -34,7 +34,7 @@ else:
         database_host, database_name, database_port,
         database_password, database_user, secret_key,
         ALLOWED_HOSTS, aws_access_key_id, aws_secret_access_key,
-        SQS_URL
+        LAMBDA_NAME
     )
 
     DEBUG = True
