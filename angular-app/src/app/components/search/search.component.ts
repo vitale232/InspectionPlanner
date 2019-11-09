@@ -13,6 +13,7 @@ import { MapToolsService } from 'src/app/services/map-tools.service';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { BridgeQuery } from 'src/app/models/bridge-query.model';
 import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -65,7 +66,8 @@ export class SearchComponent implements OnInit {
     private sidenavService: SidenavService,
     private clientLocationService: ClientLocationService,
     private mapToolsService: MapToolsService,
-    private newYorkBridgeService: NewYorkBridgeService
+    private newYorkBridgeService: NewYorkBridgeService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -73,7 +75,8 @@ export class SearchComponent implements OnInit {
   }
 
   onClick(): void {
-    this.dialogRef.open(UnderConstructionComponent);
+    // this.dialogRef.open(UnderConstructionComponent);
+    this.router.navigateByUrl('drive-time/22');
   }
 
   sendClientLocation() {

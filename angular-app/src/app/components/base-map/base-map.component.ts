@@ -30,11 +30,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
   title = 'angular-app';
   bboxSubscription: Subscription|null;
   randomSubscription: Subscription|null;
-  locationSearchSubscription: Subscription|null;
-  clientLocationSubscription: Subscription|null;
-  mapHomeSubscription: Subscription|null;
-  clearMarkersSubscription: Subscription|null;
-  binSearchSubscription: Subscription|null;
+  subscriptions = new Subscription();
   bridges = null;
   bridgeBounds: L.LatLngBounds|null = null;
   map: L.Map;
@@ -102,7 +98,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     // this.loadingBridges = true;
     this.loadingIndicatorService.sendLoadingIndicatorState(true);
     this.apply();
-    this.locationSearchSubscription = this.searchService.getLocationSearchResult$()
+    this.subscriptions.add(this.searchService.getLocationSearchResult$()
       .pipe(filter(Boolean))
       .subscribe(
         (data: LocationSearchResult) => this.applyLocationSearch(data),
@@ -116,8 +112,9 @@ export class BaseMapComponent implements OnInit, OnDestroy {
               clickToClose: true
           });
         }
-      );
-    this.clientLocationSubscription = this.clientLocationService.getClientLocation$()
+      )
+    );
+    this.subscriptions.add(this.clientLocationService.getClientLocation$()
       .subscribe(
         (data: ClientLocation) => {
           console.log('hi');
@@ -133,8 +130,9 @@ export class BaseMapComponent implements OnInit, OnDestroy {
               clickToClose: true
           });
         }
-      );
-    this.mapHomeSubscription = this.mapToolsService.getMapHome$()
+      )
+    );
+    this.subscriptions.add(this.mapToolsService.getMapHome$()
       .subscribe(
         (data: MapExtent) => {
           this.mapCenter = new L.LatLng(data.lat, data.lon);
@@ -150,8 +148,9 @@ export class BaseMapComponent implements OnInit, OnDestroy {
               clickToClose: true
             });
         }
-      );
-    this.binSearchSubscription = this.newYorkBridgeService.getBridgeFeature$()
+      )
+    );
+    this.subscriptions.add(this.newYorkBridgeService.getBridgeFeature$()
       .subscribe(
         (data: NewYorkBridgeFeature) => {
           this.applyBinSearch(data);
@@ -166,8 +165,9 @@ export class BaseMapComponent implements OnInit, OnDestroy {
               clickToClose: true
             });
         }
-      );
-    this.clearMarkersSubscription = this.mapToolsService.getClearMarkers$()
+      )
+    );
+    this.subscriptions.add(this.mapToolsService.getClearMarkers$()
       .subscribe(
         (data: boolean) => {
           this.filterOverlays('Search result');
@@ -185,15 +185,13 @@ export class BaseMapComponent implements OnInit, OnDestroy {
             }
           );
         }
-      );
+      )
+    );
   }
 
   ngOnDestroy() {
     this.cancelRequests();
-    this.locationSearchSubscription.unsubscribe();
-    this.clientLocationSubscription.unsubscribe();
-    this.binSearchSubscription.unsubscribe();
-    this.mapHomeSubscription.unsubscribe();
+    this.subscriptions.unsubscribe();
   }
 
   onMapReady(map: L.Map) {

@@ -110,22 +110,33 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
         return_bridges = self.resolve_boolean_param(request, 'return_bridges', False)
         print(f'[{datetime.now()}] return_bridges={return_bridges}')
 
+        place_id = request.query_params.get('place_id', None)
+        print(f'[{datetime.now()}] place_id from query: {place_id}')
+
         # If a general query string is provided, null out other search parameters
         # If detailed parameters are provided, null out the q param
-        if request.query_params.get('q', None):
+        if request.query_params.get('q', None) and not place_id:
             query = request.query_params.get('q', None)
             street = None
             city = None
             state = None
             country = None
             search_text = query
-        else:
+        elif not request.query_params.get('q', None) and not place_id:
             query = None
             street = request.query_params.get('street', None)
             city = request.query_params.get('city', None)
             state = request.query_params.get('state', 'NY')
             country = request.query_params.get('country', 'USA')
             search_text = ', '.join([street, city, state, country])
+        else:
+            query = None
+            street = None
+            city = None
+            state = None
+            country = None
+            search_text = query
+            pass
 
         # If the desired drive time is not specified, default to 15 mins.
         # If the inspection_years is not specified, default to 2 years.
@@ -147,8 +158,6 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             'format': 'json',
         }
 
-        place_id = request.query_params.get('place_id', None)
-        print(f'[{datetime.now()}] place_id from query: {place_id}')
         if not place_id:
             print(f'[{datetime.now()}] no place_id passed in')
             nominatim_request = requests.get(

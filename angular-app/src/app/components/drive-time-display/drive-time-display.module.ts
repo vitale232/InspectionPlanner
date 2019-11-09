@@ -3,13 +3,21 @@ import { CommonModule } from '@angular/common';
 
 import { DriveTimeDisplayRoutingModule } from './drive-time-display-routing.module';
 import { DriveTimeDisplayComponent } from './drive-time-display.component';
+import { DriveTimeMapComponent } from './drive-time-map/drive-time-map.component';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { AngularSplitModule } from 'angular-split';
 
 
 @NgModule({
-  declarations: [DriveTimeDisplayComponent],
+  declarations: [
+    DriveTimeDisplayComponent,
+    DriveTimeMapComponent,
+  ],
   imports: [
     CommonModule,
-    DriveTimeDisplayRoutingModule
+    DriveTimeDisplayRoutingModule,
+    LeafletModule,
+    AngularSplitModule,
   ]
 })
 export class DriveTimeDisplayModule { }
