@@ -270,7 +270,8 @@ export class SearchComponent implements OnInit {
           uniqueSearchText.forEach((feature) => {
             searchTextArray.push({
               shortName: feature.properties.display_name.substring(0, 61) + '...',
-              longName: feature.properties.display_name
+              longName: feature.properties.display_name,
+              feature,
             });
           });
 
@@ -281,6 +282,7 @@ export class SearchComponent implements OnInit {
             }
             return unique;
           }, {}));
+          console.log(this.driveTimeQueriesText);
         },
         err => {
           this.notifications.error(
@@ -293,6 +295,10 @@ export class SearchComponent implements OnInit {
           });
         }
       );
+  }
+
+  onHistoryClick() {
+    this.sidenavService.close();
   }
 
   selectAll($event) {

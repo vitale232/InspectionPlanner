@@ -6,10 +6,25 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./drive-time-display.component.css']
 })
 export class DriveTimeDisplayComponent implements OnInit {
+  splitterOrientation = 'horizontal';
 
   constructor() { }
 
   ngOnInit() {
+    this.getSplitterOrientation();
+  }
+
+  getSplitterOrientation() {
+    if (window.innerWidth <= 599) {
+      this.splitterOrientation = 'vertical';
+    } else {
+      this.splitterOrientation = 'horizontal';
+    }
+    console.log(window.innerWidth);
+  }
+
+  onResize(event: Event) {
+    this.getSplitterOrientation();
   }
 
 }

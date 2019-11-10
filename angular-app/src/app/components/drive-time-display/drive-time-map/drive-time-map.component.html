@@ -1,6 +1,6 @@
-<div class="splitter-container" (window:resize)="onResize()">
+<!-- <div class="splitter-container" (window:resize)="onResize($event)">
   <as-split [direction]="splitterOrientation">
-    <as-split-area size="70">
+    <as-split-area size="70"> -->
       <div leaflet class="full-height"
           [(leafletZoom)]="mapZoom"
           [(leafletCenter)]="mapCenter"
@@ -11,7 +11,7 @@
           (leafletMapReady)="onMapReady($event)">
       </div>
    
-    </as-split-area>
+    <!-- </as-split-area>
     <as-split-area size="30">B</as-split-area>
   </as-split>
-</div>
+</div> -->

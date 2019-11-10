@@ -53,7 +53,6 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
 
   ngOnInit() {
     super.ngOnInit();
-    this.getSplitterOrientation();
     this.subscriptions.add(this.route.params.subscribe(params => this.placeID = parseInt(params.placeID, 10)));
     console.log(`the placeID is ${this.placeID} of type ${typeof this.placeID}`);
   }
@@ -62,18 +61,4 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     super.ngOnDestroy();
   }
 
-  getSplitterOrientation() {
-    if (window.innerWidth <= 599) {
-      this.splitterOrientation = 'vertical';
-    } else {
-      this.splitterOrientation = 'horizontal';
-    }
-    console.log(this.splitterOrientation);
-    console.log(window.innerWidth);
-  }
-
-  onResize(event: Event) {
-    console.log('resize');
-    this.getSplitterOrientation();
-  }
 }
