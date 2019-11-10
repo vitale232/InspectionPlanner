@@ -76,7 +76,7 @@ export class SearchComponent implements OnInit {
 
   onClick(): void {
     // this.dialogRef.open(UnderConstructionComponent);
-    this.router.navigateByUrl('drive-time/22');
+    this.router.navigateByUrl('drive-time/22?lat=43.2192&lon=-75.7397&z=10');
   }
 
   sendClientLocation() {
