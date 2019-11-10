@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from '../models/new-york-bridges.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
-import { MapExtent } from '../models/map-tools.model';
 import { BridgeQuery } from '../models/bridge-query.model';
 
 @Injectable({
