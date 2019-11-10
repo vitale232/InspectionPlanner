@@ -1,4 +1,5 @@
 from django.contrib.gis.db import models
+from django.contrib.postgres.fields import ArrayField
 
 
 class NewYorkBridge(models.Model):
@@ -50,3 +51,5 @@ class NewYorkBridge(models.Model):
     edited_time = models.DateTimeField(auto_now=True)
 
     the_geom = models.PointField(srid=4326)
+
+    drive_time_queries = ArrayField(models.IntegerField(), default=list)
