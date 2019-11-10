@@ -6,7 +6,8 @@ import shapely.geometry as geometry
 from shapely.ops import cascaded_union, polygonize
 from shapely.wkb import loads
 from scipy.spatial import Delaunay
-from sqlalchemy import create_engine, MetaData
+
+from sqlalchemy import create_engine, func, MetaData, update
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
 import geoalchemy2
@@ -19,7 +20,7 @@ def get_nodes_and_make_polygon(drive_time_query_id):
 
     metadata = MetaData()
 
-    metadata.reflect(engine, only=['routing_drivetimenode', 'routing_drivetimepolygon'])
+    metadata.reflect(engine, only=['routing_drivetimenode', 'routing_drivetimepolygon', 'bridges_newyorkbridge'])
     
     Base = automap_base(metadata=metadata)
     Base.prepare()
@@ -31,6 +32,7 @@ def get_nodes_and_make_polygon(drive_time_query_id):
     DriveTimePolygon = Base.classes.routing_drivetimepolygon
     DriveTimeQuery = Base.classes.routing_drivetimequery
     WaysVerticesPgr = Base.classes.ways_vertices_pgr
+    NewYorkBridge = Base.classes.bridges_newyorkbridge
 
     # Get the routing_drivetimequery object that matches the message and the
     #  associated drivetimenodes
@@ -65,7 +67,22 @@ def get_nodes_and_make_polygon(drive_time_query_id):
 
     session.flush()
     session.commit()
-    print(f'[{datetime.now()}] get_nodes_and_make_polygon(): Committed changes to db')
+    print(f'[{datetime.now()}] get_nodes_and_make_polygon(): Committed polygon to db')
+
+    print(f'[{datetime.now()}] Running intersect query on NewYorkBridge objects')
+    bridges = session.query(NewYorkBridge).filter(
+        NewYorkBridge.the_geom.ST_Intersects('SRID=4326;'+polygon.buffer(0.005).wkt)
+    ).all()
+
+    print(f'[{datetime.now()}] Iterating through bridges')
+    for b in bridges:
+        bridge = session.query(NewYorkBridge).filter(NewYorkBridge.id == b.id).first()
+        drive_time_queries = bridge.drive_time_queries
+        bridge.drive_time_queries = list(set(drive_time_queries + [drive_time_query_id]))
+        session.add(bridge)
+    session.flush()
+    session.commit()
+    print(f'[{datetime.now()}] get_nodes_and_make_polygon(): Committed bridges to db')
 
     return True
 
@@ -149,7 +166,7 @@ def main(event, context):
 
 if __name__ == "__main__":
     test_event = {
-        'drive_time_query': 369
+        'drive_time_query': 371
     }
     print(f'[{datetime.now()}] Calling main() from __main__')
     main(test_event, '')
