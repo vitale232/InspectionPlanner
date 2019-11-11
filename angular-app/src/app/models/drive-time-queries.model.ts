@@ -26,5 +26,6 @@ export interface DriveTimeQueryFeature {
     importance: number;
     created_time: Date;
     edited_time: Date;
+    drive_time_hours: number;
   };
 }
