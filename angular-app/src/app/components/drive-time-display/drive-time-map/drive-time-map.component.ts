@@ -23,6 +23,8 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
   driveTimeID: number|null;
   splitterOrientation = 'horizontal';
   bridgeMarker = driveTimeMapConfig.bridgeMarker;
+  maxVisibleZoom = 6;
+  zoomInMessage = 'Zoom in to view drive-time bridges!';
 
   constructor(
     public newYorkBridgeService: NewYorkBridgeService,

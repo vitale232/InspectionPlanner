@@ -22,6 +22,7 @@ import { LoadingIndicatorService } from 'src/app/services/loading-indicator.serv
 
 import * as baseMapConfig from './base-map-config';
 
+
 @Component({
   selector: 'app-base-map',
   templateUrl: './base-map.component.html',
@@ -40,6 +41,8 @@ export class BaseMapComponent implements OnInit, OnDestroy {
   mapCenter = L.latLng(43.0, -75.3);
   newYorkBridgesUri = 'bridges/new-york-bridges/';
   newYorkBridgesLuckyUri = 'bridges/new-york-bridges/feeling-lucky/';
+  maxVisibleZoom = 8;
+  zoomInMessage = 'Zoom in to view bridges! (19,890 total)';
 
   // import marker icons from ./map-config.ts
   bridgeMarker = baseMapConfig.bridgeMarker;
@@ -216,7 +219,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         }
       });
     if (this.mapZoom < 8) {
-      this.openSnackbar('Zoom in to view bridges! (19,890 total)', 5000);
+      this.openSnackbar(this.zoomInMessage, 5000);
     }
   }
 
@@ -314,11 +317,11 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     this.apply();
 
     // Get random bridges when zoomed out, get bounding box + padding when zoomed in
-    if (zoom >= 8) {
+    if (zoom >= this.maxVisibleZoom) {
       this.getBridgesBbox(1, this.map.getBounds().pad(this.padding));
     } else {
       this.getRandomBridges(false);
-      this.openSnackbar('Zoom in to view bridges! (19,890 total)', 5000);
+      this.openSnackbar(this.zoomInMessage, 5000);
     }
     this.mapZoom = zoom;
     this.updateUrl(zoom);
@@ -393,7 +396,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     }
 
     if (!mapBoundsContained) {
-      if (zoom && zoom >= 8) {
+      if (zoom && zoom >= this.maxVisibleZoom) {
         this.getBridgesBbox(page, this.map.getBounds().pad(padding));
       } else {
         this.getRandomBridges(false);
