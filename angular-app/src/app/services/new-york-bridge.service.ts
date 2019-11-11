@@ -9,6 +9,8 @@ import { BridgeQuery } from '../models/bridge-query.model';
 })
 export class NewYorkBridgeService {
   bridgeExtent = new Subject<NewYorkBridgeFeature>();
+  newYorkBridgesUri = 'bridges/new-york-bridges/';
+  newYorkBridgesLuckyUri = 'bridges/new-york-bridges/feeling-lucky/';
 
   constructor(
     private http: HttpClient
@@ -53,7 +55,7 @@ export class NewYorkBridgeService {
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
     }
-    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, {
+    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUri, {
       params: {
         page: `${pageNumber}`,
         bin
@@ -79,7 +81,7 @@ export class NewYorkBridgeService {
         return str;
       }
     }
-    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, {
+    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUri, {
       params: {
         bin: defString(query.bin),
         carried: defString(query.carried).toUpperCase(),
