@@ -56,10 +56,12 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
 
   ngOnInit() {
     super.ngOnInit();
-    this.subscriptions.add(this.route.params.subscribe(params => this.driveTimeID = parseInt(params.driveTimeID, 10)));
+    this.subscriptions.add(this.route.params.subscribe(params => {
+      this.driveTimeID = parseInt(params.driveTimeID, 10);
+      this.newYorkBridgesUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
+      this.newYorkBridgesLuckyUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
+    }));
     console.log(`the driveTimeID is ${this.driveTimeID} of type ${typeof this.driveTimeID}`);
-    this.newYorkBridgesUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
-    this.newYorkBridgesLuckyUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
   }
 
   ngOnDestroy() {
