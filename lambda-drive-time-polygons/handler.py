@@ -57,6 +57,23 @@ def get_nodes_and_make_polygon(drive_time_query_id):
     )
     session.add(new_drive_time_polygon)
 
+    session.flush()
+    session.commit()
+
+    print(f'[{datetime.now()}] get_nodes_and_make_polygon(): Committed polygon to db')
+
+    print(f'[{datetime.now()}] Running intersect query on NewYorkBridge objects')
+    bridges = session.query(NewYorkBridge).filter(
+        NewYorkBridge.the_geom.ST_Intersects('SRID=4326;'+polygon.buffer(0.005).wkt)
+    ).all()
+
+    print(f'[{datetime.now()}] Iterating through {len(bridges)} bridges')
+    for b in bridges:
+        bridge = session.query(NewYorkBridge).filter(NewYorkBridge.id == b.id).first()
+        drive_time_queries = bridge.drive_time_queries
+        bridge.drive_time_queries = list(set(drive_time_queries + [drive_time_query_id]))
+        session.add(bridge)
+
     drive_time_query.polygon_pending = False
     session.add(drive_time_query)
 
@@ -65,21 +82,6 @@ def get_nodes_and_make_polygon(drive_time_query_id):
         f'.polygon_pending to {drive_time_query.polygon_pending}'
     )
 
-    session.flush()
-    session.commit()
-    print(f'[{datetime.now()}] get_nodes_and_make_polygon(): Committed polygon to db')
-
-    print(f'[{datetime.now()}] Running intersect query on NewYorkBridge objects')
-    bridges = session.query(NewYorkBridge).filter(
-        NewYorkBridge.the_geom.ST_Intersects('SRID=4326;'+polygon.buffer(0.005).wkt)
-    ).all()
-
-    print(f'[{datetime.now()}] Iterating through bridges')
-    for b in bridges:
-        bridge = session.query(NewYorkBridge).filter(NewYorkBridge.id == b.id).first()
-        drive_time_queries = bridge.drive_time_queries
-        bridge.drive_time_queries = list(set(drive_time_queries + [drive_time_query_id]))
-        session.add(bridge)
     session.flush()
     session.commit()
     print(f'[{datetime.now()}] get_nodes_and_make_polygon(): Committed bridges to db')

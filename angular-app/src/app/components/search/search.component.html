@@ -176,7 +176,7 @@
               (click)="onHistoryClick()"
               matTooltip="{{ name.longName }}"
               matTooltipShowDelay="1000"
-              routerLink="drive-time/{{name.feature.properties.place_id}}"
+              routerLink="drive-time/{{name.feature.id}}"
               [queryParams]="{ lat: name.feature.properties.lat, lon: name.feature.properties.lon, z: 11 }"
 
               *ngFor="let name of driveTimeQueriesText"
