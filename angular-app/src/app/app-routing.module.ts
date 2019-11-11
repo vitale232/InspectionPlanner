@@ -10,7 +10,7 @@ const routes: Routes = [
     component: MapComponent,
   },
   {
-    path: 'drive-time/:placeID',
+    path: 'drive-time/:driveTimeID',
     loadChildren: () => import('./components/drive-time-display/drive-time-display.module').then(m => m.DriveTimeDisplayModule)
   },
   {

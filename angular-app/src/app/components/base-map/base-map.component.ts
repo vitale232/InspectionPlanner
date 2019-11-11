@@ -38,6 +38,8 @@ export class BaseMapComponent implements OnInit, OnDestroy {
   loadingBridges: boolean;
   mapZoom = 7;
   mapCenter = L.latLng(43.0, -75.3);
+  newYorkBridgesUri = 'bridges/new-york-bridges/';
+  newYorkBridgesLuckyUri = 'bridges/new-york-bridges/feeling-lucky/';
 
   // import marker icons from ./map-config.ts
   bridgeMarker = baseMapConfig.bridgeMarker;
@@ -444,7 +446,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     this.cancelRequests();
     this.loadingIndicatorService.sendLoadingIndicatorState(true);
     this.bboxSubscription = this.newYorkBridgeService
-      .getNewYorkBridgesBounds(1, bounds)
+      .getNewYorkBridgesBounds(this.newYorkBridgesUri, 1, bounds)
       .subscribe(
         (data: NewYorkBridgesApiResponse) => {
 
@@ -501,7 +503,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     this.cancelRequests();
     this.loadingIndicatorService.sendLoadingIndicatorState(true);
     this.randomSubscription = this.newYorkBridgeService
-      .getNewYorkBridgesRandom(1)
+      .getNewYorkBridgesRandom(this.newYorkBridgesLuckyUri, 1)
       .subscribe(
         (data: NewYorkBridgesApiResponse) => {
 

@@ -11,6 +11,8 @@ import { SidenavService } from 'src/app/services/sidenav.service';
 import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
 import { BaseMapComponent } from '../../base-map/base-map.component';
 
+import * as driveTimeMapConfig from './drive-time-map-config';
+
 
 @Component({
   selector: 'app-drive-time-map',
@@ -18,8 +20,9 @@ import { BaseMapComponent } from '../../base-map/base-map.component';
   styleUrls: ['./drive-time-map.component.css']
 })
 export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, OnDestroy {
-  placeID: number|null;
+  driveTimeID: number|null;
   splitterOrientation = 'horizontal';
+  bridgeMarker = driveTimeMapConfig.bridgeMarker;
 
   constructor(
     public newYorkBridgeService: NewYorkBridgeService,
@@ -53,8 +56,10 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
 
   ngOnInit() {
     super.ngOnInit();
-    this.subscriptions.add(this.route.params.subscribe(params => this.placeID = parseInt(params.placeID, 10)));
-    console.log(`the placeID is ${this.placeID} of type ${typeof this.placeID}`);
+    this.subscriptions.add(this.route.params.subscribe(params => this.driveTimeID = parseInt(params.driveTimeID, 10)));
+    console.log(`the driveTimeID is ${this.driveTimeID} of type ${typeof this.driveTimeID}`);
+    this.newYorkBridgesUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
+    this.newYorkBridgesLuckyUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
   }
 
   ngOnDestroy() {

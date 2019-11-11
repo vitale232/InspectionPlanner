@@ -8,8 +8,6 @@ import { BridgeQuery } from '../models/bridge-query.model';
   providedIn: 'root'
 })
 export class NewYorkBridgeService {
-  newYorkBridgesUrl = 'bridges/new-york-bridges/';
-  newYorkBridgesHeavyUrl = 'bridges/new-york-bridges/feeling-lucky/';
   bridgeExtent = new Subject<NewYorkBridgeFeature>();
 
   constructor(
@@ -24,7 +22,7 @@ export class NewYorkBridgeService {
     return this.bridgeExtent.asObservable();
   }
 
-  getNewYorkBridgesBounds(pageNumber: number, bounds): Observable<NewYorkBridgesApiResponse> {
+  getNewYorkBridgesBounds(uri: string, pageNumber: number, bounds): Observable<NewYorkBridgesApiResponse> {
     const queryParams: any = { };
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
@@ -37,14 +35,14 @@ export class NewYorkBridgeService {
       );
       queryParams.in_bbox = bbox;
     }
-    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, { params: queryParams });
+    return this.http.get<NewYorkBridgesApiResponse>(uri, { params: queryParams });
   }
 
-  getNewYorkBridgesRandom(pageNumber: number): Observable<NewYorkBridgesApiResponse> {
+  getNewYorkBridgesRandom(uri: string, pageNumber: number): Observable<NewYorkBridgesApiResponse> {
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
     }
-    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesHeavyUrl, {
+    return this.http.get<NewYorkBridgesApiResponse>(uri, {
       params: {
         page: `${pageNumber}`
       }
