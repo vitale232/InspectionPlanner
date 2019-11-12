@@ -12,6 +12,7 @@ import { LoadingIndicatorService } from 'src/app/services/loading-indicator.serv
 import { BaseMapComponent } from '../../base-map/base-map.component';
 
 import * as driveTimeMapConfig from './drive-time-map-config';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -40,6 +41,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     public sidenavService: SidenavService,
     public loadingIndicatorService: LoadingIndicatorService,
     public activatedRoute: ActivatedRoute,
+    public titleService: Title
   ) {
     super(
       newYorkBridgeService,
@@ -66,6 +68,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       this.newYorkBridgesLuckyUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
     }));
     console.log(`the driveTimeID is ${this.driveTimeID} of type ${typeof this.driveTimeID}`);
+    this.titleService.setTitle(`Drive Time Query ${this.driveTimeID}`);
   }
 
   ngOnDestroy() {
