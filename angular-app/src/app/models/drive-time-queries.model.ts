@@ -27,5 +27,6 @@ export interface DriveTimeQueryFeature {
     created_time: Date;
     edited_time: Date;
     drive_time_hours: number;
+    polygon_pending: boolean;
   };
 }

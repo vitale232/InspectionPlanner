@@ -256,44 +256,6 @@ export class SearchComponent implements OnDestroy {
       );
   }
 
-  // getRecentQueries() {
-  //   this.searchService.getDriveTimeQueries(1)
-  //     .subscribe(
-  //       (data: DriveTimeQueryApiResponse) => {
-  //         const uniqueSearchText: Array<DriveTimeQueryFeature> = data.results.features;
-
-  //         // Create an array of objects with two properties:
-  //         // 1) first 61 characters of address  2) full address
-  //         const searchTextArray = [];
-  //         uniqueSearchText.forEach((feature) => {
-  //           searchTextArray.push({
-  //             shortName: feature.properties.display_name.substring(0, 61) + '...',
-  //             longName: feature.properties.display_name,
-  //             feature,
-  //           });
-  //         });
-
-  //         // Filter addresses for unique values
-  //         this.driveTimeQueriesText = Object.values(searchTextArray.reduce((unique, o) => {
-  //           if (!unique[o.shortName]) {
-  //             unique[o.shortName] = o;
-  //           }
-  //           return unique;
-  //         }, {}));
-  //       },
-  //       err => {
-  //         this.notifications.error(
-  //           'Unhandled error',
-  //           `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-  //             timeOut: 20000,
-  //             showProgressBar: true,
-  //             pauseOnHover: true,
-  //             clickToClose: true
-  //         });
-  //       }
-  //     );
-  // }
-
   onHistoryClick() {
     this.sidenavService.close();
   }

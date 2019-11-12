@@ -38,6 +38,7 @@ export class QueryHistoryTableComponent implements OnInit {
               id: element.id,
               lat: element.properties.lat,
               lon: element.properties.lon,
+              polygon_pending: element.properties.polygon_pending,
               });
             });
           this.recentQueries = new MatTableDataSource(queryProperties);

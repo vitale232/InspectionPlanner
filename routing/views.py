@@ -47,8 +47,12 @@ class DriveTimePolygonDetail(generics.RetrieveAPIView):
 
 
 class DriveTimeQueryList(generics.ListAPIView):
-    queryset = DriveTimeQuery.objects.all().order_by('-created_time')
     serializer_class = DriveTimeQuerySerializer
+
+    def get_queryset(self):
+        return DriveTimeQuery.objects.filter(
+            polygon_pending=False
+        ).order_by('-created_time')
 
 
 class DriveTimeQueryDetail(generics.RetrieveAPIView):
