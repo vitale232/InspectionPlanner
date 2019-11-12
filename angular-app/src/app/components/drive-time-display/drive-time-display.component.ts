@@ -1,17 +1,24 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 
 @Component({
   selector: 'app-drive-time-display',
   templateUrl: './drive-time-display.component.html',
   styleUrls: ['./drive-time-display.component.css']
 })
-export class DriveTimeDisplayComponent implements OnInit {
+export class DriveTimeDisplayComponent implements OnInit, AfterViewInit {
   splitterOrientation = 'horizontal';
+  mapSize = 100;
+  tableSize = 0;
 
   constructor() { }
 
   ngOnInit() {
     this.getSplitterOrientation();
+  }
+
+  ngAfterViewInit() {
+    this.mapSize = 70;
+    this.tableSize = 30;
   }
 
   getSplitterOrientation() {

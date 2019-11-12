@@ -49,9 +49,9 @@ export class QueryHistoryTableComponent implements OnInit {
   onClick(row) {
     console.log('click', row);
     let zoom = null;
-    if (row.drive_time_hours >= 1.0) {
+    if (row.drive_time_hours > 1.0) {
       zoom = 8;
-    } else if (row.drive_time_hours >= 0.5 && row.drive_time_hours < 1.0) {
+    } else if (row.drive_time_hours >= 0.5 && row.drive_time_hours <= 1.0) {
       zoom = 9;
     } else {
       zoom = 10;
