@@ -1,7 +1,7 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { SidenavService } from 'src/app/services/sidenav.service';
 import { Subscription, Observable } from 'rxjs';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute, Params } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 
@@ -10,15 +10,18 @@ import { filter } from 'rxjs/operators';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnDestroy {
+export class NavbarComponent implements OnInit, OnDestroy {
   sidenavSubscription: Subscription|null;
   sidenavState$: Observable<boolean>|null;
   routerSubscription: Subscription|null;
   driveTimeVisible = false;
+  queryParamsSubscription: Subscription|null;
+  queryParams: Params;
 
   constructor(
     public sidenavService: SidenavService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
   ) {
     this.sidenavState$ = this.sidenavService.getSidenavState$();
     this.routerSubscription = this.router.events
@@ -31,6 +34,17 @@ export class NavbarComponent implements OnDestroy {
           this.driveTimeVisible = false;
         }
       });
+  }
+
+  ngOnInit() {
+    this.queryParamsSubscription = this.activatedRoute.queryParams.subscribe(
+      params => {
+        this.queryParams = params;
+        console.log(this.queryParams);
+      },
+      err => console.error(err),
+      () => console.log('complete')
+    );
   }
 
   ngOnDestroy() {

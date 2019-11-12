@@ -162,7 +162,7 @@
   </ng-template>
 </mat-expansion-panel>
 
-<div *ngIf="driveTimeQueriesText">
+<div>
   <mat-expansion-panel
     (opened)="pastPanelOpen = true;"
     (closed)="pastPanelOpen = false;">
@@ -171,18 +171,7 @@
         Search history
       </mat-panel-title>
     </mat-expansion-panel-header>
-    <mat-action-list>
-      <button mat-list-item class="small-font"
-              (click)="onHistoryClick()"
-              matTooltip="{{ name.longName }}"
-              matTooltipShowDelay="500"
-              routerLink="drive-time/{{name.feature.id}}"
-              [queryParams]="{ lat: name.feature.properties.lat, lon: name.feature.properties.lon, z: 9 }"
-              *ngFor="let name of driveTimeQueriesText"
-              >
-        {{ name.shortName }}
-      </button>
-    </mat-action-list>
+    <app-query-history-table></app-query-history-table>
   </mat-expansion-panel>
 </div>
 

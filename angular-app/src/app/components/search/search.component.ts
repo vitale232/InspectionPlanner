@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { DriveTimeQueryApiResponse, DriveTimeQueryFeature } from '../../models/drive-time-queries.model';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { UnderConstructionComponent } from '../under-construction/under-construction.component';
 import { FormBuilder } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from 'src/app/services/sidenav.service';
@@ -12,8 +10,8 @@ import { MapExtent } from 'src/app/models/map-tools.model';
 import { MapToolsService } from 'src/app/services/map-tools.service';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { BridgeQuery } from 'src/app/models/bridge-query.model';
-import { take } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -21,7 +19,7 @@ import { Router } from '@angular/router';
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnDestroy {
   detailsPanelOpen = false;
   pastPanelOpen = false;
   driveTimeQueriesText: Array<string>;
@@ -30,6 +28,7 @@ export class SearchComponent implements OnInit {
   searchLoading = false;
   selectedTimeInterval = 'fifteenMins';
   locationSearch: LocationSearchResult|null = null;
+  subscriptions = new Subscription();
 
   timeIntervals = [
     {value: 'fifteenMins', viewValue: '15 minutes'},
@@ -70,8 +69,8 @@ export class SearchComponent implements OnInit {
     private router: Router,
   ) { }
 
-  ngOnInit() {
-    this.getRecentQueries();
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   onClick(): void {
@@ -102,7 +101,7 @@ export class SearchComponent implements OnInit {
 
   getFilterSearch(filterSearch: FilterSearch) {
     this.searchLoading = true;
-    this.searchService.filterSearch(filterSearch)
+    this.subscriptions.add(this.searchService.filterSearch(filterSearch)
       .subscribe(
         (data: Array<NominatimApiResponse>) => {
 
@@ -144,7 +143,7 @@ export class SearchComponent implements OnInit {
           this.searchLoading = false;
         },
         () => this.searchLoading = false
-      );
+      ));
   }
 
   onLocationSearch() {
@@ -153,7 +152,7 @@ export class SearchComponent implements OnInit {
 
     const binRegex = /^\d{6,7}$/;
     const match = binRegex.test(location.searchText);
-    console.log(`${location.searchText} is a match: ${match}`);
+
     if (match) {
       this.getBinSearch(location.searchText);
     } else {
@@ -257,51 +256,45 @@ export class SearchComponent implements OnInit {
       );
   }
 
-  getRecentQueries() {
-    this.searchService.getDriveTimeQueries(1)
-      .subscribe(
-        (data: DriveTimeQueryApiResponse) => {
-          console.log(data.results);
-          const uniqueSearchText: Array<DriveTimeQueryFeature> = data.results.features;
+  // getRecentQueries() {
+  //   this.searchService.getDriveTimeQueries(1)
+  //     .subscribe(
+  //       (data: DriveTimeQueryApiResponse) => {
+  //         const uniqueSearchText: Array<DriveTimeQueryFeature> = data.results.features;
 
-          // Create an array of objects with two properties:
-          // 1) first 61 characters of address  2) full address
-          const searchTextArray = [];
-          uniqueSearchText.forEach((feature) => {
-            searchTextArray.push({
-              shortName: feature.properties.display_name.substring(0, 61) + '...',
-              longName: feature.properties.display_name,
-              feature,
-            });
-          });
+  //         // Create an array of objects with two properties:
+  //         // 1) first 61 characters of address  2) full address
+  //         const searchTextArray = [];
+  //         uniqueSearchText.forEach((feature) => {
+  //           searchTextArray.push({
+  //             shortName: feature.properties.display_name.substring(0, 61) + '...',
+  //             longName: feature.properties.display_name,
+  //             feature,
+  //           });
+  //         });
 
-          // Filter addresses for unique values
-          this.driveTimeQueriesText = Object.values(searchTextArray.reduce((unique, o) => {
-            if (!unique[o.shortName]) {
-              unique[o.shortName] = o;
-            }
-            return unique;
-          }, {}));
-          console.log(this.driveTimeQueriesText);
-        },
-        err => {
-          this.notifications.error(
-            'Unhandled error',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
-        }
-      );
-  }
+  //         // Filter addresses for unique values
+  //         this.driveTimeQueriesText = Object.values(searchTextArray.reduce((unique, o) => {
+  //           if (!unique[o.shortName]) {
+  //             unique[o.shortName] = o;
+  //           }
+  //           return unique;
+  //         }, {}));
+  //       },
+  //       err => {
+  //         this.notifications.error(
+  //           'Unhandled error',
+  //           `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
+  //             timeOut: 20000,
+  //             showProgressBar: true,
+  //             pauseOnHover: true,
+  //             clickToClose: true
+  //         });
+  //       }
+  //     );
+  // }
 
   onHistoryClick() {
     this.sidenavService.close();
-  }
-
-  selectAll($event) {
-    // $event.target.select();
   }
 }

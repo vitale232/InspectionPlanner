@@ -20,7 +20,6 @@ export class DriveTimeDisplayComponent implements OnInit {
     } else {
       this.splitterOrientation = 'horizontal';
     }
-    console.log(window.innerWidth);
   }
 
   onResize(event: Event) {

@@ -32,6 +32,7 @@ export class MapComponent extends BaseMapComponent implements OnInit, OnDestroy 
     public mapToolsService: MapToolsService,
     public sidenavService: SidenavService,
     public loadingIndicatorService: LoadingIndicatorService,
+    public activatedRoute: ActivatedRoute
   ) {
     super(
       newYorkBridgeService,
@@ -45,7 +46,8 @@ export class MapComponent extends BaseMapComponent implements OnInit, OnDestroy 
       clientLocationService,
       mapToolsService,
       sidenavService,
-      loadingIndicatorService
+      loadingIndicatorService,
+      activatedRoute,
     );
   }
 

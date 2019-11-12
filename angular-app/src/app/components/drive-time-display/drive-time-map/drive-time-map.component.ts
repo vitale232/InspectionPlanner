@@ -39,6 +39,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     public mapToolsService: MapToolsService,
     public sidenavService: SidenavService,
     public loadingIndicatorService: LoadingIndicatorService,
+    public activatedRoute: ActivatedRoute,
   ) {
     super(
       newYorkBridgeService,
@@ -52,7 +53,8 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       clientLocationService,
       mapToolsService,
       sidenavService,
-      loadingIndicatorService
+      loadingIndicatorService,
+      activatedRoute,
     );
   }
 

@@ -97,6 +97,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     public mapToolsService: MapToolsService,
     public sidenavService: SidenavService,
     public loadingIndicatorService: LoadingIndicatorService,
+    public activatedRoute: ActivatedRoute,
   ) { }
 
   ngOnInit() {
@@ -360,10 +361,15 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         z: this.mapZoom
       };
 
-      const url = this.router
-        .createUrlTree([], {relativeTo: this.route, queryParams })
-        .toString();
-      this.location.replaceState(url);
+      // const url = this.router
+      //   .createUrlTree([], {relativeTo: this.route, queryParams })
+      //   .toString();
+      // this.location.replaceState(url);
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams,
+        queryParamsHandling: 'merge'
+      });
     }
   }
 

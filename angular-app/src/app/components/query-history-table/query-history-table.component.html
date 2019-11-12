@@ -1,0 +1,23 @@
+<table mat-table *ngIf="recentQueries" [dataSource]="recentQueries">
+    <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> ID </th>
+        <td mat-cell *matCellDef="let query"> {{query.id}} - - -</td>
+    </ng-container>
+
+    <ng-container matColumnDef="drive_time_hours">
+        <th mat-header-cell *matHeaderCellDef> Hours </th>
+        <td mat-cell *matCellDef="let query"> {{query.drive_time_hours}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="display_name">
+        <th mat-header-cell *matHeaderCellDef> Place Name </th>
+        <td mat-cell *matCellDef="let query"> {{query.display_name}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="table-row"
+        (click)="onClick(row)"
+        ></tr>
+</table>
