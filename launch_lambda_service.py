@@ -58,7 +58,6 @@ output_yml = format_yml.format(
     security_group=env['security_group'],
     subnet_a=env['subnet_a'],
     subnet_b=env['subnet_b'],
-    queue_arn=env['queue_arn'],
 )
 
 with open(os.path.join(BASE_DIR, 'serverless.yml'), 'w') as out_yaml:

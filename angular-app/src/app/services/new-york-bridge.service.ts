@@ -2,16 +2,15 @@ import { Injectable } from '@angular/core';
 import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from '../models/new-york-bridges.model';
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject } from 'rxjs';
-import { MapExtent } from '../models/map-tools.model';
 import { BridgeQuery } from '../models/bridge-query.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class NewYorkBridgeService {
-  newYorkBridgesUrl = 'bridges/new-york-bridges/';
-  newYorkBridgesHeavyUrl = 'bridges/new-york-bridges/feeling-lucky/';
   bridgeExtent = new Subject<NewYorkBridgeFeature>();
+  newYorkBridgesUri = 'bridges/new-york-bridges/';
+  newYorkBridgesLuckyUri = 'bridges/new-york-bridges/feeling-lucky/';
 
   constructor(
     private http: HttpClient
@@ -25,7 +24,7 @@ export class NewYorkBridgeService {
     return this.bridgeExtent.asObservable();
   }
 
-  getNewYorkBridgesBounds(pageNumber: number, bounds): Observable<NewYorkBridgesApiResponse> {
+  getNewYorkBridgesBounds(uri: string, pageNumber: number, bounds): Observable<NewYorkBridgesApiResponse> {
     const queryParams: any = { };
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
@@ -38,14 +37,14 @@ export class NewYorkBridgeService {
       );
       queryParams.in_bbox = bbox;
     }
-    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, { params: queryParams });
+    return this.http.get<NewYorkBridgesApiResponse>(uri, { params: queryParams });
   }
 
-  getNewYorkBridgesRandom(pageNumber: number): Observable<NewYorkBridgesApiResponse> {
+  getNewYorkBridgesRandom(uri: string, pageNumber: number): Observable<NewYorkBridgesApiResponse> {
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
     }
-    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesHeavyUrl, {
+    return this.http.get<NewYorkBridgesApiResponse>(uri, {
       params: {
         page: `${pageNumber}`
       }
@@ -56,7 +55,7 @@ export class NewYorkBridgeService {
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
     }
-    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, {
+    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUri, {
       params: {
         page: `${pageNumber}`,
         bin
@@ -82,7 +81,7 @@ export class NewYorkBridgeService {
         return str;
       }
     }
-    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUrl, {
+    return this.http.get<NewYorkBridgesApiResponse>(this.newYorkBridgesUri, {
       params: {
         bin: defString(query.bin),
         carried: defString(query.carried).toUpperCase(),

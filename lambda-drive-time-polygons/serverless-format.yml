@@ -15,11 +15,6 @@ functions:
   create_drive_time_polygon:
     handler: handler.main
     timeout: 600
-    events:
-      - sqs: 
-          arn: {queue_arn}
-          batchSize: 1
-          enabled: true
 
 plugins:
   - serverless-python-requirements

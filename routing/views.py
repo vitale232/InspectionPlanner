@@ -110,22 +110,33 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
         return_bridges = self.resolve_boolean_param(request, 'return_bridges', False)
         print(f'[{datetime.now()}] return_bridges={return_bridges}')
 
+        place_id = request.query_params.get('place_id', None)
+        print(f'[{datetime.now()}] place_id from query: {place_id}')
+
         # If a general query string is provided, null out other search parameters
         # If detailed parameters are provided, null out the q param
-        if request.query_params.get('q', None):
+        if request.query_params.get('q', None) and not place_id:
             query = request.query_params.get('q', None)
             street = None
             city = None
             state = None
             country = None
             search_text = query
-        else:
+        elif not request.query_params.get('q', None) and not place_id:
             query = None
             street = request.query_params.get('street', None)
             city = request.query_params.get('city', None)
             state = request.query_params.get('state', 'NY')
             country = request.query_params.get('country', 'USA')
             search_text = ', '.join([street, city, state, country])
+        else:
+            query = None
+            street = None
+            city = None
+            state = None
+            country = None
+            search_text = query
+            pass
 
         # If the desired drive time is not specified, default to 15 mins.
         # If the inspection_years is not specified, default to 2 years.
@@ -147,72 +158,76 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
             'format': 'json',
         }
 
-        nominatim_request = requests.get(
-            'https://nominatim.openstreetmap.org/search',
-            params=nominatim_query_params
-        )
-        if nominatim_request.status_code == 200:
-            try:
-                data = nominatim_request.json()[0]
-            except IndexError:
-                return Response(
-                    {'msg': 'No OSM results found for this address'},
-                    status=status.HTTP_404_NOT_FOUND
-                )
-
-            # Check for previous searches on this address. If exists, reuse the objects
-            place_id = data['place_id']
-            try:
-                existing_drive_time_query = DriveTimeQuery.objects.filter(
-                    place_id=place_id
-                ).filter(
-                    drive_time_hours=drive_time_hours
-                ).order_by(
-                    '-created_time'
-                )[:1].get()
-                print(f'[{datetime.now()}] existing_drive_time_query: {existing_drive_time_query}')
-
-                drive_time_polygon = DriveTimePolygon.objects.filter(
-                    drive_time_query=existing_drive_time_query
-                ).order_by(
-                    '-created_time'
-                )[:1].get()
-
-                drive_time_query = existing_drive_time_query
-                print(f'[{datetime.now()}] Using cached results')
-
-            except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist) as exc:
-                print(f'[{datetime.now()}] {str(exc)}: Calculating new drive-time')
-                existing_drive_time_query = None
-
-            # Ensure the request lies within the routable network extent before sending it to the queue.
-            # This avoids endless loops on the queue, and allows for a more logical response with a 400 status
-            if not existing_drive_time_query:
-                lon = data.get('lon', None)
-                lat = data.get('lat', None)
-                if lon and lat:
-                    query_point_location = Point(float(lon), float(lat))
-                    routable_network_extent = Polygon.from_bbox((-78.3377, 41.5679, -72.7328, 44.2841))
-                    print(
-                        f'[{datetime.now()}] {query_point_location} contained in {routable_network_extent}: ' +
-                        f'{routable_network_extent.contains(query_point_location)}'
+        if not place_id:
+            print(f'[{datetime.now()}] no place_id passed in')
+            nominatim_request = requests.get(
+                'https://nominatim.openstreetmap.org/search',
+                params=nominatim_query_params
+            )
+            if nominatim_request.status_code == 200:
+                try:
+                    data = nominatim_request.json()[0]
+                except IndexError:
+                    return Response(
+                        {'msg': 'No OSM results found for this address'},
+                        status=status.HTTP_404_NOT_FOUND
                     )
-                    if not routable_network_extent.contains(query_point_location):
-                        rejected_payload = {
-                            'msg': (
-                                'The search location does not line within the routable network extent. ' +
-                                'Cannot calculate a drive time query.'
-                            ),
-                            'search_text': query,
-                            'drive_time_hours': drive_time_hours,
-                            'return_bridges': return_bridges,
-                            'inspection_years': inspection_years,
-                            'lat': data['lat'],
-                            'lon': data['lon'],
-                            'display_name': data['display_name']
-                        }
-                        print(f'[{datetime.now()}] rejected_palyload: {rejected_payload}')
-                        return Response(rejected_payload, status=status.HTTP_400_BAD_REQUEST)
+
+                # Check for previous searches on this address. If exists, reuse the objects
+                place_id = data['place_id']
+                print(f'[{datetime.now()}] place_id from Nominatim: {place_id}')
+
+        try:
+            existing_drive_time_query = DriveTimeQuery.objects.filter(
+                place_id=place_id
+            ).filter(
+                drive_time_hours=drive_time_hours
+            ).order_by(
+                '-created_time'
+            )[:1].get()
+            print(f'[{datetime.now()}] existing_drive_time_query: {existing_drive_time_query}')
+
+            drive_time_polygon = DriveTimePolygon.objects.filter(
+                drive_time_query=existing_drive_time_query
+            ).order_by(
+                '-created_time'
+            )[:1].get()
+
+            drive_time_query = existing_drive_time_query
+            print(f'[{datetime.now()}] Using cached results')
+
+        except (DriveTimePolygon.DoesNotExist, DriveTimeQuery.DoesNotExist) as exc:
+            print(f'[{datetime.now()}] {str(exc)}: Calculating new drive-time')
+            existing_drive_time_query = None
+
+        # Ensure the request lies within the routable network extent before sending it to the queue.
+        # This avoids endless loops on the queue, and allows for a more logical response with a 400 status
+        if not existing_drive_time_query:
+            lon = data.get('lon', None)
+            lat = data.get('lat', None)
+            if lon and lat:
+                query_point_location = Point(float(lon), float(lat))
+                routable_network_extent = Polygon.from_bbox((-78.3377, 41.5679, -72.7328, 44.2841))
+                print(
+                    f'[{datetime.now()}] {query_point_location} contained in {routable_network_extent}: ' +
+                    f'{routable_network_extent.contains(query_point_location)}'
+                )
+                if not routable_network_extent.contains(query_point_location):
+                    rejected_payload = {
+                        'msg': (
+                            'The search location does not line within the routable network extent. ' +
+                            'Cannot calculate a drive time query.'
+                        ),
+                        'search_text': query,
+                        'drive_time_hours': drive_time_hours,
+                        'return_bridges': return_bridges,
+                        'inspection_years': inspection_years,
+                        'lat': data['lat'],
+                        'lon': data['lon'],
+                        'display_name': data['display_name']
+                    }
+                    print(f'[{datetime.now()}] rejected_palyload: {rejected_payload}')
+                    return Response(rejected_payload, status=status.HTTP_400_BAD_REQUEST)
 
                 data.pop('licence', None)
                 data['drive_time_hours'] = drive_time_hours
@@ -239,30 +254,31 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                 }
                 return Response(accepted_payload, status=status.HTTP_202_ACCEPTED)
 
-            if not return_bridges:
-                dtq_serializer = DriveTimeQuerySerializer(drive_time_query)
-                return Response(dtq_serializer.data, status=status.HTTP_200_OK)
-            try:
-                bridges = NewYorkBridge.objects.filter(
-                    the_geom__intersects=drive_time_polygon.the_geom
-                ).filter(
-                    inspection__lte=inspection_date
-                ).order_by(
-                    'bin'
-                )
-            except AttributeError:
-                # TODO: return drive time query here for development
-                dtq_serializer = DriveTimeQuerySerializer(drive_time_query)
-                return Response(dtq_serializer.data, status=status.HTTP_400_BAD_REQUEST)
+        if not return_bridges:
+            dtq_serializer = DriveTimeQuerySerializer(drive_time_query)
+            return Response(dtq_serializer.data, status=status.HTTP_200_OK)
+        try:
+            bridges = NewYorkBridge.objects.filter(
+                the_geom__intersects=drive_time_polygon.the_geom
+            ).filter(
+                inspection__lte=inspection_date
+            ).order_by(
+                'bin'
+            )
+        except AttributeError:
+            # TODO: return drive time query here for development
+            dtq_serializer = DriveTimeQuerySerializer(drive_time_query)
+            return Response(dtq_serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
-            response_bridges = self.paginate_queryset(bridges, request, view=QueryDriveTime)
-            if not response_bridges:
-                response_bridges = bridges
-            if response_bridges is not None:
-                bridges_serializer = NewYorkBridgeSerializer(response_bridges, many=True)
-                print(f'[{datetime.now()}] Bridges returned')
-                return Response(bridges_serializer.data, status=status.HTTP_200_OK)
+        response_bridges = self.paginate_queryset(bridges, request, view=QueryDriveTime)
+        if not response_bridges:
+            response_bridges = bridges
+        if response_bridges is not None:
+            bridges_serializer = NewYorkBridgeSerializer(response_bridges, many=True)
+            print(f'[{datetime.now()}] Bridges returned')
+            return Response(bridges_serializer.data, status=status.HTTP_200_OK)
 
+        if drive_time_polygon and not return_bridges:
             polygon_serializer = DriveTimePolygonSerializer(drive_time_polygon)
             print(f'[{datetime.now()}] Polygon returned')
             return Response(polygon_serializer.data, status=status.HTTP_200_OK)

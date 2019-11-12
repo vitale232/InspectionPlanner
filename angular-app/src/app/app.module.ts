@@ -10,6 +10,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { BaseMapComponent } from './components/base-map/base-map.component';
 import { MapComponent } from './components/map/map.component';
 import { SearchComponent } from './components/search/search.component';
 import { SidenavService } from './services/sidenav.service';
@@ -40,6 +41,7 @@ const cookieConfig: NgcCookieConsentConfig = {
   declarations: [
     AppComponent,
     NavbarComponent,
+    BaseMapComponent,
     MapComponent,
     SearchComponent,
     UnderConstructionComponent,

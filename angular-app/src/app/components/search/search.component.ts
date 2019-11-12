@@ -12,6 +12,8 @@ import { MapExtent } from 'src/app/models/map-tools.model';
 import { MapToolsService } from 'src/app/services/map-tools.service';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { BridgeQuery } from 'src/app/models/bridge-query.model';
+import { take } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -64,7 +66,8 @@ export class SearchComponent implements OnInit {
     private sidenavService: SidenavService,
     private clientLocationService: ClientLocationService,
     private mapToolsService: MapToolsService,
-    private newYorkBridgeService: NewYorkBridgeService
+    private newYorkBridgeService: NewYorkBridgeService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -72,7 +75,8 @@ export class SearchComponent implements OnInit {
   }
 
   onClick(): void {
-    this.dialogRef.open(UnderConstructionComponent);
+    // this.dialogRef.open(UnderConstructionComponent);
+    this.router.navigateByUrl('drive-time/22?lat=43.2192&lon=-75.7397&z=10');
   }
 
   sendClientLocation() {
@@ -257,6 +261,7 @@ export class SearchComponent implements OnInit {
     this.searchService.getDriveTimeQueries(1)
       .subscribe(
         (data: DriveTimeQueryApiResponse) => {
+          console.log(data.results);
           const uniqueSearchText: Array<DriveTimeQueryFeature> = data.results.features;
 
           // Create an array of objects with two properties:
@@ -265,7 +270,8 @@ export class SearchComponent implements OnInit {
           uniqueSearchText.forEach((feature) => {
             searchTextArray.push({
               shortName: feature.properties.display_name.substring(0, 61) + '...',
-              longName: feature.properties.display_name
+              longName: feature.properties.display_name,
+              feature,
             });
           });
 
@@ -276,6 +282,7 @@ export class SearchComponent implements OnInit {
             }
             return unique;
           }, {}));
+          console.log(this.driveTimeQueriesText);
         },
         err => {
           this.notifications.error(
@@ -288,6 +295,10 @@ export class SearchComponent implements OnInit {
           });
         }
       );
+  }
+
+  onHistoryClick() {
+    this.sidenavService.close();
   }
 
   selectAll($event) {

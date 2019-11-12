@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta
+import json
 import traceback
 
 import boto3
@@ -94,7 +95,7 @@ def new_drive_time_query(request_data):
         except:
             no_way = True
             pass
-    
+
     # Remove nominatim fields that are not modeled
     allowed_fields = [field.name for field in DriveTimeQuery._meta.fields]
     model_data = {key: value for key, value in request_data.items() if key in allowed_fields}
@@ -136,16 +137,21 @@ def new_drive_time_query(request_data):
         f'polygon to: {drive_time_query.polygon_pending}'
     )
 
-    print(f'[{datetime.now()}] SQS_URL: {settings.SQS_URL}')
-    sqs = boto3.client('sqs')
-    response = sqs.send_message(
-        QueueUrl=settings.SQS_URL,
-        DelaySeconds=5,
-        MessageBody=f'drive_time_query_id={drive_time_query.id}'
+    print(f'[{datetime.now()}] Function Name: {settings.LAMBDA_NAME}')
+    client = boto3.client('lambda')
+    response = client.invoke(
+        FunctionName=settings.LAMBDA_NAME,
+        InvocationType='Event',
+        LogType='None',
+        ClientContext='d-queue',
+        Payload=json.dumps({'drive_time_query': drive_time_query.id}),
+        Qualifier='$LATEST'
     )
 
-    message_id = response['MessageId']
-    print(f'[{datetime.now()}] Message sent to lambda with id {message_id}')
+    status_code = response['StatusCode']
+    request_id = response['ResponseMetadata']['RequestId']
+    print(f'[{datetime.now()}] Lambda Status Code: {status_code}')
+    print(f'[{datetime.now()}] Request ID: {request_id}')
     print(f'[{datetime.now()}] completed in {datetime.now()-start_time}')
 
     return True

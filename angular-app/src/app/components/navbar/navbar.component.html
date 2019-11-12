@@ -1,6 +1,6 @@
 <div>
   <mat-toolbar color="primary">
-  
+
     <div *ngIf="sidenavState$ | async as sidenavVisible; else sidenavClosed">
       <button mat-icon-button
               (click)="closeSidenav();"
@@ -25,6 +25,15 @@
     <span fxHide fxShow.gt-xs class="fill-remaining-space">Inspection Planner Application</span>
     <span fxHide fxShow.lt-sm class="fill-remaining-space">IPA</span>
 
+    <button mat-button
+            *ngIf="driveTimeVisible"
+            color="accent"
+            matTooltip="Clear drive time search results"
+            matTooltipShowDelay="250"
+            routerLink="/"
+            >
+      <mat-icon>cancel</mat-icon> Clear Results
+    </button>
     <button mat-button [matMenuTriggerFor]="menu">
       <mat-icon>menu</mat-icon>
     </button>
