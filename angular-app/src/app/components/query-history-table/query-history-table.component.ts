@@ -49,6 +49,7 @@ export class QueryHistoryTableComponent implements OnInit {
 
   onClick(row) {
     console.log('click', row);
+    this.sidenavService.close();
     let zoom = null;
     if (row.drive_time_hours > 1.0) {
       zoom = 8;
@@ -63,7 +64,6 @@ export class QueryHistoryTableComponent implements OnInit {
     }
 
     this.router.navigate([`/drive-time/${row.id}`], { queryParams: { lat: row.lat, lon: row.lon, z: zoom} });
-    this.sidenavService.close();
   }
 
 }
