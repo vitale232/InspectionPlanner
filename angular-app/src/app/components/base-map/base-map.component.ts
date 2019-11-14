@@ -361,10 +361,8 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         z: this.mapZoom
       };
 
-      const url = this.router
-        .createUrlTree([], {relativeTo: this.route, queryParams })
-        .toString();
-      this.location.go(url);
+      const url = this.router.createUrlTree([], {relativeTo: this.route, queryParams }).toString();
+      this.location.replaceState(url);
     }
   }
 
