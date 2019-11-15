@@ -376,7 +376,8 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     let mapBoundsContained = null;
     let padding = this.padding;
 
-    if (this.model.overlayLayers && this.map) {
+    if (this.model.overlayLayers && this.map && this.bridgeBounds) {
+      console.log('bridgeBounds', this.bridgeBounds);
       bridgeBoundsContained = this.map.getBounds().contains(this.bridgeBounds);
     }
     // When zoomed in, check if the map bounds lies within the

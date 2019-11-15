@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from 'src/app/services/sidenav.service';
 import { NominatimApiResponse, LocationSearchResult, FilterSearch } from '../../models/location-search.model';
@@ -43,6 +43,11 @@ export class SearchComponent implements OnDestroy {
     searchText: ['']
   });
 
+  driveTimeForm = this.fb.group({
+    searchText: [''],
+    driveTimeHours: this.timeIntervals[1].value
+  });
+
   filterForm = this.fb.group({
     streetAddress: [''],
     city: [''],
@@ -73,9 +78,86 @@ export class SearchComponent implements OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  onClick(): void {
-    // this.dialogRef.open(UnderConstructionComponent);
-    this.router.navigateByUrl('drive-time/22?lat=43.2192&lon=-75.7397&z=10');
+  onToggleChange(event: Event) {
+    if (this.driveTimeSearchToggle) {
+      this.driveTimeForm.patchValue({
+        searchText: this.locationForm.value.searchText,
+        driveTimeHours: this.driveTimeForm.value.driveTimeHours
+      });
+    } else {
+      this.locationForm.patchValue({
+        searchText: this.driveTimeForm.value.searchText
+      });
+    }
+  }
+
+  onDriveTimeQuery(): void {
+    console.log('form values', this.driveTimeForm.value);
+    let driveTimeHours = this.driveTimeForm.value.driveTimeHours;
+    console.log('driveTimeHours', driveTimeHours);
+    switch (driveTimeHours) {
+      case 'fifteenMins':
+        driveTimeHours = '0.25';
+        break;
+      case 'thirtyMins':
+        console.log('30');
+        driveTimeHours = '0.50';
+        break;
+      case 'fortyFiveMins':
+        driveTimeHours = '0.75';
+        break;
+      case 'sixtyMins':
+        driveTimeHours = '1.00';
+        break;
+      case 'seventyFiveMins':
+        driveTimeHours = '1.25';
+        break;
+      case 'ninetyMins':
+        driveTimeHours = '1.50';
+        break;
+    }
+    console.log('driveTimeHours', driveTimeHours);
+    const requestQueryParams = {
+      q: this.driveTimeForm.value.searchText,
+      drive_time_hours: driveTimeHours,
+      return_bridges: false
+    };
+    console.log('queryParams', requestQueryParams);
+    this.searchService.getNewDriveTimeQuery(requestQueryParams).subscribe((data: any) => {
+      console.log('from start data', data);
+      if (data.id) {
+        this.handleExistingDriveTimeQuery(data, driveTimeHours);
+      }
+    });
+  }
+
+  handleExistingDriveTimeQuery(data: any, inputDriveTimeHours: string) {
+    const driveTimeId = data.id;
+    const driveTimeHours = parseFloat(inputDriveTimeHours);
+    console.log(driveTimeId);
+    console.log('fromComponent', driveTimeHours);
+    console.log(data);
+    let zoom = null;
+    if (driveTimeHours > 1.0) {
+      zoom = 8;
+    } else if (driveTimeHours >= 0.5 && driveTimeHours <= 1.0) {
+      zoom = 9;
+    } else {
+      zoom = 10;
+    }
+
+    if (!zoom) {
+      zoom = 7;
+    }
+
+    const driveTimeQueryParams = {
+      lat: data.geometry.coordinates[1],
+      lon: data.geometry.coordinates[0],
+      z: zoom
+    };
+    this.router.navigate([`/drive-time/${driveTimeId}`], { queryParams: driveTimeQueryParams });
+    this.sidenavService.close();
+
   }
 
   sendClientLocation() {

@@ -55,7 +55,7 @@ export class MapComponent extends BaseMapComponent implements OnInit, OnDestroy 
 
   ngOnInit() {
     super.ngOnInit();
-    this.titleService.setTitle('Browse Bridges');
+    this.titleService.setTitle('IPA - Browse Bridges');
   }
 
   ngOnDestroy() {
