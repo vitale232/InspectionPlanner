@@ -120,8 +120,14 @@ export class SearchComponent implements OnDestroy {
         driveTimeHours = '1.50';
         break;
     }
+    let searchText = null;
+    if (this.driveTimeForm.value.searchText.length === 0) {
+      searchText = '""';
+    } else {
+      searchText = this.driveTimeForm.value.searchText;
+    }
     const requestQueryParams = {
-      q: this.driveTimeForm.value.searchText,
+      q: searchText,
       drive_time_hours: driveTimeHours,
       return_bridges: false
     };
