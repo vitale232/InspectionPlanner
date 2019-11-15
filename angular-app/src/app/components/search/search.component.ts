@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { FormBuilder, FormControl } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from 'src/app/services/sidenav.service';
 import { NominatimApiResponse, LocationSearchResult, FilterSearch } from '../../models/location-search.model';
@@ -29,6 +29,12 @@ export class SearchComponent implements OnDestroy {
   selectedTimeInterval = 'fifteenMins';
   locationSearch: LocationSearchResult|null = null;
   subscriptions = new Subscription();
+  notificationSettings = {
+    timeOut: 15000,
+    showProgressBar: true,
+    pauseOnHover: true,
+    clickToClose: true
+  };
 
   timeIntervals = [
     {value: 'fifteenMins', viewValue: '15 minutes'},
@@ -92,15 +98,13 @@ export class SearchComponent implements OnDestroy {
   }
 
   onDriveTimeQuery(): void {
-    console.log('form values', this.driveTimeForm.value);
+    this.searchLoading = true;
     let driveTimeHours = this.driveTimeForm.value.driveTimeHours;
-    console.log('driveTimeHours', driveTimeHours);
     switch (driveTimeHours) {
       case 'fifteenMins':
         driveTimeHours = '0.25';
         break;
       case 'thirtyMins':
-        console.log('30');
         driveTimeHours = '0.50';
         break;
       case 'fortyFiveMins':
@@ -116,27 +120,46 @@ export class SearchComponent implements OnDestroy {
         driveTimeHours = '1.50';
         break;
     }
-    console.log('driveTimeHours', driveTimeHours);
     const requestQueryParams = {
       q: this.driveTimeForm.value.searchText,
       drive_time_hours: driveTimeHours,
       return_bridges: false
     };
-    console.log('queryParams', requestQueryParams);
     this.searchService.getNewDriveTimeQuery(requestQueryParams).subscribe((data: any) => {
-      console.log('from start data', data);
       if (data.id) {
         this.handleExistingDriveTimeQuery(data, driveTimeHours);
+      } else if (data.msg === 'The request has been added to the queue') {
+        this.notifications.info(
+          'Hold up!',
+          `This is a new drive time request, which takes a while to process. ` +
+          `Check the "Search History" for your results in a bit. Note: ` +
+          `The longer the drive time, the longer the wait!`, this.notificationSettings);
       }
-    });
+    },
+    err => {
+      console.error(err);
+      if (err.status === 400) {
+        this.notifications.error(
+          'Search error',
+          'The search location is not within the extent of the routable network. ' +
+          'Search for a place that lies within the blue box on the map.', this.notificationSettings);
+        } else if(err.status === 404) {
+          this.notifications.error(
+            'Search error',
+            `No results found for query: ${this.driveTimeForm.value.searchText}`, this.notificationSettings);
+        } else {
+          this.notifications.error(
+            'Unhandled error',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationSettings);
+        }
+      this.searchLoading = false;
+    },
+    () => this.searchLoading = false);
   }
 
   handleExistingDriveTimeQuery(data: any, inputDriveTimeHours: string) {
     const driveTimeId = data.id;
     const driveTimeHours = parseFloat(inputDriveTimeHours);
-    console.log(driveTimeId);
-    console.log('fromComponent', driveTimeHours);
-    console.log(data);
     let zoom = null;
     if (driveTimeHours > 1.0) {
       zoom = 8;
@@ -193,12 +216,7 @@ export class SearchComponent implements OnDestroy {
               `country: "${filterSearch.country}"`;
             this.notifications.error(
               'Search error',
-              `No results found for query: ${query}`, {
-                timeOut: 10000,
-                showProgressBar: true,
-                pauseOnHover: true,
-                clickToClose: true
-            });
+              `No results found for query: ${query}`, this.notificationSettings);
           } else {
             (this.locationSearch as LocationSearchResult) = {
               lat: data[0].lat,
@@ -216,12 +234,7 @@ export class SearchComponent implements OnDestroy {
         err => {
           this.notifications.error(
             'Unhandled error',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationSettings);
           this.searchLoading = false;
         },
         () => this.searchLoading = false
@@ -257,23 +270,13 @@ export class SearchComponent implements OnDestroy {
             `common_name: "${bridgeQuery.commonName}"; `;
           this.notifications.error(
             'Search error',
-            `No results found for query: "${query}"`, {
-              timeOut: 10000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
+            `No results found for query: "${query}"`, this.notificationSettings);
         } else {
           if (data.count > 1) {
 
             this.notifications.info(
               'Returned many records',
-              `Displaying 1 of ${data.count} possible results`, {
-                timeOut: 10000,
-                showProgressBar: true,
-                pauseOnHover: true,
-                clickToClose: true
-            });
+              `Displaying 1 of ${data.count} possible results`, this.notificationSettings);
           }
           this.newYorkBridgeService
             .sendBridgeFeature(data.results.features[0]);
@@ -304,12 +307,7 @@ export class SearchComponent implements OnDestroy {
           if (data.length === 0) {
             this.notifications.error(
               'Search error',
-              `No results found for query: "${query}"`, {
-                timeOut: 10000,
-                showProgressBar: true,
-                pauseOnHover: true,
-                clickToClose: true
-            });
+              `No results found for query: "${query}"`, this.notificationSettings);
           } else {
             (this.locationSearch as LocationSearchResult) = {
               lat: data[0].lat,
@@ -327,12 +325,7 @@ export class SearchComponent implements OnDestroy {
         err => {
           this.notifications.error(
             'Unhandled error',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationSettings);
           this.searchLoading = false;
         }, () => this.searchLoading = false
       );
