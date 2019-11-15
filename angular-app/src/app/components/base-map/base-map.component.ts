@@ -123,7 +123,6 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.clientLocationService.getClientLocation$()
       .subscribe(
         (data: ClientLocation) => {
-          console.log('hi');
           this.applyClientLocationQuery(data);
         },
         (err) => {
@@ -377,7 +376,6 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     let padding = this.padding;
 
     if (this.model.overlayLayers && this.map && this.bridgeBounds) {
-      console.log('bridgeBounds', this.bridgeBounds);
       bridgeBoundsContained = this.map.getBounds().contains(this.bridgeBounds);
     }
     // When zoomed in, check if the map bounds lies within the

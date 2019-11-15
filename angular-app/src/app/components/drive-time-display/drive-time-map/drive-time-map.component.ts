@@ -66,9 +66,9 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       this.driveTimeID = parseInt(params.driveTimeID, 10);
       this.newYorkBridgesUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
       this.newYorkBridgesLuckyUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
+      this.titleService.setTitle(`IPA - Drive Time Query ${this.driveTimeID}`);
     }));
     console.log(`the driveTimeID is ${this.driveTimeID} of type ${typeof this.driveTimeID}`);
-    this.titleService.setTitle(`IPA - Drive Time Query ${this.driveTimeID}`);
   }
 
   ngOnDestroy() {

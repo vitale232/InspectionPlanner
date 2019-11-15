@@ -41,6 +41,7 @@ def get_nodes_and_make_polygon(drive_time_query_id):
         DriveTimeNode.routing_drivetimequery == drive_time_query
     ).all()
 
+    print(f'[{datetime.now()}] Display name: {drive_time_query.display_name}')
     # Make a polygon object from the nodes
     print(
         f'[{datetime.now()}] get_nodes_and_make_polygon(): ' +

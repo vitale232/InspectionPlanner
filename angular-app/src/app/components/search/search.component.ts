@@ -30,7 +30,7 @@ export class SearchComponent implements OnDestroy {
   locationSearch: LocationSearchResult|null = null;
   subscriptions = new Subscription();
   notificationSettings = {
-    timeOut: 15000,
+    timeOut: 20000,
     showProgressBar: true,
     pauseOnHover: true,
     clickToClose: true

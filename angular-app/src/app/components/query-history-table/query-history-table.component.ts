@@ -28,7 +28,6 @@ export class QueryHistoryTableComponent implements OnInit {
     this.searchService.getDriveTimeQueries(1)
       .subscribe(
         (data: DriveTimeQueryApiResponse) => {
-          console.log('data', data);
           const features = data.results.features;
           const queryProperties = [];
           features.forEach(element => {
@@ -48,7 +47,6 @@ export class QueryHistoryTableComponent implements OnInit {
   }
 
   onClick(row) {
-    console.log('click', row);
     this.sidenavService.close();
     let zoom = null;
     if (row.drive_time_hours > 1.0) {
