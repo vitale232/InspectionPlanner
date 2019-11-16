@@ -29,7 +29,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.loadingIndicator$ = this.loadingIndicatorService.getLoadingIndicatorState$();
     this.sidenavService.getSidenavState$().subscribe((data: boolean) => {
       this.sidenavOpen = data;
-      console.log('data', data);
     });
   }
   ngAfterViewInit() {
