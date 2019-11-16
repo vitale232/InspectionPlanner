@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SearchService } from 'src/app/services/search.service';
-import { DriveTimeQueryApiResponse, DriveTimeQueryFeature } from 'src/app/models/drive-time-queries.model';
+import { IDriveTimeQueryApiResponse, IDriveTimeQueryFeature } from 'src/app/models/drive-time-queries.model';
 import { MatTableDataSource } from '@angular/material';
 import { Router } from '@angular/router';
 import { SidenavService } from 'src/app/services/sidenav.service';
@@ -11,7 +11,7 @@ import { SidenavService } from 'src/app/services/sidenav.service';
   styleUrls: ['./query-history-table.component.css']
 })
 export class QueryHistoryTableComponent implements OnInit {
-  recentQueries: MatTableDataSource<DriveTimeQueryFeature['properties']>;
+  recentQueries: MatTableDataSource<IDriveTimeQueryFeature['properties']>;
   displayedColumns: string[] = ['display_name', 'drive_time_hours'];
 
   constructor(
@@ -27,7 +27,7 @@ export class QueryHistoryTableComponent implements OnInit {
   getRecentQueries() {
     this.searchService.getDriveTimeQueries(1)
       .subscribe(
-        (data: DriveTimeQueryApiResponse) => {
+        (data: IDriveTimeQueryApiResponse) => {
           const features = data.results.features;
           const queryProperties = [];
           features.forEach(element => {
@@ -41,6 +41,7 @@ export class QueryHistoryTableComponent implements OnInit {
               });
             });
           this.recentQueries = new MatTableDataSource(queryProperties);
+          console.log(queryProperties);
         },
         (err) => console.error(err),
       );

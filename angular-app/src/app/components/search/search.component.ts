@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { FormBuilder } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
@@ -12,6 +12,10 @@ import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { BridgeQuery } from 'src/app/models/bridge-query.model';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import {
+  IDriveTimeQueryFeature,
+  ISubmittedDriveTimeQuery,
+  DriveTimeEndpoint } from 'src/app/models/drive-time-queries.model';
 
 
 @Component({
@@ -22,7 +26,6 @@ import { Subscription } from 'rxjs';
 export class SearchComponent implements OnDestroy {
   detailsPanelOpen = false;
   pastPanelOpen = false;
-  driveTimeQueriesText: Array<string>;
   driveTimeSearchToggle = false;
   bridgeSearchToggle = false;
   searchLoading = false;
@@ -131,10 +134,10 @@ export class SearchComponent implements OnDestroy {
       drive_time_hours: driveTimeHours,
       return_bridges: false
     };
-    this.searchService.getNewDriveTimeQuery(requestQueryParams).subscribe((data: any) => {
-      if (data.id) {
-        this.handleExistingDriveTimeQuery(data, driveTimeHours);
-      } else if (data.msg === 'The request has been added to the queue') {
+    this.searchService.getNewDriveTimeQuery(requestQueryParams).subscribe((data: DriveTimeEndpoint) => {
+      if ((data as IDriveTimeQueryFeature).id) {
+        this.handleExistingDriveTimeQuery((data as IDriveTimeQueryFeature), driveTimeHours);
+      } else if ((data as ISubmittedDriveTimeQuery).msg === 'The request has been added to the queue') {
         this.notifications.info(
           'Hold up!',
           `This is a new drive time request, which takes a while to process. ` +
@@ -149,7 +152,7 @@ export class SearchComponent implements OnDestroy {
           'Search error',
           'The search location is not within the extent of the routable network. ' +
           'Search for a place that lies within the blue box on the map.', this.notificationSettings);
-        } else if(err.status === 404) {
+        } else if (err.status === 404) {
           this.notifications.error(
             'Search error',
             `No results found for query: ${this.driveTimeForm.value.searchText}`, this.notificationSettings);
@@ -163,7 +166,7 @@ export class SearchComponent implements OnDestroy {
     () => this.searchLoading = false);
   }
 
-  handleExistingDriveTimeQuery(data: any, inputDriveTimeHours: string) {
+  handleExistingDriveTimeQuery(data: IDriveTimeQueryFeature, inputDriveTimeHours: string) {
     const driveTimeId = data.id;
     const driveTimeHours = parseFloat(inputDriveTimeHours);
     let zoom = null;

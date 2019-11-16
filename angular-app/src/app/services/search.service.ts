@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { DriveTimeQueryApiResponse } from '../models/drive-time-queries.model';
+import { IDriveTimeQueryApiResponse } from '../models/drive-time-queries.model';
 import { Subject, Observable } from 'rxjs';
 import { LocationSearchResult, FilterSearch, NominatimApiResponse } from '../models/location-search.model';
 
@@ -19,11 +19,11 @@ export class SearchService {
     private http: HttpClient
   ) { }
 
-  getDriveTimeQueries(pageNumber: number|null = null): Observable<DriveTimeQueryApiResponse> {
+  getDriveTimeQueries(pageNumber: number|null = null): Observable<IDriveTimeQueryApiResponse> {
     if (pageNumber === undefined || pageNumber === null) {
       pageNumber = 1;
     }
-    return this.http.get<DriveTimeQueryApiResponse>(this.driveTimeQueryUrl, {
+    return this.http.get<IDriveTimeQueryApiResponse>(this.driveTimeQueryUrl, {
       params: {
         page: `${pageNumber}`
       }

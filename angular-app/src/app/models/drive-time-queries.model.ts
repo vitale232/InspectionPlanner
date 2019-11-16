@@ -1,17 +1,20 @@
-export interface DriveTimeQueryApiResponse {
+export interface IDriveTimeQueryApiResponse {
   count: number;
   next: string|null;
   previous: string|null;
   results: {
     type: string;
-    features: Array<DriveTimeQueryFeature>
+    features: Array<IDriveTimeQueryFeature>
   };
 }
 
-export interface DriveTimeQueryFeature {
+export interface IDriveTimeQueryFeature {
   id: number;
   type: string;
-  coordinates: Array<number>;
+  geometry: {
+    type: string;
+    coordinates: number[];
+  };
   bbox: Array<number>;
   properties: {
     search_text: string;
@@ -30,3 +33,16 @@ export interface DriveTimeQueryFeature {
     polygon_pending: boolean;
   };
 }
+
+export interface ISubmittedDriveTimeQuery {
+  msg: string;
+  search_text: string;
+  drive_time_hours: string;
+  return_bridges: boolean;
+  inspection_years: number;
+  lat: string;
+  lon: string;
+  display_name: string;
+}
+
+export type DriveTimeEndpoint = IDriveTimeQueryFeature|ISubmittedDriveTimeQuery;
