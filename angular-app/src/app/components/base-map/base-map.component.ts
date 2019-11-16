@@ -371,13 +371,9 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     if (this.map) {
       zoom = this.map.getZoom();
     }
-    let bridgeBoundsContained = false;
     let mapBoundsContained = null;
     let padding = this.padding;
 
-    if (this.model.overlayLayers && this.map && this.bridgeBounds) {
-      bridgeBoundsContained = this.map.getBounds().contains(this.bridgeBounds);
-    }
     // When zoomed in, check if the map bounds lies within the
     // bridges bounds (bounding box, bbox). If so, don't load data.
     // If not, load data based on zoom
@@ -397,7 +393,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
       this.loadingIndicatorService.sendLoadingIndicatorState(true);
     }
 
-    if (!mapBoundsContained && !bridgeBoundsContained) {
+    if (!mapBoundsContained) {
       if (zoom && zoom >= this.maxVisibleZoom) {
         this.getBridgesBbox(page, this.map.getBounds().pad(padding));
       } else {

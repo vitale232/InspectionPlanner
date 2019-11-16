@@ -75,4 +75,45 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     super.ngOnDestroy();
   }
 
+  onMapMove(mapMoveEvent: Event) {
+    const page = 1;
+    let zoom = null;
+    if (this.map) {
+      zoom = this.map.getZoom();
+    }
+    let bridgeBoundsContained = false;
+    let mapBoundsContained = null;
+    let padding = this.padding;
+
+    if (this.model.overlayLayers && this.map && this.bridgeBounds) {
+      bridgeBoundsContained = this.map.getBounds().contains(this.bridgeBounds);
+    }
+    // When zoomed in, check if the map bounds lies within the
+    // bridges bounds (bounding box, bbox). If so, don't load data.
+    // If not, load data based on zoom
+    if (this.model.overlayLayers && zoom) {
+      if (zoom > 12) {
+        // Add a little extra padding when its likely the entire
+        // first page of bridges are within the map extent
+        padding = this.padding + 0.25;
+      }
+      if (this.bridgeBounds) {
+        mapBoundsContained = this.bridgeBounds
+          .pad(padding)
+          .contains(this.map.getBounds());
+      }
+    } else {
+      mapBoundsContained = false;
+      this.loadingIndicatorService.sendLoadingIndicatorState(true);
+    }
+
+    if (!mapBoundsContained && !bridgeBoundsContained) {
+      if (zoom && zoom >= this.maxVisibleZoom) {
+        this.getBridgesBbox(page, this.map.getBounds().pad(padding));
+      } else {
+        this.getRandomBridges(false);
+      }
+    }
+    this.updateUrl(zoom);
+  }
 }
