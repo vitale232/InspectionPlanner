@@ -8,7 +8,7 @@ import {
 import { LeafletLayersModel } from 'src/app/models/leaflet-layers.model';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, UrlTree } from '@angular/router';
 import { Location } from '@angular/common';
 import { SearchService } from 'src/app/services/search.service';
 import { filter } from 'rxjs/operators';
@@ -97,6 +97,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     public mapToolsService: MapToolsService,
     public sidenavService: SidenavService,
     public loadingIndicatorService: LoadingIndicatorService,
+    public activatedRoute: ActivatedRoute,
   ) { }
 
   ngOnInit() {
@@ -122,7 +123,6 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.clientLocationService.getClientLocation$()
       .subscribe(
         (data: ClientLocation) => {
-          console.log('hi');
           this.applyClientLocationQuery(data);
         },
         (err) => {
@@ -360,9 +360,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         z: this.mapZoom
       };
 
-      const url = this.router
-        .createUrlTree([], {relativeTo: this.route, queryParams })
-        .toString();
+      const url = this.router.createUrlTree([], {relativeTo: this.route, queryParams }).toString();
       this.location.replaceState(url);
     }
   }

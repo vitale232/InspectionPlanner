@@ -31,4 +31,4 @@ class NewYorkBridgeDriveTime(generics.ListAPIView):
 
     def get_queryset(self):
         id_ = int(self.kwargs['id_'])
-        return NewYorkBridge.objects.filter(drive_time_queries__contains=[id_]).order_by('pk')
+        return NewYorkBridge.objects.filter(drive_time_queries__contains=[id_]).order_by('bin')

@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { DriveTimeQueryApiResponse, DriveTimeQueryFeature } from '../../models/drive-time-queries.model';
+import { Component, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { UnderConstructionComponent } from '../under-construction/under-construction.component';
 import { FormBuilder } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from 'src/app/services/sidenav.service';
@@ -12,8 +10,12 @@ import { MapExtent } from 'src/app/models/map-tools.model';
 import { MapToolsService } from 'src/app/services/map-tools.service';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { BridgeQuery } from 'src/app/models/bridge-query.model';
-import { take } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
+import {
+  IDriveTimeQueryFeature,
+  ISubmittedDriveTimeQuery,
+  DriveTimeEndpoint } from 'src/app/models/drive-time-queries.model';
 
 
 @Component({
@@ -21,15 +23,21 @@ import { Router } from '@angular/router';
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnDestroy {
   detailsPanelOpen = false;
   pastPanelOpen = false;
-  driveTimeQueriesText: Array<string>;
   driveTimeSearchToggle = false;
   bridgeSearchToggle = false;
   searchLoading = false;
   selectedTimeInterval = 'fifteenMins';
   locationSearch: LocationSearchResult|null = null;
+  subscriptions = new Subscription();
+  notificationSettings = {
+    timeOut: 20000,
+    showProgressBar: true,
+    pauseOnHover: true,
+    clickToClose: true
+  };
 
   timeIntervals = [
     {value: 'fifteenMins', viewValue: '15 minutes'},
@@ -42,6 +50,11 @@ export class SearchComponent implements OnInit {
 
   locationForm = this.fb.group({
     searchText: ['']
+  });
+
+  driveTimeForm = this.fb.group({
+    searchText: [''],
+    driveTimeHours: this.timeIntervals[1].value
   });
 
   filterForm = this.fb.group({
@@ -70,13 +83,113 @@ export class SearchComponent implements OnInit {
     private router: Router,
   ) { }
 
-  ngOnInit() {
-    this.getRecentQueries();
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
-  onClick(): void {
-    // this.dialogRef.open(UnderConstructionComponent);
-    this.router.navigateByUrl('drive-time/22?lat=43.2192&lon=-75.7397&z=10');
+  onToggleChange(event: Event) {
+    if (this.driveTimeSearchToggle) {
+      this.driveTimeForm.patchValue({
+        searchText: this.locationForm.value.searchText,
+        driveTimeHours: this.driveTimeForm.value.driveTimeHours
+      });
+    } else {
+      this.locationForm.patchValue({
+        searchText: this.driveTimeForm.value.searchText
+      });
+    }
+  }
+
+  onDriveTimeQuery(): void {
+    this.searchLoading = true;
+    let driveTimeHours = this.driveTimeForm.value.driveTimeHours;
+    switch (driveTimeHours) {
+      case 'fifteenMins':
+        driveTimeHours = '0.25';
+        break;
+      case 'thirtyMins':
+        driveTimeHours = '0.50';
+        break;
+      case 'fortyFiveMins':
+        driveTimeHours = '0.75';
+        break;
+      case 'sixtyMins':
+        driveTimeHours = '1.00';
+        break;
+      case 'seventyFiveMins':
+        driveTimeHours = '1.25';
+        break;
+      case 'ninetyMins':
+        driveTimeHours = '1.50';
+        break;
+    }
+    let searchText = null;
+    if (this.driveTimeForm.value.searchText.length === 0) {
+      searchText = '""';
+    } else {
+      searchText = this.driveTimeForm.value.searchText;
+    }
+    const requestQueryParams = {
+      q: searchText,
+      drive_time_hours: driveTimeHours,
+      return_bridges: false
+    };
+    this.searchService.getNewDriveTimeQuery(requestQueryParams).subscribe((data: DriveTimeEndpoint) => {
+      if ((data as IDriveTimeQueryFeature).id) {
+        this.handleExistingDriveTimeQuery((data as IDriveTimeQueryFeature), driveTimeHours);
+      } else if ((data as ISubmittedDriveTimeQuery).msg === 'The request has been added to the queue') {
+        this.notifications.info(
+          'Hold up!',
+          `This is a new drive time request, which takes a while to process. ` +
+          `Check the "Search History" for your results in a bit. Note: ` +
+          `The longer the drive time, the longer the wait!`, this.notificationSettings);
+      }
+    },
+    err => {
+      console.error(err);
+      if (err.status === 400) {
+        this.notifications.error(
+          'Search error',
+          'The search location is not within the extent of the routable network. ' +
+          'Search for a place that lies within the blue box on the map.', this.notificationSettings);
+        } else if (err.status === 404) {
+          this.notifications.error(
+            'Search error',
+            `No results found for query: ${this.driveTimeForm.value.searchText}`, this.notificationSettings);
+        } else {
+          this.notifications.error(
+            'Unhandled error',
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationSettings);
+        }
+      this.searchLoading = false;
+    },
+    () => this.searchLoading = false);
+  }
+
+  handleExistingDriveTimeQuery(data: IDriveTimeQueryFeature, inputDriveTimeHours: string) {
+    const driveTimeId = data.id;
+    const driveTimeHours = parseFloat(inputDriveTimeHours);
+    let zoom = null;
+    if (driveTimeHours > 1.0) {
+      zoom = 8;
+    } else if (driveTimeHours >= 0.5 && driveTimeHours <= 1.0) {
+      zoom = 9;
+    } else {
+      zoom = 10;
+    }
+
+    if (!zoom) {
+      zoom = 7;
+    }
+
+    const driveTimeQueryParams = {
+      lat: data.geometry.coordinates[1],
+      lon: data.geometry.coordinates[0],
+      z: zoom
+    };
+    this.router.navigate([`/drive-time/${driveTimeId}`], { queryParams: driveTimeQueryParams });
+    this.sidenavService.close();
+
   }
 
   sendClientLocation() {
@@ -102,7 +215,7 @@ export class SearchComponent implements OnInit {
 
   getFilterSearch(filterSearch: FilterSearch) {
     this.searchLoading = true;
-    this.searchService.filterSearch(filterSearch)
+    this.subscriptions.add(this.searchService.filterSearch(filterSearch)
       .subscribe(
         (data: Array<NominatimApiResponse>) => {
 
@@ -112,12 +225,7 @@ export class SearchComponent implements OnInit {
               `country: "${filterSearch.country}"`;
             this.notifications.error(
               'Search error',
-              `No results found for query: ${query}`, {
-                timeOut: 10000,
-                showProgressBar: true,
-                pauseOnHover: true,
-                clickToClose: true
-            });
+              `No results found for query: ${query}`, this.notificationSettings);
           } else {
             (this.locationSearch as LocationSearchResult) = {
               lat: data[0].lat,
@@ -135,16 +243,11 @@ export class SearchComponent implements OnInit {
         err => {
           this.notifications.error(
             'Unhandled error',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationSettings);
           this.searchLoading = false;
         },
         () => this.searchLoading = false
-      );
+      ));
   }
 
   onLocationSearch() {
@@ -153,7 +256,7 @@ export class SearchComponent implements OnInit {
 
     const binRegex = /^\d{6,7}$/;
     const match = binRegex.test(location.searchText);
-    console.log(`${location.searchText} is a match: ${match}`);
+
     if (match) {
       this.getBinSearch(location.searchText);
     } else {
@@ -176,23 +279,13 @@ export class SearchComponent implements OnInit {
             `common_name: "${bridgeQuery.commonName}"; `;
           this.notifications.error(
             'Search error',
-            `No results found for query: "${query}"`, {
-              timeOut: 10000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
+            `No results found for query: "${query}"`, this.notificationSettings);
         } else {
           if (data.count > 1) {
 
             this.notifications.info(
               'Returned many records',
-              `Displaying 1 of ${data.count} possible results`, {
-                timeOut: 10000,
-                showProgressBar: true,
-                pauseOnHover: true,
-                clickToClose: true
-            });
+              `Displaying 1 of ${data.count} possible results`, this.notificationSettings);
           }
           this.newYorkBridgeService
             .sendBridgeFeature(data.results.features[0]);
@@ -223,12 +316,7 @@ export class SearchComponent implements OnInit {
           if (data.length === 0) {
             this.notifications.error(
               'Search error',
-              `No results found for query: "${query}"`, {
-                timeOut: 10000,
-                showProgressBar: true,
-                pauseOnHover: true,
-                clickToClose: true
-            });
+              `No results found for query: "${query}"`, this.notificationSettings);
           } else {
             (this.locationSearch as LocationSearchResult) = {
               lat: data[0].lat,
@@ -246,62 +334,13 @@ export class SearchComponent implements OnInit {
         err => {
           this.notifications.error(
             'Unhandled error',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationSettings);
           this.searchLoading = false;
         }, () => this.searchLoading = false
       );
   }
 
-  getRecentQueries() {
-    this.searchService.getDriveTimeQueries(1)
-      .subscribe(
-        (data: DriveTimeQueryApiResponse) => {
-          console.log(data.results);
-          const uniqueSearchText: Array<DriveTimeQueryFeature> = data.results.features;
-
-          // Create an array of objects with two properties:
-          // 1) first 61 characters of address  2) full address
-          const searchTextArray = [];
-          uniqueSearchText.forEach((feature) => {
-            searchTextArray.push({
-              shortName: feature.properties.display_name.substring(0, 61) + '...',
-              longName: feature.properties.display_name,
-              feature,
-            });
-          });
-
-          // Filter addresses for unique values
-          this.driveTimeQueriesText = Object.values(searchTextArray.reduce((unique, o) => {
-            if (!unique[o.shortName]) {
-              unique[o.shortName] = o;
-            }
-            return unique;
-          }, {}));
-          console.log(this.driveTimeQueriesText);
-        },
-        err => {
-          this.notifications.error(
-            'Unhandled error',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
-        }
-      );
-  }
-
   onHistoryClick() {
     this.sidenavService.close();
-  }
-
-  selectAll($event) {
-    // $event.target.select();
   }
 }

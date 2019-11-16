@@ -10,6 +10,7 @@ import { LoadingIndicatorService } from 'src/app/services/loading-indicator.serv
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { SearchService } from 'src/app/services/search.service';
 import { Location } from '@angular/common';
+import { Title } from '@angular/platform-browser';
 
 
 @Component({
@@ -32,6 +33,8 @@ export class MapComponent extends BaseMapComponent implements OnInit, OnDestroy 
     public mapToolsService: MapToolsService,
     public sidenavService: SidenavService,
     public loadingIndicatorService: LoadingIndicatorService,
+    public activatedRoute: ActivatedRoute,
+    private titleService: Title
   ) {
     super(
       newYorkBridgeService,
@@ -45,12 +48,14 @@ export class MapComponent extends BaseMapComponent implements OnInit, OnDestroy 
       clientLocationService,
       mapToolsService,
       sidenavService,
-      loadingIndicatorService
+      loadingIndicatorService,
+      activatedRoute,
     );
   }
 
   ngOnInit() {
     super.ngOnInit();
+    this.titleService.setTitle('IPA - Browse Bridges');
   }
 
   ngOnDestroy() {

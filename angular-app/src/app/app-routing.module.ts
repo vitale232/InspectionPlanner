@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { MapComponent } from './components/map/map.component';
+import { QueryHistoryTableComponent } from './components/query-history-table/query-history-table.component';
 
 
 const routes: Routes = [
@@ -12,6 +13,10 @@ const routes: Routes = [
   {
     path: 'drive-time/:driveTimeID',
     loadChildren: () => import('./components/drive-time-display/drive-time-display.module').then(m => m.DriveTimeDisplayModule)
+  },
+  {
+    path: 'table-test',
+    component: QueryHistoryTableComponent
   },
   {
     path: '404',
