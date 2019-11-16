@@ -1,6 +1,6 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from 'src/app/services/sidenav.service';
 import { NominatimApiResponse, LocationSearchResult, FilterSearch } from '../../models/location-search.model';
@@ -11,11 +11,14 @@ import { MapToolsService } from 'src/app/services/map-tools.service';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { BridgeQuery } from 'src/app/models/bridge-query.model';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import {
   IDriveTimeQueryFeature,
   ISubmittedDriveTimeQuery,
-  DriveTimeEndpoint } from 'src/app/models/drive-time-queries.model';
+  DriveTimeEndpoint,
+  IDriveTimeQueryApiResponse,
+  IQueryProperties} from 'src/app/models/drive-time-queries.model';
+import { startWith, map } from 'rxjs/operators';
 
 
 @Component({
@@ -23,7 +26,7 @@ import {
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.css']
 })
-export class SearchComponent implements OnDestroy {
+export class SearchComponent implements OnInit, OnDestroy {
   detailsPanelOpen = false;
   pastPanelOpen = false;
   driveTimeSearchToggle = false;
@@ -32,12 +35,20 @@ export class SearchComponent implements OnDestroy {
   selectedTimeInterval = 'fifteenMins';
   locationSearch: LocationSearchResult|null = null;
   subscriptions = new Subscription();
+  recentQueries: IQueryProperties[] = [];
+  filteredRecentQueries: Observable<IQueryProperties[]>;
+  placeNames: string[] = [];
+  filteredPlaceNames: Observable<string[]>;
   notificationSettings = {
     timeOut: 20000,
     showProgressBar: true,
     pauseOnHover: true,
     clickToClose: true
   };
+
+  locationForm = this.fb.group({
+    searchText: new FormControl('', Validators.required)
+  });
 
   timeIntervals = [
     {value: 'fifteenMins', viewValue: '15 minutes'},
@@ -48,12 +59,9 @@ export class SearchComponent implements OnDestroy {
     {value: 'ninetyMins', viewValue: '1 hour 30 minutes'}
   ];
 
-  locationForm = this.fb.group({
-    searchText: ['']
-  });
-
+  driveTimeSearchTextControl = new FormControl('', Validators.required);
   driveTimeForm = this.fb.group({
-    searchText: [''],
+    searchText: this.driveTimeSearchTextControl,
     driveTimeHours: this.timeIntervals[1].value
   });
 
@@ -83,8 +91,74 @@ export class SearchComponent implements OnDestroy {
     private router: Router,
   ) { }
 
+  ngOnInit() {
+    this.subscriptions.add(this.driveTimeForm.valueChanges.subscribe(
+      data => this._filter(this.driveTimeForm.value.searchText))
+    );
+    this.getRecentQueries();
+
+  }
+
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  filterQueries() {
+    this.filteredRecentQueries = this.driveTimeSearchTextControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      );
+  }
+
+  private _filter(searchText: string) {
+    const filterValue = searchText.toLowerCase().replace(',', '');
+    return this.recentQueries
+      .filter(q => q.drive_time_hours === this.formHoursToNumber(this.driveTimeForm.value.driveTimeHours))
+      .filter(q => q.display_name.toLowerCase().replace(',', '').includes(filterValue));
+  }
+
+  // private _filter(searchText: string) {
+  //   const filterValue = searchText.toLowerCase().replace(',', '');
+  //   console.log('filter value', filterValue);
+  //   const queries = [...this.recentQueries];
+  //   queries.forEach(q => q.display_name = q.display_name.replace(',', ''));
+  //   // return this.recentQueries
+  //   const filteredQueries = queries
+  //     .filter(q => q.drive_time_hours === this.formHoursToNumber(this.driveTimeForm.value.driveTimeHours))
+  //     .filter(q => q.display_name.toLowerCase().replace(',', '').includes(filterValue));
+  //   const filteredQueryIDs = [];
+  //   filteredQueries.forEach(q => filteredQueryIDs.push(q.id));
+  //   console.log(filteredQueryIDs);
+  //   return this.recentQueries.filter(q => filteredQueryIDs.includes(q.id));
+  // }
+
+  getRecentQueries() {
+    this.searchService.getDriveTimeQueries(1)
+      .subscribe(
+        (data: IDriveTimeQueryApiResponse) => {
+          const features = data.results.features;
+          const queryProperties = [];
+          features.forEach(element => {
+            queryProperties.push({
+              drive_time_hours: element.properties.drive_time_hours,
+              display_name: element.properties.display_name,
+              id: element.id,
+              lat: element.properties.lat,
+              lon: element.properties.lon,
+              polygon_pending: element.properties.polygon_pending,
+              search_text: element.properties.search_text,
+              });
+            });
+          this.recentQueries = queryProperties;
+          // features.forEach(element => {
+          //   this.recentQuery.push(element.properties.display_name);
+          // });
+          this.filterQueries();
+        },
+        (err) => console.error(err),
+        () => 'complete!'
+      );
   }
 
   onToggleChange(event: Event) {
@@ -100,37 +174,49 @@ export class SearchComponent implements OnDestroy {
     }
   }
 
-  onDriveTimeQuery(): void {
-    this.searchLoading = true;
-    let driveTimeHours = this.driveTimeForm.value.driveTimeHours;
-    switch (driveTimeHours) {
+  formHoursToNumber(inputDriveTimeHours: string) {
+    let outputDriveTimeHours = 0.5;
+    switch (inputDriveTimeHours) {
       case 'fifteenMins':
-        driveTimeHours = '0.25';
+        outputDriveTimeHours = 0.25;
         break;
       case 'thirtyMins':
-        driveTimeHours = '0.50';
+        outputDriveTimeHours = 0.50;
         break;
       case 'fortyFiveMins':
-        driveTimeHours = '0.75';
+        outputDriveTimeHours = 0.75;
         break;
       case 'sixtyMins':
-        driveTimeHours = '1.00';
+        outputDriveTimeHours = 1.00;
         break;
       case 'seventyFiveMins':
-        driveTimeHours = '1.25';
+        outputDriveTimeHours = 1.25;
         break;
       case 'ninetyMins':
-        driveTimeHours = '1.50';
+        outputDriveTimeHours = 1.50;
         break;
     }
-    let searchText = null;
-    if (this.driveTimeForm.value.searchText.length === 0) {
-      searchText = '""';
+    return outputDriveTimeHours;
+  }
+
+  onDriveTimeQuery(): void {
+    this.searchLoading = true;
+    const driveTimeHours = this.formHoursToNumber(this.driveTimeForm.value.driveTimeHours).toString();
+
+    // Nominatim API doesn't like the display_name sometimes. If the search is cached, use the .search_text
+    // otherwise, use the form value
+    const selectedQuery = this.recentQueries
+      .filter(q => q.display_name === this.driveTimeForm.value.searchText)
+      .filter(q => q.drive_time_hours === this.formHoursToNumber(this.driveTimeForm.value.driveTimeHours));
+
+    let querySearchText = '';
+    if (selectedQuery.length === 1) {
+      querySearchText = selectedQuery[0].search_text;
     } else {
-      searchText = this.driveTimeForm.value.searchText;
+      querySearchText = this.driveTimeForm.value.searchText;
     }
     const requestQueryParams = {
-      q: searchText,
+      q: querySearchText,
       drive_time_hours: driveTimeHours,
       return_bridges: false
     };

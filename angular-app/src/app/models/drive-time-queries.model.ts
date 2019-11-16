@@ -46,3 +46,13 @@ export interface ISubmittedDriveTimeQuery {
 }
 
 export type DriveTimeEndpoint = IDriveTimeQueryFeature|ISubmittedDriveTimeQuery;
+
+export interface IQueryProperties {
+  drive_time_hours: number;
+  display_name: string;
+  id: number;
+  lat: number;
+  lon: number;
+  polygon_pending: boolean;
+  search_text: string;
+}

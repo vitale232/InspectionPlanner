@@ -38,10 +38,10 @@ export class QueryHistoryTableComponent implements OnInit {
               lat: element.properties.lat,
               lon: element.properties.lon,
               polygon_pending: element.properties.polygon_pending,
+              search_text: element.properties.search_text,
               });
             });
           this.recentQueries = new MatTableDataSource(queryProperties);
-          console.log(queryProperties);
         },
         (err) => console.error(err),
       );

@@ -34,6 +34,12 @@ mat-panel-title {
     display: block;
 }
 
+.form-validation {
+    color: #F4443E;
+    padding-bottom: 10px;
+    padding-left: 10px;
+}
+
 .detailed-form-field {
     width: 280px;
     margin: 0 auto;
