@@ -40,11 +40,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   fKey($event) {
-    if (this.sidenavOpen) {
-      this.sidenavService.close();
-    } else {
-      this.sidenavService.open();
-    }
+    // if (this.sidenavOpen) {
+    //   this.sidenavService.close();
+    // } else {
+    //   this.sidenavService.open();
+    // }
+    this.sidenavService.open();
   }
 
   ngOnDestroy() {

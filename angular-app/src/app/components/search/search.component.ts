@@ -112,10 +112,22 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   private _filter(searchText: string) {
+    function sortByDisplayName(a: IQueryProperties, b: IQueryProperties) {
+      const aText = a.display_name.toLowerCase().replace(',', '');
+      const bText = b.display_name.toLowerCase().replace(',', '');
+      if (aText < bText) {
+        return -1;
+      } else if (aText > bText) {
+        return 1;
+      } else {
+        return 0;
+      }
+    }
     const filterValue = searchText.toLowerCase().replace(',', '');
     return this.recentQueries
       .filter(q => q.drive_time_hours === this.formHoursToNumber(this.driveTimeForm.value.driveTimeHours))
-      .filter(q => q.display_name.toLowerCase().replace(',', '').includes(filterValue));
+      .filter(q => q.display_name.toLowerCase().replace(',', '').includes(filterValue))
+      .sort(sortByDisplayName);
   }
 
   // private _filter(searchText: string) {
