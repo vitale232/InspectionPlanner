@@ -8,11 +8,11 @@ import {
 import { LeafletLayersModel } from 'src/app/models/leaflet-layers.model';
 import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
-import { ActivatedRoute, Router, UrlTree } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { SearchService } from 'src/app/services/search.service';
 import { filter } from 'rxjs/operators';
-import { LocationSearchResult, ClientLocation } from 'src/app/models/location-search.model';
+import { LocationSearchResult, ClientLocation, IStorageLocation, MarkerStore } from 'src/app/models/location-search.model';
 import { NotificationsService } from 'angular2-notifications';
 import { ClientLocationService } from 'src/app/services/client-location.service';
 import { MapToolsService } from 'src/app/services/map-tools.service';
@@ -48,6 +48,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
   bridgeMarker = baseMapConfig.bridgeMarker;
   searchMarker = baseMapConfig.searchMarker;
   clientLocationMarker = baseMapConfig.clientLocationMarker;
+  binSearchMarkerConfig = baseMapConfig.binSearchMarkerConfig;
 
   // Import basemap configs from ./map-config.ts
   LAYER_WIKIMEDIA_MAP = baseMapConfig.LAYER_WIKIMEDIA_MAP;
@@ -102,6 +103,26 @@ export class BaseMapComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // this.loadingBridges = true;
+    console.log('MarkerStore', new MarkerStore([], null, []));
+    const markersStr = sessionStorage.getItem('markers');
+    const markers: MarkerStore|null = markersStr ? JSON.parse(markersStr) : null;
+    if (markers) {
+      if (markers.locationSearch) {
+        const locations = markers.locationSearch;
+        locations.forEach(loc => {
+          this.addAndStoreLocationMarker(loc);
+        });
+      }
+      if (markers.clientLocation) {
+        this.addAndStoreClientMarker(markers.clientLocation);
+      }
+      if (markers.binLocations) {
+        const binLocations = markers.binLocations;
+        binLocations.forEach(loc => {
+          this.addAndStoreBinSearch(loc);
+        });
+      }
+    }
     this.loadingIndicatorService.sendLoadingIndicatorState(true);
     this.apply();
     this.subscriptions.add(this.searchService.getLocationSearchResult$()
@@ -178,6 +199,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
           this.filterOverlays('Search result');
           this.filterOverlays('Current location', true);
           this.filterOverlays('BIN result');
+          sessionStorage.clear();
           // this.sidenavService.close();
         }, (err) => {
           this.notifications.error(
@@ -223,6 +245,26 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     }
   }
 
+  addAndStoreLocationMarker(location: IStorageLocation) {
+    this.model.overlayLayers.push({
+      id: 'Search result',
+      name: 'Search results',
+      enabled: true,
+      layer: L.marker(
+        new L.LatLng(location.latLon.lat, location.latLon.lon),
+        { icon: this.searchMarker }
+      ).bindPopup(location.html)
+    });
+    const markers = sessionStorage.getItem('markers');
+    const storedMarkers: MarkerStore = markers ? JSON.parse(markers) : new MarkerStore([], null, []);
+    storedMarkers.locationSearch.push(location);
+    // Filter out duplicate search locations
+    storedMarkers.locationSearch = storedMarkers.locationSearch.filter((searchLocation, index, self) => {
+      return index === self.findIndex((loc) => (loc.html === searchLocation.html));
+    });
+    sessionStorage.setItem('markers', JSON.stringify(storedMarkers));
+  }
+
   applyLocationSearch(searchResult: LocationSearchResult) {
     if (searchResult) {
       const latLong = new L.LatLng(
@@ -235,24 +277,39 @@ export class BaseMapComponent implements OnInit, OnDestroy {
       this.changeDetector.detectChanges();
       this.updateUrl(searchResult.z);
 
-      this.model.overlayLayers.push({
-        id: 'Search result',
-        name: 'Search results',
-        enabled: true,
-        layer: L.marker(latLong, { icon: this.searchMarker }).bindPopup(
-          `<address> <strong> ${searchResult.displayName} </strong> </address> ` +
-          `<dl> <dt> Latitude, Longitude: </dt> <dd> ` +
-            `${parseFloat(searchResult.lat).toFixed(4)}, ` +
-            `${parseFloat(searchResult.lon).toFixed(4)} </dd>` +
-          `<dt> OSM Type: </dt> <dd> ${searchResult.osmType} </dd> ` +
-          `<dt> Class: </dt> <dd> ${searchResult.class} </dd> ` +
-          `<dt> Type: </dt> <dd> ${searchResult.type} </dd> </dl>`
-        )
-
-      });
+      const location: IStorageLocation = {
+        latLon: { lat: parseFloat(searchResult.lat), lon: parseFloat(searchResult.lon) },
+        html: `<address> <strong> ${searchResult.displayName} </strong> </address> ` +
+              `<dl> <dt> Latitude, Longitude: </dt> <dd> ` +
+                `${parseFloat(searchResult.lat).toFixed(4)}, ` +
+                `${parseFloat(searchResult.lon).toFixed(4)} </dd>` +
+              `<dt> OSM Type: </dt> <dd> ${searchResult.osmType} </dd> ` +
+              `<dt> Class: </dt> <dd> ${searchResult.class} </dd> ` +
+              `<dt> Type: </dt> <dd> ${searchResult.type} </dd> </dl>`
+      };
+      this.addAndStoreLocationMarker(location);
       this.apply();
       this.onZoomChange(searchResult.z);
     }
+  }
+
+  addAndStoreBinSearch(binLocation: IStorageLocation) {
+    this.model.overlayLayers.push({
+      id: 'Current location',
+      name: 'Current location',
+      enabled: true,
+      layer: L.circleMarker(
+        new L.LatLng(binLocation.latLon.lat, binLocation.latLon.lon), this.binSearchMarkerConfig)
+        .bindPopup(binLocation.html)
+    });
+    const markers = sessionStorage.getItem('markers');
+    const storedMarkers: MarkerStore = markers ? JSON.parse(markers) : new MarkerStore([], null, []);
+    storedMarkers.binLocations.push(binLocation);
+    // Filter out duplicate bin locations
+    storedMarkers.binLocations = storedMarkers.binLocations.filter((binLoc, index, self) => {
+      return index === self.findIndex((loc) => (loc.html === binLoc.html));
+    });
+    sessionStorage.setItem('markers', JSON.stringify(storedMarkers));
   }
 
   applyBinSearch(feature: NewYorkBridgeFeature) {
@@ -265,23 +322,34 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     this.changeDetector.detectChanges();
     this.updateUrl(this.mapZoom);
 
-    const binSearchResult = {
-      id: `BIN result`,
-      name: `BIN ${feature.properties.bin}`,
-      enabled: true,
-      layer: L.circleMarker(this.mapCenter, {
-        radius: 10,
-        color: '#FFC23D',
-        weight: 5,
-        fill: true,
-        fillColor: '#2A82CB',
-        fillOpacity: 0.5,
-      }).bindPopup(this.bridgePopupHtml(feature))
-      .openPopup()
+    const location: IStorageLocation = {
+      latLon: {
+        lat: feature.geometry.coordinates[1],
+        lon: feature.geometry.coordinates[0],
+      },
+      html: this.bridgePopupHtml(feature),
+      bin: feature.properties.bin,
     };
-    this.model.overlayLayers.push(binSearchResult);
+
+    this.addAndStoreBinSearch(location);
     this.apply();
     this.onZoomChange(this.mapZoom);
+  }
+
+  addAndStoreClientMarker(location: IStorageLocation) {
+    this.model.overlayLayers.push({
+      id: 'Current location',
+      name: 'Current location',
+      enabled: true,
+      layer: L.marker(
+        new L.LatLng(location.latLon.lat, location.latLon.lon),
+        { icon: this.clientLocationMarker }
+      ).bindPopup(location.html)
+    });
+    const markers = sessionStorage.getItem('markers');
+    const storedMarkers: MarkerStore = markers ? JSON.parse(markers) : new MarkerStore([], null, []);
+    storedMarkers.clientLocation = location;
+    sessionStorage.setItem('markers', JSON.stringify(storedMarkers));
   }
 
   applyClientLocationQuery(clientLocation: ClientLocation) {
@@ -293,19 +361,16 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     this.changeDetector.detectChanges();
     this.updateUrl(this.mapZoom);
 
-    this.model.overlayLayers.push({
-      id: 'Current location',
-      name: 'Current location',
-      enabled: true,
-      layer: L.marker(latLong, { icon: this.clientLocationMarker }).bindPopup(
-        `<p><strong>Current browser location</strong></p>` +
-        `<dl> <dt> Latitude, Longitude: </dt> <dd> ` +
-          `${clientLocation.lat.toFixed(4)}, ` +
-          `${clientLocation.lon.toFixed(4)} </dd>` +
-        `<dt> Timestamp: </dt> <dd> ` +
-          `${(new Date(clientLocation.timestamp)).toLocaleString()} </dd> `
-      )
-    });
+    const location: IStorageLocation = {
+      latLon: { lat: clientLocation.lat, lon: clientLocation.lon },
+      html: `<p><strong>Current browser location</strong></p>` +
+            `<dl> <dt> Latitude, Longitude: </dt> <dd> ` +
+              `${clientLocation.lat.toFixed(4)}, ` +
+              `${clientLocation.lon.toFixed(4)} </dd>` +
+            `<dt> Timestamp: </dt> <dd> ` +
+              `${(new Date(clientLocation.timestamp)).toLocaleString()} </dd> `
+    };
+    this.addAndStoreClientMarker(location);
     this.apply();
     this.onZoomChange(this.mapZoom);
   }

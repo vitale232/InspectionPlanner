@@ -32,16 +32,17 @@
             matTooltipShowDelay="250"
             routerLink="/"
             [queryParams]="queryParams"
+            aria-label="Clear drive time search results"
             >
       <mat-icon>cancel</mat-icon> Clear Results
     </button>
     <button mat-button [matMenuTriggerFor]="menu">
       <mat-icon>menu</mat-icon>
     </button>
-    <mat-menu #menu="matMenu">
-      <a mat-menu-item href="https://openstreetmap.org">OpenStreetMap.org</a>
-      <a mat-menu-item href="https://timelinetamer.com">TimelineTamer.com</a>
-      <a mat-menu-item href="https://github.com/vitale232/InspectionPlanner">Source Code</a>
+    <mat-menu #menu="matMenu" aria-label="Main menu">
+      <a mat-menu-item href="https://openstreetmap.org" aria-label="Navigate to open street map website">OpenStreetMap.org</a>
+      <a mat-menu-item href="https://timelinetamer.com" aria-label="Navigate to timeline tamer website">TimelineTamer.com</a>
+      <a mat-menu-item href="https://github.com/vitale232/InspectionPlanner" aria-label="Navigate to source code on github">Source Code</a>
     </mat-menu>
   </mat-toolbar>
 </div>

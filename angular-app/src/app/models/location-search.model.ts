@@ -34,3 +34,22 @@ export interface FilterSearch {
     state: string;
     country: string;
 }
+
+export interface ILatLon {
+    lat: number;
+    lon: number;
+}
+
+export interface IStorageLocation {
+    latLon: ILatLon;
+    html: string;
+    bin?: string;
+}
+
+export class MarkerStore {
+    constructor(
+        public locationSearch: IStorageLocation[],
+        public clientLocation: IStorageLocation,
+        public binLocations: IStorageLocation[],
+    ) {}
+}
