@@ -65,11 +65,6 @@ export class SearchComponent implements OnInit, OnDestroy {
     driveTimeHours: this.timeIntervals[1].value
   });
 
-  driveTimeForm = this.fb.group({
-    searchText: [''],
-    driveTimeHours: this.timeIntervals[1].value
-  });
-
   filterForm = this.fb.group({
     streetAddress: [''],
     city: [''],
