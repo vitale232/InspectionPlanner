@@ -65,6 +65,11 @@ export class SearchComponent implements OnInit, OnDestroy {
     driveTimeHours: this.timeIntervals[1].value
   });
 
+  driveTimeForm = this.fb.group({
+    searchText: [''],
+    driveTimeHours: this.timeIntervals[1].value
+  });
+
   filterForm = this.fb.group({
     streetAddress: [''],
     city: [''],
@@ -129,21 +134,6 @@ export class SearchComponent implements OnInit, OnDestroy {
       .filter(q => q.display_name.toLowerCase().replace(',', '').includes(filterValue))
       .sort(sortByDisplayName);
   }
-
-  // private _filter(searchText: string) {
-  //   const filterValue = searchText.toLowerCase().replace(',', '');
-  //   console.log('filter value', filterValue);
-  //   const queries = [...this.recentQueries];
-  //   queries.forEach(q => q.display_name = q.display_name.replace(',', ''));
-  //   // return this.recentQueries
-  //   const filteredQueries = queries
-  //     .filter(q => q.drive_time_hours === this.formHoursToNumber(this.driveTimeForm.value.driveTimeHours))
-  //     .filter(q => q.display_name.toLowerCase().replace(',', '').includes(filterValue));
-  //   const filteredQueryIDs = [];
-  //   filteredQueries.forEach(q => filteredQueryIDs.push(q.id));
-  //   console.log(filteredQueryIDs);
-  //   return this.recentQueries.filter(q => filteredQueryIDs.includes(q.id));
-  // }
 
   getRecentQueries() {
     this.searchService.getDriveTimeQueries(1)
