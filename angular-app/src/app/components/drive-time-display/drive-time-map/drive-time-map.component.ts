@@ -13,6 +13,8 @@ import { BaseMapComponent } from '../../base-map/base-map.component';
 
 import * as driveTimeMapConfig from './drive-time-map-config';
 import { Title } from '@angular/platform-browser';
+import * as L from 'leaflet';
+
 
 
 @Component({
@@ -24,6 +26,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
   driveTimeID: number|null;
   splitterOrientation = 'horizontal';
   bridgeMarker = driveTimeMapConfig.bridgeMarker;
+  driveTimeSearchMarker = driveTimeMapConfig.driveTimeSearchMarker;
   maxVisibleZoom = 6;
   zoomInMessage = 'Zoom in to view drive-time bridges!';
 
@@ -67,12 +70,35 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       this.newYorkBridgesUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
       this.newYorkBridgesLuckyUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
       this.titleService.setTitle(`IPA - Drive Time Query ${this.driveTimeID}`);
+      this.subscriptions.add(this.searchService.getDriveTimeQuery(this.driveTimeID).subscribe((data) => {
+        console.log('driveTime data', data);
+        this.filterOverlays('Drive Time Query', true);
+        this.model.overlayLayers.push({
+          id: 'Drive Time Query',
+          name: 'Drive Time Query',
+          enabled: true,
+          layer: L.marker(
+            new L.LatLng(data.properties.lat, data.properties.lon),
+            { icon: this.driveTimeSearchMarker }
+          ).bindPopup(
+            `<h3> Drive Time Query ${this.driveTimeID} </h3>` +
+            `<dl> <dt> Search Location: </dt> <dd> ${data.properties.display_name} </dd>` +
+            `<dt> Latitude, Longitude: </dt> <dd> ` +
+              `${data.properties.lat}, ` +
+              `${data.properties.lon} </dd>` +
+            `<dt> OSM Type: </dt> <dd> ${data.properties.osm_type} </dd> ` +
+            `<dt> Class: </dt> <dd> ${data.properties.osm_class} </dd> ` +
+            `<dt> Type: </dt> <dd> ${data.properties.osm_type} </dd> </dl>`
+          )
+        });
+      }));
     }));
     console.log(`the driveTimeID is ${this.driveTimeID} of type ${typeof this.driveTimeID}`);
   }
 
   ngOnDestroy() {
     super.ngOnDestroy();
+    this.filterOverlays('Drive Time Query', true);
   }
 
   onMapMove(mapMoveEvent: Event) {

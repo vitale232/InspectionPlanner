@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IDriveTimeQueryApiResponse } from '../models/drive-time-queries.model';
+import { IDriveTimeQueryApiResponse, IDriveTimeQueryFeature } from '../models/drive-time-queries.model';
 import { Subject, Observable } from 'rxjs';
 import { LocationSearchResult, FilterSearch, NominatimApiResponse } from '../models/location-search.model';
 
@@ -30,11 +30,16 @@ export class SearchService {
     });
   }
 
+  getDriveTimeQuery(queryId: number) {
+    return this.http.get<IDriveTimeQueryFeature>(this.driveTimeQueryUrl + `/${queryId}/`);
+  }
+
   getNewDriveTimeQuery(queryParams) {
     return this.http.get(this.newDriveTimeUrl, {
       params: queryParams
     });
   }
+
   sendLocationSearchResult(locationResult: LocationSearchResult) {
     this.locationSearchSubject.next(locationResult);
   }
