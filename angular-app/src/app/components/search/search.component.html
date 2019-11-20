@@ -44,11 +44,18 @@
           <button matSuffix
                   mat-icon-button
                   (click)="onLocationSearch()"
-                  aria-label="Execute search">
+                  aria-label="Execute search"
+                  [disabled]="this.locationForm.invalid"
+                  >
             <mat-icon>search</mat-icon>
           </button>
         </mat-form-field>
       </form>
+      <div *ngIf="locationForm.invalid && locationForm.touched">
+        <section class="mat-typography form-validation">
+            *An address, BIN, or place name is required.
+        </section>
+      </div>
     </div>
 
     <!-- Drive time search form -->
@@ -59,9 +66,18 @@
                         color="accent"
                         >
           <input matInput
-                 formControlName="searchText"
+                 [formControl]="driveTimeSearchTextControl"
                  color="warn"
+                 [matAutocomplete]="auto"
                  >
+          <mat-autocomplete #auto="matAutocomplete">
+            <mat-option *ngFor="let query of filteredRecentQueries | async"
+                        [value]="query.display_name"
+                        matTooltip="{{ query.display_name }}"
+                        >
+              {{ query.display_name }}
+            </mat-option>
+          </mat-autocomplete>
           <mat-label>
             Search address or place name
           </mat-label>
@@ -79,11 +95,18 @@
           </mat-select>
         </mat-form-field>
 
+        <div *ngIf="driveTimeForm.invalid && driveTimeForm.touched">
+          <section class="mat-typography form-validation">
+              *An address or place name is required.
+          </section>
+        </div>
         <div class="pad-button">
           <button mat-flat-button 
                   (click)="onDriveTimeQuery()"
                   color="primary"
-                  class="center-button"> Search </button>
+                  class="center-button"
+                  [disabled]="driveTimeForm.invalid"
+                  > Search </button>
         </div> 
       </form>
     </ng-template>

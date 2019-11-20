@@ -24,6 +24,15 @@ export const clientLocationMarker = L.icon({
   popupAnchor: [0, -20.5]
 });
 
+export const binSearchMarkerConfig = {
+  radius: 10,
+  color: '#FFC23D',
+  weight: 5,
+  fill: true,
+  fillColor: '#2A82CB',
+  fillOpacity: 0.5,
+};
+
 export const LAYER_WIKIMEDIA_MAP = {
   id: 'wikimediamap',
   name: 'Wikimedia Map',

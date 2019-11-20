@@ -159,22 +159,22 @@ def update_bridges_with_dtq_id(skip_list=[]):
             print(f'[{datetime.now()}] Multiple results found!!!!! Skipping.\n')
             continue
 
-        # print(f'[{datetime.now()}] Running intersect query on NewYorkBridge objects')
-        # bridges = session.query(NewYorkBridge).filter(
-        #     NewYorkBridge.the_geom.ST_Intersects('SRID=4326;'+polygon.buffer(0.005).wkt)
-        # ).all()
-        # print(f'[{datetime.now()}] Iterating through {len(bridges)} bridges')
-        # for b in bridges:
-        #     bridge = session.query(NewYorkBridge).filter(NewYorkBridge.id == b.id).first()
-        #     drive_time_queries = bridge.drive_time_queries
-        #     bridge.drive_time_queries = list(set(drive_time_queries + [drive_time_query_id]))
-        #     session.add(bridge)
-        # print(f'[{datetime.now()}] Committing bridges to db')
-        # session.flush()
-        # session.commit()
-        # print('')
-    # session.flush()
-    # session.commit()
+        print(f'[{datetime.now()}] Running intersect query on NewYorkBridge objects')
+        bridges = session.query(NewYorkBridge).filter(
+            NewYorkBridge.the_geom.ST_Intersects('SRID=4326;'+polygon.buffer(0.005).wkt)
+        ).all()
+        print(f'[{datetime.now()}] Iterating through {len(bridges)} bridges')
+        for b in bridges:
+            bridge = session.query(NewYorkBridge).filter(NewYorkBridge.id == b.id).first()
+            drive_time_queries = bridge.drive_time_queries
+            bridge.drive_time_queries = list(set(drive_time_queries + [drive_time_query_id]))
+            session.add(bridge)
+        print(f'[{datetime.now()}] Committing bridges to db')
+        session.flush()
+        session.commit()
+        print('')
+    session.flush()
+    session.commit()
     if skipped:
         print(f'[{datetime.now()}] Skipped drive_time_queries: {skipped}')
     if multiple_results:

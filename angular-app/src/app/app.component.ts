@@ -14,6 +14,7 @@ import { LoadingIndicatorService } from './services/loading-indicator.service';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   popupOpenSubscription: Subscription;
   loadingIndicator$: Observable<boolean>;
+  sidenavOpen: boolean;
 
   @ViewChild('sidenav', { static: false }) public sidenav: MatSidenav;
 
@@ -26,6 +27,9 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   ngOnInit() {
     this.popupOpenSubscription = this.ccService.popupOpen$.subscribe();
     this.loadingIndicator$ = this.loadingIndicatorService.getLoadingIndicatorState$();
+    this.sidenavService.getSidenavState$().subscribe((data: boolean) => {
+      this.sidenavOpen = data;
+    });
   }
   ngAfterViewInit() {
     this.sidenavService.setSidenav(this.sidenav);
@@ -36,6 +40,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   fKey($event) {
+    // if (this.sidenavOpen) {
+    //   this.sidenavService.close();
+    // } else {
+    //   this.sidenavService.open();
+    // }
     this.sidenavService.open();
   }
 
