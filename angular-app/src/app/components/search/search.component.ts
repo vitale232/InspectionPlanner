@@ -95,10 +95,9 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(this.driveTimeForm.valueChanges.subscribe(
-      data => this._filter(this.driveTimeForm.value.searchText))
+      (data) => this._filter(this.driveTimeForm.value.searchText))
     );
     this.getRecentQueries();
-
   }
 
   ngOnDestroy() {
@@ -106,6 +105,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   sendFocus() {
+    this.filterQueries();
+
     const allowSidenavEscape = false;
     this.Focus.emit(allowSidenavEscape);
   }
@@ -135,10 +136,10 @@ export class SearchComponent implements OnInit, OnDestroy {
         return 0;
       }
     }
-    const filterValue = searchText.toLowerCase().replace(',', '');
+    const filterText = searchText.toLowerCase().replace(',', '');
     return this.recentQueries
       .filter(q => q.drive_time_hours === this.formHoursToNumber(this.driveTimeForm.value.driveTimeHours))
-      .filter(q => q.display_name.toLowerCase().replace(',', '').includes(filterValue))
+      .filter(q => q.display_name.toLowerCase().replace(',', '').includes(filterText))
       .sort(sortByDisplayName);
   }
 
