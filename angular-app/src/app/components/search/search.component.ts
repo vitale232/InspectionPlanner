@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { NotificationsService } from 'angular2-notifications';
@@ -27,6 +27,8 @@ import { startWith, map } from 'rxjs/operators';
   styleUrls: ['./search.component.css']
 })
 export class SearchComponent implements OnInit, OnDestroy {
+  @Output() Focus = new EventEmitter<boolean>();
+  @Output() Blur = new EventEmitter<boolean>();
   detailsPanelOpen = false;
   pastPanelOpen = false;
   driveTimeSearchToggle = false;
@@ -101,6 +103,16 @@ export class SearchComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  sendFocus() {
+    const allowSidenavEscape = false;
+    this.Focus.emit(allowSidenavEscape);
+  }
+
+  sendBlur() {
+    const allowSidenavEscape = true;
+    this.Blur.emit(allowSidenavEscape);
   }
 
   filterQueries() {

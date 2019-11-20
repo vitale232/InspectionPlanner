@@ -15,6 +15,7 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   popupOpenSubscription: Subscription;
   loadingIndicator$: Observable<boolean>;
   sidenavOpen: boolean;
+  allowSidenavEscape = true;
 
   @ViewChild('sidenav', { static: false }) public sidenav: MatSidenav;
 
@@ -36,16 +37,21 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   escape($event) {
-    this.sidenavService.sendSidenavState(false);
+    if (this.allowSidenavEscape) {
+      this.sidenavService.close();
+    }
   }
 
   fKey($event) {
-    // if (this.sidenavOpen) {
-    //   this.sidenavService.close();
-    // } else {
-    //   this.sidenavService.open();
-    // }
     this.sidenavService.open();
+  }
+
+  onFocus($event) {
+    this.allowSidenavEscape = $event;
+  }
+
+  onBlur($event) {
+    this.allowSidenavEscape = $event;
   }
 
   ngOnDestroy() {

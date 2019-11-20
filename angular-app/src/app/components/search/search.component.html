@@ -37,7 +37,8 @@
           <input matInput
                 formControlName="searchText"
                 color="warn"
-                (mouseup)="$event.preventDefault()">
+                (mouseup)="$event.preventDefault()"
+                >
           <mat-label>
             Search address, BIN, or place name
           </mat-label>
@@ -69,6 +70,8 @@
                  [formControl]="driveTimeSearchTextControl"
                  color="warn"
                  [matAutocomplete]="auto"
+                 (focus)="sendFocus()"
+                 (blur)="sendBlur()"
                  >
           <mat-autocomplete #auto="matAutocomplete">
             <mat-option *ngFor="let query of filteredRecentQueries | async"

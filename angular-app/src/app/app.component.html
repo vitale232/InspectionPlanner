@@ -7,8 +7,13 @@
   </div>
 
   <mat-sidenav-container fxFlex [hasBackdrop]="false">
-    <mat-sidenav #sidenav mode="over" (keydown.escape)="escape($event)" (document:keydown.f)="fKey($event)">
-      <app-search></app-search>
+    <mat-sidenav #sidenav
+                 mode="over"
+                 (keydown.escape)="escape($event)"
+                 (document:keydown.f)="fKey($event)"
+                 disableClose
+                 >
+      <app-search (Focus)="onFocus($event)" (Blur)="onBlur($event)"></app-search>
     </mat-sidenav>
     <router-outlet></router-outlet>
   </mat-sidenav-container>
