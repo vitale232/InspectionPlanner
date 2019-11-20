@@ -102,8 +102,8 @@ export class BaseMapComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // this.loadingBridges = true;
-    console.log('MarkerStore', new MarkerStore([], null, []));
+    this.loadingIndicatorService.sendLoadingIndicatorState(true);
+
     const markersStr = sessionStorage.getItem('markers');
     const markers: MarkerStore|null = markersStr ? JSON.parse(markersStr) : null;
     if (markers) {
@@ -123,7 +123,6 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         });
       }
     }
-    this.loadingIndicatorService.sendLoadingIndicatorState(true);
     this.apply();
     this.subscriptions.add(this.searchService.getLocationSearchResult$()
       .pipe(filter(Boolean))
