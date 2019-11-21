@@ -93,3 +93,10 @@ export const studyArea = {
   [44.2841, -78.3377]
   ]).setStyle({fillOpacity: 0.0})
 };
+
+export const notificationConfig = {
+  timeOut: 20000,
+  showProgressBar: true,
+  pauseOnHover: true,
+  clickToClose: true
+};

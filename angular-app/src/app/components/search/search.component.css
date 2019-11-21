@@ -2,6 +2,10 @@ mat-panel-title {
     color: #FFC23D;
 }
 
+.accordion-container {
+    padding: 10px;
+}
+
 .search-panel {
     width: 335px;
     height: 98%;

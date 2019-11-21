@@ -121,96 +121,96 @@
     </mat-slide-toggle>
 
   </div>
+<div class="accordion-container">
+  <mat-accordion>
+    <mat-expansion-panel (opened)="detailsPanelOpen = true;"
+                        (closed)="detailsPanelOpen = false;">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Search filters
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+    
+      <section class="mat-typography space-below">
+        Use the toggle to switch between searching for an address or a bridge.
+      </section>
+      <mat-slide-toggle [(ngModel)]="bridgeSearchToggle" class="selection-input">
+        Search Bridges
+      </mat-slide-toggle>
+    
+      <div *ngIf="!bridgeSearchToggle; else bridgeSearch">
+    
+        <form [formGroup]="filterForm" (keydown.enter)="onFilterSearch()">
+          <mat-form-field class="detailed-form-field" color="accent">
+            <input matInput formControlName="streetAddress" placeholder="Street address">
+          </mat-form-field>
+      
+          <mat-form-field class="detailed-form-field" color="accent">
+            <input matInput formControlName="city" placeholder="City">
+          </mat-form-field>
+      
+          <mat-form-field class="detailed-form-field" color="accent">
+            <input matInput formControlName="state" placeholder="State">
+          </mat-form-field>
+      
+          <mat-form-field class="detailed-form-field" color="accent">
+            <input matInput formControlName="country" placeholder="Country">
+          </mat-form-field>
+        </form>
+    
+        <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
+    
+        <button mat-flat-button
+                color="primary"
+                (click)="onFilterSearch()"
+                class="center-button">
+          Search
+        </button>
+      </div>
+    
+      <ng-template #bridgeSearch>
+        <section class="mat-typography space-above">
+          Fill out one, some, or all fields to find a single bridge.
+        </section>
+      
+        <form [formGroup]="bridgeForm" (keydown.enter)="onBridgeSearch()">
+          <mat-form-field class="detailed-form-field" color="accent">
+            <input matInput formControlName="bin" placeholder="BIN">
+          </mat-form-field>
+      
+          <mat-form-field class="detailed-form-field" color="accent">
+            <input matInput formControlName="carried" placeholder="Carried">
+          </mat-form-field>
+      
+          <mat-form-field class="detailed-form-field" color="accent">
+            <input matInput formControlName="county" placeholder="County">
+          </mat-form-field>
+      
+          <mat-form-field class="detailed-form-field" color="accent">
+            <input matInput formControlName="commonName" placeholder="Common Name">
+          </mat-form-field>
+        </form>
+    
+        <button mat-flat-button
+                color="primary"
+                (click)="onBridgeSearch()"
+                class="center-button">
+          Search
+        </button>
+        <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
+      </ng-template>
+    </mat-expansion-panel>
 
-<mat-expansion-panel (opened)="detailsPanelOpen = true;"
-                    (closed)="detailsPanelOpen = false;">
-  <mat-expansion-panel-header>
-    <mat-panel-title>
-      Search filters
-    </mat-panel-title>
-  </mat-expansion-panel-header>
-
-  <section class="mat-typography space-below">
-    Use the toggle to switch between searching for an address or a bridge.
-  </section>
-  <mat-slide-toggle [(ngModel)]="bridgeSearchToggle" class="selection-input">
-    Search Bridges
-  </mat-slide-toggle>
-
-  <div *ngIf="!bridgeSearchToggle; else bridgeSearch">
-
-    <form [formGroup]="filterForm" (keydown.enter)="onFilterSearch()">
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="streetAddress" placeholder="Street address">
-      </mat-form-field>
-  
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="city" placeholder="City">
-      </mat-form-field>
-  
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="state" placeholder="State">
-      </mat-form-field>
-  
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="country" placeholder="Country">
-      </mat-form-field>
-    </form>
-
-    <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
-
-    <button mat-flat-button
-            color="primary"
-            (click)="onFilterSearch()"
-            class="center-button">
-      Search
-    </button>
-  </div>
-
-  <ng-template #bridgeSearch>
-    <section class="mat-typography space-above">
-      Fill out one, some, or all fields to find a single bridge.
-    </section>
-  
-    <form [formGroup]="bridgeForm" (keydown.enter)="onBridgeSearch()">
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="bin" placeholder="BIN">
-      </mat-form-field>
-  
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="carried" placeholder="Carried">
-      </mat-form-field>
-  
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="county" placeholder="County">
-      </mat-form-field>
-  
-      <mat-form-field class="detailed-form-field" color="accent">
-        <input matInput formControlName="commonName" placeholder="Common Name">
-      </mat-form-field>
-    </form>
-
-    <button mat-flat-button
-            color="primary"
-            (click)="onBridgeSearch()"
-            class="center-button">
-      Search
-    </button>
-    <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
-  </ng-template>
-</mat-expansion-panel>
-
-<div>
-  <mat-expansion-panel
-    (opened)="pastPanelOpen = true;"
-    (closed)="pastPanelOpen = false;">
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        Search history
-      </mat-panel-title>
-    </mat-expansion-panel-header>
-    <app-query-history-table></app-query-history-table>
-  </mat-expansion-panel>
+    <mat-expansion-panel
+      (opened)="pastPanelOpen = true;"
+      (closed)="pastPanelOpen = false;">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Search history
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-query-history-table></app-query-history-table>
+    </mat-expansion-panel>
+  </mat-accordion>
 </div>
-
 </div>

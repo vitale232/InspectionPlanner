@@ -59,6 +59,8 @@ export class BaseMapComponent implements OnInit, OnDestroy {
   // Import routable network area polygon from ./map-config.txt
   studyArea = baseMapConfig.studyArea;
 
+  notificationConfig = baseMapConfig.notificationConfig;
+
   model = new LeafletLayersModel(
     [
       this.LAYER_WIKIMEDIA_MAP,
@@ -131,12 +133,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         (err) => {
           this.notifications.error(
             'Unhandled error',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationConfig);
         }
       )
     );
@@ -148,12 +145,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         (err) => {
           this.notifications.error(
             'Unhandled error : applyClientLocationQuery : map',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationConfig);
         }
       )
     );
@@ -166,12 +158,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         }, (err) => {
           this.notifications.error(
             'Unhandled error : mapHomeSubscription : MapComponent',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-            });
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationConfig);
         }
       )
     );
@@ -183,12 +170,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         }, (err) => {
           this.notifications.error(
             'Unhandled error : BinSearchSubscription : MapComponent',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-            });
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationConfig);
         }
       )
     );
@@ -203,13 +185,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         }, (err) => {
           this.notifications.error(
             'Unhandled error: clearMarkersSubscription: MapComponent',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true,
-            }
-          );
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationConfig);
         }
       )
     );
@@ -231,9 +207,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         const lon = 'lon';
         const zoom = 'z';
         // If there are query params in the URL, use them to set the map options
-        if (queryParams[params][lat] &&
-            queryParams[params][lon] &&
-            queryParams[params][zoom]) {
+        if (queryParams[params][lat] && queryParams[params][lon] && queryParams[params][zoom]) {
 
           this.mapZoom = queryParams[params][zoom];
           this.mapCenter = new L.LatLng(queryParams[params][lat], queryParams[params][lon]);
@@ -375,8 +349,6 @@ export class BaseMapComponent implements OnInit, OnDestroy {
   }
 
   onZoomChange(zoom: number) {
-    // this.model.overlayLayers = this.model.overlayLayers
-    //   .filter(overlay => overlay.id !== 'bridgesGeoJSON');
     this.filterOverlays('bridgesGeoJSON');
     this.apply();
 
@@ -448,9 +420,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         padding = this.padding + 0.25;
       }
       if (this.bridgeBounds) {
-        mapBoundsContained = this.bridgeBounds
-          .pad(padding)
-          .contains(this.map.getBounds());
+        mapBoundsContained = this.bridgeBounds.pad(padding).contains(this.map.getBounds());
       }
     } else {
       mapBoundsContained = false;
@@ -543,12 +513,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
         this.loadingIndicatorService.sendLoadingIndicatorState(this.apply());
         this.notifications.error(
           'getBridgesBbox(): Unhandled error',
-          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-            timeOut: 20000,
-            showProgressBar: true,
-            pauseOnHover: true,
-            clickToClose: true
-        });
+          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationConfig);
       },
       () => {
         // this.model.overlayLayers = this.model.overlayLayers
@@ -596,12 +561,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
           this.loadingIndicatorService.sendLoadingIndicatorState(this.apply());
           this.notifications.error(
             'getRandomBridges(): Unhandled error',
-            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, {
-              timeOut: 20000,
-              showProgressBar: true,
-              pauseOnHover: true,
-              clickToClose: true
-          });
+            `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`, this.notificationConfig);
         },
         () => {
           // this.model.overlayLayers = this.model.overlayLayers
@@ -634,5 +594,4 @@ export class BaseMapComponent implements OnInit, OnDestroy {
       horizontalPosition: 'start'
     });
   }
-
 }
