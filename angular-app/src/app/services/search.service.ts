@@ -31,7 +31,7 @@ export class SearchService {
   }
 
   getDriveTimeQuery(queryId: number) {
-    return this.http.get<IDriveTimeQueryFeature>(this.driveTimeQueryUrl + `/${queryId}/`);
+    return this.http.get<IDriveTimeQueryFeature>(this.driveTimeQueryUrl + `${queryId}/`);
   }
 
   getNewDriveTimeQuery(queryParams) {

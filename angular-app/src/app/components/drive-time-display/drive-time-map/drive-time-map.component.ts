@@ -83,9 +83,10 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
           ).bindPopup(
             `<h3> Drive Time Query ${this.driveTimeID} </h3>` +
             `<dl> <dt> Search Location: </dt> <dd> ${data.properties.display_name} </dd>` +
+            `<dt> Drive Time Hours </dt> <dd> ${data.properties.drive_time_hours} </dd>` +
             `<dt> Latitude, Longitude: </dt> <dd> ` +
-              `${data.properties.lat}, ` +
-              `${data.properties.lon} </dd>` +
+              `${data.properties.lat.toFixed(4)}, ` +
+              `${data.properties.lon.toFixed(4)} </dd>` +
             `<dt> OSM Type: </dt> <dd> ${data.properties.osm_type} </dd> ` +
             `<dt> Class: </dt> <dd> ${data.properties.osm_class} </dd> ` +
             `<dt> Type: </dt> <dd> ${data.properties.osm_type} </dd> </dl>`

@@ -161,9 +161,6 @@ export class SearchComponent implements OnInit, OnDestroy {
               });
             });
           this.recentQueries = queryProperties;
-          // features.forEach(element => {
-          //   this.recentQuery.push(element.properties.display_name);
-          // });
           this.filterQueries();
         },
         (err) => console.error(err),
@@ -356,6 +353,9 @@ export class SearchComponent implements OnInit, OnDestroy {
     if (match) {
       this.getBinSearch(location.searchText);
     } else {
+      if (location.searchText.includes('New York State Department of Transportation')) {
+        location.searchText = '50 wolf road, albany, ny';
+      }
       this.getLocationSearch(location.searchText);
     }
   }
