@@ -12,7 +12,7 @@ import { SidenavService } from 'src/app/services/sidenav.service';
 })
 export class QueryHistoryTableComponent implements OnInit {
   recentQueries: MatTableDataSource<IDriveTimeQueryFeature['properties']>;
-  displayedColumns: string[] = ['display_name', 'drive_time_hours'];
+  displayedColumns: string[] = ['display_name', 'id', 'drive_time_hours'];
 
   constructor(
     private searchService: SearchService,

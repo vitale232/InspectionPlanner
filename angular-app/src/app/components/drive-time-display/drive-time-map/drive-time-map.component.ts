@@ -16,7 +16,6 @@ import { Title } from '@angular/platform-browser';
 import * as L from 'leaflet';
 
 
-
 @Component({
   selector: 'app-drive-time-map',
   templateUrl: './drive-time-map.component.html',
@@ -44,7 +43,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     public sidenavService: SidenavService,
     public loadingIndicatorService: LoadingIndicatorService,
     public activatedRoute: ActivatedRoute,
-    public titleService: Title
+    public titleService: Title,
   ) {
     super(
       newYorkBridgeService,

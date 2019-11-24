@@ -19,6 +19,7 @@ import {
   IDriveTimeQueryApiResponse,
   IQueryProperties} from 'src/app/models/drive-time-queries.model';
 import { startWith, map } from 'rxjs/operators';
+import { PollDriveTimeQueryService } from 'src/app/services/poll-drive-time-query.service';
 
 
 @Component({
@@ -91,12 +92,20 @@ export class SearchComponent implements OnInit, OnDestroy {
     private mapToolsService: MapToolsService,
     private newYorkBridgeService: NewYorkBridgeService,
     private router: Router,
+    private pollDriveTimeQueryService: PollDriveTimeQueryService,
   ) { }
 
   ngOnInit() {
     this.subscriptions.add(this.driveTimeForm.valueChanges.subscribe(
       (data) => this._filter(this.driveTimeForm.value.searchText))
     );
+    // this.subscriptions.add(
+    //   this.pollDriveTimeQueryService.pollDriveTimeQuery('50 wolf road, albany, ny', 0.232).subscribe(
+    //     data => console.log('data', data),
+    //     (err) => console.error(err),
+    //     () => console.log('Complete!')
+    //   )
+    // );
     this.getRecentQueries();
   }
 
