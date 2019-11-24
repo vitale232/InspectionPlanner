@@ -158,8 +158,8 @@ export class SearchComponent implements OnInit, OnDestroy {
               lon: element.properties.lon,
               polygon_pending: element.properties.polygon_pending,
               search_text: element.properties.search_text,
-              });
             });
+          });
           this.recentQueries = queryProperties;
           this.filterQueries();
         },
