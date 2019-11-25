@@ -14,6 +14,7 @@ import { BaseMapComponent } from '../../base-map/base-map.component';
 import * as driveTimeMapConfig from './drive-time-map-config';
 import { Title } from '@angular/platform-browser';
 import * as L from 'leaflet';
+import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
 
 
 @Component({
@@ -44,6 +45,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     public loadingIndicatorService: LoadingIndicatorService,
     public activatedRoute: ActivatedRoute,
     public titleService: Title,
+    private driveTimeQueryService: DriveTimeQueryService,
   ) {
     super(
       newYorkBridgeService,
@@ -69,7 +71,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       this.newYorkBridgesUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
       this.newYorkBridgesLuckyUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
       this.titleService.setTitle(`IPA - Drive Time Query ${this.driveTimeID}`);
-      this.subscriptions.add(this.searchService.getDriveTimeQuery(this.driveTimeID).subscribe((data) => {
+      this.subscriptions.add(this.driveTimeQueryService.getDriveTimeQuery(this.driveTimeID).subscribe((data) => {
         console.log('driveTime data', data);
         this.filterOverlays('Drive Time Query', true);
         this.model.overlayLayers.push({

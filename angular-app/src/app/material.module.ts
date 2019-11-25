@@ -20,6 +20,7 @@ import {
     MatProgressSpinnerModule,
     MatTableModule,
     MatAutocompleteModule,
+    MatBadgeModule,
 } from '@angular/material';
 
 @NgModule({
@@ -44,6 +45,7 @@ import {
     MatProgressSpinnerModule,
     MatTableModule,
     MatAutocompleteModule,
+    MatBadgeModule,
   ]
 })
 export class MaterialModule {}

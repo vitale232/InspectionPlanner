@@ -8,7 +8,10 @@
               matTooltip="Close search panel (try using 'esc' key)"
               matTooltipShowDelay="250"
               >
-        <mat-icon>close</mat-icon>
+        <div *ngIf="notificationCount > 0; else noNotification">
+          <mat-icon [matBadge]="notificationCount" matBadgeColor="accent">close</mat-icon>
+        </div>
+        <ng-template #noNotification><mat-icon>close</mat-icon></ng-template>
       </button>
     </div>
     <ng-template #sidenavClosed>
@@ -18,7 +21,10 @@
               matTooltip="Open search panel (try using the 'f' key)"
               matTooltipShowDelay="250"
               >
-        <mat-icon>search</mat-icon>
+        <div *ngIf="notificationCount > 0; else noNotification">
+          <mat-icon [matBadge]="notificationCount" matBadgeColor="accent">search</mat-icon>
+        </div>
+        <ng-template #noNotification><mat-icon>search</mat-icon></ng-template>
       </button>
     </ng-template>
 
