@@ -14,7 +14,7 @@ import { Subscription } from 'rxjs';
 })
 export class QueryHistoryTableComponent implements OnInit, OnDestroy {
   recentQueries: MatTableDataSource<IQueryProperties>;
-  displayedColumns: string[] = ['display_name', 'id', 'drive_time_hours'];
+  displayedColumns: string[] = ['display_name', 'drive_time_hours'];
   subscriptions = new Subscription();
 
   constructor(
