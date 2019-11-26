@@ -1,0 +1,8 @@
+tr.table-row:hover {
+    background-color: #212121;
+}
+
+.align-right {
+    text-align: right !important;
+    justify-content: flex-end;
+}

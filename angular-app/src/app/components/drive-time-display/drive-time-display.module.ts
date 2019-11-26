@@ -7,6 +7,7 @@ import { DriveTimeMapComponent } from './drive-time-map/drive-time-map.component
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { AngularSplitModule } from 'angular-split';
 import { BridgeTableComponent } from './bridge-table/bridge-table.component';
+import { MatTableModule } from '@angular/material';
 
 
 @NgModule({
@@ -20,6 +21,7 @@ import { BridgeTableComponent } from './bridge-table/bridge-table.component';
     DriveTimeDisplayRoutingModule,
     LeafletModule,
     AngularSplitModule,
+    MatTableModule,
   ]
 })
 export class DriveTimeDisplayModule { }

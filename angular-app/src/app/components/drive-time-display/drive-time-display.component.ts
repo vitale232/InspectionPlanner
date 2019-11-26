@@ -17,8 +17,8 @@ export class DriveTimeDisplayComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.mapSize = 80;
-    this.tableSize = 20;
+    this.mapSize = 50;
+    this.tableSize = 50;
   }
 
   getSplitterOrientation() {

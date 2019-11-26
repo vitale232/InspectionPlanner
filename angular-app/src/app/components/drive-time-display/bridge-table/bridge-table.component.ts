@@ -11,10 +11,11 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./bridge-table.component.css']
 })
 export class BridgeTableComponent implements OnInit {
-  bridgeFeatures: NewYorkBridgeFeature[];
   bridgeDataSource: MatTableDataSource<NewYorkBridgeFeature>;
   driveTimeID: number;
+
   subscriptions = new Subscription();
+  displayedColumns = [ 'inspection', 'bin' , 'county', 'owner', 'structure', 'materials', 'aadt', ];
 
   constructor(
     private newYorkBridgeService: NewYorkBridgeService,
@@ -29,15 +30,18 @@ export class BridgeTableComponent implements OnInit {
           this.driveTimeID = params.driveTimeID;
           console.log('this.driveTimeID', this.driveTimeID);
           this.newYorkBridgeService.getAllDriveTimeBridges(this.driveTimeID).subscribe(
-            data => console.log('all bridge data', data),
+            data => this.bridgeDataSource = new MatTableDataSource(data),
             bridgeErr => console.error(bridgeErr),
-            () => console.log('bridge complete!')
+            () => console.log('bridgeDataSource!', this.bridgeDataSource)
           );
         },
         err => console.error(err),
         () => console.log('params complete')
       )
-  );
+    );
   }
 
+  onClick(row) {
+    console.log('click row', row);
+  }
 }
