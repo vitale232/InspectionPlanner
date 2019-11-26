@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from '../models/new-york-bridges.model';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, of, EMPTY } from 'rxjs';
 import { BridgeQuery } from '../models/bridge-query.model';
+import { map, mergeMap, expand, reduce } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -25,8 +26,15 @@ export class NewYorkBridgeService {
     return this.bridgeExtent.asObservable();
   }
 
-  getAllDriveTimeBridges(driveTimeID: number|string): Observable<NewYorkBridgesApiResponse> {
-    return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}/`);
+  getAllDriveTimeBridges(driveTimeID: number|string): Observable<NewYorkBridgeFeature[]> {
+    return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}`).pipe(
+      expand(data => data.next ? this.http.get<NewYorkBridgesApiResponse>(data.next) : EMPTY),
+      map(d => d.results.features),
+      reduce((x, acc) => acc.concat(x))
+    );
+    // return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}/`)
+    //            .pipe(mergeMap(x => this.http.get<NewYorkBridgesApiResponse>(x.next)
+    //                                    .pipe(map(d => x.results.features.concat(d.results.features)))));
   }
 
   getNewYorkBridgesBounds(uri: string, pageNumber: number, bounds): Observable<NewYorkBridgesApiResponse> {

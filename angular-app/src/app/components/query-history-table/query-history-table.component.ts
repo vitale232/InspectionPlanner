@@ -27,7 +27,6 @@ export class QueryHistoryTableComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.driveTimeQueryService.receiveRecentQueriesArray$().subscribe(
         data => {
-          console.log('data from ngOnInit query table', data);
           this.recentQueries = new MatTableDataSource(data);
           this.driveTimeQueryService.originalDriveTimeQueryCount = data.length;
         },
