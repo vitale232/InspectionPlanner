@@ -23,7 +23,7 @@ import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service
   styleUrls: ['./drive-time-map.component.css']
 })
 export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, OnDestroy {
-  driveTimeID: number|null;
+  driveTimeID: number;
   splitterOrientation = 'horizontal';
   bridgeMarker = driveTimeMapConfig.bridgeMarker;
   driveTimeSearchMarker = driveTimeMapConfig.driveTimeSearchMarker;

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { timer, Observable, Subject } from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { concatMap, map, filter, take, mergeMap } from 'rxjs/operators';
+import { filter, take, mergeMap } from 'rxjs/operators';
 import { IDriveTimeQueryApiResponse, IDriveTimeQueryFeature, IQueryProperties } from '../models/drive-time-queries.model';
 
 @Injectable({
@@ -23,7 +23,7 @@ export class DriveTimeQueryService {
     return timer(0, 20000)
       .pipe(
         mergeMap((i) => {
-          console.log('from concat map, i=', i);
+          console.log('from mergeMap, i=', i);
           return this.newDriveTimeQuery(searchText, driveTimeHours);
         }),
         filter((response: HttpResponse<any>) => response.status === 200),

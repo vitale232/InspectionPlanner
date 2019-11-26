@@ -11,6 +11,7 @@ export class NewYorkBridgeService {
   bridgeExtent = new Subject<NewYorkBridgeFeature>();
   newYorkBridgesUri = 'bridges/new-york-bridges/';
   newYorkBridgesLuckyUri = 'bridges/new-york-bridges/feeling-lucky/';
+  driveTimeBridgesUri = 'bridges/new-york-bridges/drive-time-query/';
 
   constructor(
     private http: HttpClient
@@ -22,6 +23,10 @@ export class NewYorkBridgeService {
 
   getBridgeFeature$(): Observable<NewYorkBridgeFeature> {
     return this.bridgeExtent.asObservable();
+  }
+
+  getAllDriveTimeBridges(driveTimeID: number|string): Observable<NewYorkBridgesApiResponse> {
+    return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}/`);
   }
 
   getNewYorkBridgesBounds(uri: string, pageNumber: number, bounds): Observable<NewYorkBridgesApiResponse> {
