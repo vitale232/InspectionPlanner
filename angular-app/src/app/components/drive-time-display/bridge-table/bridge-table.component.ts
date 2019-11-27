@@ -11,8 +11,8 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./bridge-table.component.css']
 })
 export class BridgeTableComponent implements OnInit {
-  bridgeDataSource: MatTableDataSource<NewYorkBridgeFeature>;
-  driveTimeID: number;
+  bridgeDataSource: MatTableDataSource<NewYorkBridgeFeature> | null;
+  driveTimeID: number | null;
 
   subscriptions = new Subscription();
   displayedColumns = [ 'inspection', 'bin' , 'county', 'owner', 'structure', 'materials', 'aadt', ];
@@ -26,9 +26,8 @@ export class BridgeTableComponent implements OnInit {
     this.subscriptions.add(
       this.route.params.subscribe(
         params => {
-          console.log('params', params);
           this.driveTimeID = params.driveTimeID;
-          console.log('this.driveTimeID', this.driveTimeID);
+          this.bridgeDataSource = null;
           this.newYorkBridgeService.getAllDriveTimeBridges(this.driveTimeID).subscribe(
             data => this.bridgeDataSource = new MatTableDataSource(data),
             bridgeErr => console.error(bridgeErr),

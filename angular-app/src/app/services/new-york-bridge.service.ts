@@ -28,7 +28,7 @@ export class NewYorkBridgeService {
 
   getAllDriveTimeBridges(driveTimeID: number|string): Observable<NewYorkBridgeFeature[]> {
     return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}`).pipe(
-      expand(data => data.next ? this.http.get<NewYorkBridgesApiResponse>(data.next) : EMPTY),
+      expand(data => data.next ? this.http.get<NewYorkBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),
       map(d => d.results.features),
       reduce((x, acc) => acc.concat(x))
     );

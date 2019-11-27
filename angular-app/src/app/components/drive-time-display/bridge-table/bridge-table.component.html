@@ -1,3 +1,7 @@
+<div *ngIf="!bridgeDataSource" class="spinner-container">
+    <mat-spinner color="accent" class="center-spinner"></mat-spinner>
+</div>
+
 <table mat-table *ngIf="bridgeDataSource" [dataSource]="bridgeDataSource">
         <ng-container matColumnDef="id">
         <th mat-header-cell *matHeaderCellDef> ID </th>

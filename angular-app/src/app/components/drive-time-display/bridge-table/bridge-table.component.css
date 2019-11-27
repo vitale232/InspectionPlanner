@@ -6,3 +6,11 @@ tr.table-row:hover {
     text-align: right !important;
     justify-content: flex-end;
 }
+
+.center-spinner {
+    margin: 0 auto;
+}
+
+.spinner-container {
+    margin-top: 20px;
+}
