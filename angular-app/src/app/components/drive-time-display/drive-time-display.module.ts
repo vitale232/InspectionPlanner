@@ -8,6 +8,7 @@ import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { AngularSplitModule } from 'angular-split';
 import { BridgeTableComponent } from './bridge-table/bridge-table.component';
 import { MatTableModule, MatProgressSpinnerModule } from '@angular/material';
+import { BridgeGridComponent } from './bridge-grid/bridge-grid.component';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { MatTableModule, MatProgressSpinnerModule } from '@angular/material';
     DriveTimeDisplayComponent,
     DriveTimeMapComponent,
     BridgeTableComponent,
+    BridgeGridComponent,
   ],
   imports: [
     CommonModule,
