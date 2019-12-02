@@ -81,7 +81,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
             new L.LatLng(data.properties.lat, data.properties.lon),
             { icon: this.driveTimeSearchMarker }
           ).bindPopup(
-            `<h3> Drive Time Search: ${data.properties.drive_time_hours} hours </h3>` +
+            `<h3> Drive Time Search: ${data.properties.drive_time_hours.toFixed(2)} hours </h3>` +
             `<dl> <dt> Search Location: </dt> <dd> ${data.properties.display_name} </dd>` +
             `<dt> Latitude, Longitude: </dt> <dd> ` +
               `${data.properties.lat.toFixed(4)}, ` +
