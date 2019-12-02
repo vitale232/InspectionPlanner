@@ -2,7 +2,7 @@ import { columnFactory } from '@pebula/ngrid';
 
 export const COLUMNS = columnFactory()
   .table(
-    // { prop: 'id', sort: true, },
+    { prop: 'id', sort: true, },
     { prop: 'properties.inspection', sort: true, label: 'Inspected Date' },
     { prop: 'properties.bin', sort: true, label: 'BIN', },
     { prop: 'properties.county_name', sort: true, label: 'County', },
@@ -12,6 +12,6 @@ export const COLUMNS = columnFactory()
     { prop: 'properties.aadt', sort: true, label: 'AADT' },
   )
   .header(
-    // { rowClassName: 'pbl-groupby-row' },
+    { rowClassName: 'pbl-groupby-row' },
     { id: 'pbl-groupby-row', type: 'pbl-groupby-row', label: ' ' },
     );

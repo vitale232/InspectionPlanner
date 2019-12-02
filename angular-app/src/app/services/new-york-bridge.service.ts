@@ -3,7 +3,7 @@ import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from '../models/new-y
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, of, EMPTY } from 'rxjs';
 import { BridgeQuery } from '../models/bridge-query.model';
-import { map, mergeMap, expand, reduce } from 'rxjs/operators';
+import { map, mergeMap, expand, reduce, finalize } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -41,6 +41,7 @@ export class NewYorkBridgeService {
       expand(data => data.next ? this.http.get<NewYorkBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),
       map(d => d.results.features),
       reduce((x, acc) => acc.concat(x)),
+      finalize(() => this.sendLoadingState(false)),
     );
     // return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}/`)
     //            .pipe(mergeMap(x => this.http.get<NewYorkBridgesApiResponse>(x.next)

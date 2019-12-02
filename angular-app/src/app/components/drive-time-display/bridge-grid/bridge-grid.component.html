@@ -1,19 +1,26 @@
 <!-- <p>bridge-grid works!</p> -->
-<p>Drive Time Query: {{driveTimeID}}</p>
-<div *ngIf="loading"> Loading... </div>
-<pbl-ngrid id="newYorkBridgeGrid" persistState
-           matHeaderContextMenu="excelMenu"
-           rowReorder
-           columnReorder
-           blockUi
-           matSort
-           vScrollFixed
-           cellTooltip
-           matCheckboxSelection="selection"
-           focusMode="cell"
-           [dataSource]="bridgesDataSource"
-           [columns]="columns"
-           (cellClick)="$event.context && $event.context.startEdit()"
-           style="height: 500px"
-           class="pbl-ngrid-cell-ellipsis pbl-ngrid-header-cell-ellipsis">
-</pbl-ngrid>
+<section class="mat-typography">
+    <h3>Drive Time Query: {{driveTimeID}}</h3>
+</section>
+<div *ngIf="loading" class="spinner-container">
+    <mat-spinner color="accent" class="center-spinner"></mat-spinner>
+</div>
+
+<div class="grid-container">
+    <pbl-ngrid id="newYorkBridgeGrid" persistState
+               matHeaderContextMenu="excelMenu"
+               rowReorder
+               columnReorder
+               blockUi
+               matSort
+               vScrollFixed
+               cellTooltip
+               matCheckboxSelection="selection"
+               focusMode="cell"
+               [dataSource]="bridgesDataSource"
+               [columns]="columns"
+               (cellClick)="$event.context && $event.context.startEdit()"
+               style="height: 500px"
+               class="pbl-ngrid-cell-ellipsis pbl-ngrid-header-cell-ellipsis"
+               > </pbl-ngrid>
+</div>
