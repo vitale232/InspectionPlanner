@@ -7,7 +7,7 @@ import { DriveTimeMapComponent } from './drive-time-map/drive-time-map.component
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { AngularSplitModule } from 'angular-split';
 import { BridgeTableComponent } from './bridge-table/bridge-table.component';
-import { MatTableModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatTableModule, MatProgressSpinnerModule, MatToolbarModule, MatButtonModule, MatIconModule } from '@angular/material';
 import { BridgeGridComponent } from './bridge-grid/bridge-grid.component';
 import { PblNgridModule } from '@pebula/ngrid';
 
@@ -27,6 +27,9 @@ import { PblNgridModule } from '@pebula/ngrid';
     MatTableModule,
     MatProgressSpinnerModule,
     PblNgridModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
   ]
 })
 export class DriveTimeDisplayModule { }

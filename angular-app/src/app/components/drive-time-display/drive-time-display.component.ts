@@ -10,6 +10,7 @@ export class DriveTimeDisplayComponent implements OnInit, AfterViewInit {
   splitterOrientation = 'horizontal';
   mapSize = 100;
   tableSize = 0;
+  visible = true;
 
   @ViewChild(DriveTimeMapComponent, { static: false })
   private driveTimeMapComponent: DriveTimeMapComponent;
@@ -26,6 +27,13 @@ export class DriveTimeDisplayComponent implements OnInit, AfterViewInit {
     this.invalidateMapSize();
   }
 
+  closeTable() {
+    this.mapSize = 100;
+    this.tableSize = 0;
+    this.visible = false;
+    this.invalidateMapSize();
+  }
+
   invalidateMapSize() {
     setTimeout(() => this.driveTimeMapComponent.map.invalidateSize(true), 100);
   }
@@ -38,8 +46,10 @@ export class DriveTimeDisplayComponent implements OnInit, AfterViewInit {
     }
   }
 
-  splitDragEnd() {
-    console.log('splitDragEnd');
+  splitDragEnd(event: { gutterNum: number, sizes: number[] }) {
+    console.log('splitDragEnd', event);
+    this.mapSize = event.sizes[0];
+    this.tableSize = event.sizes[1];
     this.invalidateMapSize();
   }
 
