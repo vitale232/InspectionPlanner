@@ -1,7 +1,7 @@
 import { columnFactory } from '@pebula/ngrid';
 
 export const COLUMNS = columnFactory()
-  .default({ width: '100px', resize: true, reorder: true})
+  .default({ width: '75px', resize: true, reorder: true})
   .table(
     { prop: 'id', sort: true, },
     { prop: 'properties.inspection', id: 'inspection', sort: true, label: 'Inspected Date' },
