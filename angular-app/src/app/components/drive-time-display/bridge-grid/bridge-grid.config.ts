@@ -13,7 +13,7 @@ export const COLUMNS = columnFactory()
     { prop: 'properties.crossed', id: 'crossed', sort: true, label: 'Crossed Roadway' },
     { prop: 'properties.aadt', id: 'aadt', sort: true, label: 'AADT' },
     { prop: 'properties.year_built', id: 'yearBuilt', sort: true, label: 'Year Built' },
-    { prop: 'properties.condition_field', id: 'conditionRating', sort: true, label: 'Condition Rating', type: 'number', }
+    { prop: 'properties.condition_field', id: 'conditionRating', sort: true, label: 'Condition Rating', }
   );
   // .header(
   //   { rowClassName: 'pbl-groupby-row' },
