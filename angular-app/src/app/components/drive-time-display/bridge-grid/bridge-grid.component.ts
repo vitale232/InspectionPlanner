@@ -40,8 +40,6 @@ export class BridgeGridComponent implements OnInit {
   ) {  }
 
   ngOnInit() {
-    console.log('bridgesDataSource', this.bridgesDataSource);
-    console.log('columns', this.columns);
     this.subscriptions.add(
       this.newYorkBridgeService.getLoadingState$().subscribe(
         loadingState => this.loading = loadingState,
@@ -59,7 +57,6 @@ export class BridgeGridComponent implements OnInit {
   }
 
   getBridges(event): Observable<NewYorkBridgeFeature[]> {
-    console.log('event', event);
     this.loading = true;
     return this.newYorkBridgeService.getAllDriveTimeBridges(this.driveTimeID);
   }

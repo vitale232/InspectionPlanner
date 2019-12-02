@@ -3,9 +3,11 @@
         <as-split-area [size]="mapSize">
             <app-drive-time-map></app-drive-time-map>  
         </as-split-area>
-        <as-split-area [size]="tableSize"
-                       >
-            <mat-toolbar color="primary"> <button mat-icon-button (click)="closeTable()"> <mat-icon> close </mat-icon></button></mat-toolbar>
+        <as-split-area [size]="tableSize">
+            <mat-toolbar color="primary">
+                <button mat-icon-button (click)="closeTable()"> <mat-icon> close </mat-icon></button>
+                <button mat-icon-button (click)="useMapExtent($event)"> <mat-icon> map </mat-icon></button>
+            </mat-toolbar>
             <app-bridge-grid></app-bridge-grid>
         </as-split-area>
   </as-split>

@@ -27,6 +27,10 @@ export class DriveTimeDisplayComponent implements OnInit, AfterViewInit {
     this.invalidateMapSize();
   }
 
+  useMapExtent(event) {
+    console.log('You clicked the map extent button', event);
+  }
+
   closeTable() {
     this.mapSize = 100;
     this.tableSize = 0;
