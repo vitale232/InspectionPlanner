@@ -57,7 +57,6 @@ export class DriveTimeQueryService {
       .subscribe(
         (data: IDriveTimeQueryApiResponse) => {
           this.originalDriveTimeQueryCount = data.count;
-          console.log('dtq count', this.originalDriveTimeQueryCount);
           const features = data.results.features;
           const queryProperties = [];
           features.forEach(element => {

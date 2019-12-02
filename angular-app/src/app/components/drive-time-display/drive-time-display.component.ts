@@ -28,7 +28,6 @@ export class DriveTimeDisplayComponent implements OnInit, AfterViewInit {
 
   invalidateMapSize() {
     setTimeout(() => this.driveTimeMapComponent.map.invalidateSize(true), 100);
-    setTimeout(() => console.log('fired'), 100);
   }
 
   getSplitterOrientation() {

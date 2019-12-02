@@ -13,10 +13,19 @@ export class NewYorkBridgeService {
   newYorkBridgesUri = 'bridges/new-york-bridges/';
   newYorkBridgesLuckyUri = 'bridges/new-york-bridges/feeling-lucky/';
   driveTimeBridgesUri = 'bridges/new-york-bridges/drive-time-query/';
+  loadingAllBridgesSubject = new Subject<boolean>();
 
   constructor(
     private http: HttpClient
   ) { }
+
+  getLoadingState$(): Observable<boolean> {
+    return this.loadingAllBridgesSubject.asObservable();
+  }
+
+  sendLoadingState(loadingBool: boolean): void {
+    this.loadingAllBridgesSubject.next(loadingBool);
+  }
 
   sendBridgeFeature(feature: NewYorkBridgeFeature): void {
     this.bridgeExtent.next(feature);
@@ -27,10 +36,11 @@ export class NewYorkBridgeService {
   }
 
   getAllDriveTimeBridges(driveTimeID: number|string): Observable<NewYorkBridgeFeature[]> {
+    console.log('getAllDriveTimeBridges driveTimeID:', driveTimeID);
     return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}`).pipe(
       expand(data => data.next ? this.http.get<NewYorkBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),
       map(d => d.results.features),
-      reduce((x, acc) => acc.concat(x))
+      reduce((x, acc) => acc.concat(x)),
     );
     // return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}/`)
     //            .pipe(mergeMap(x => this.http.get<NewYorkBridgesApiResponse>(x.next)

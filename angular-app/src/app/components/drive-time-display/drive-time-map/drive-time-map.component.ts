@@ -72,7 +72,6 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       this.newYorkBridgesLuckyUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
       this.titleService.setTitle(`IPA - Drive Time Query ${this.driveTimeID}`);
       this.subscriptions.add(this.driveTimeQueryService.getDriveTimeQuery(this.driveTimeID).subscribe((data) => {
-        console.log('driveTime data', data);
         this.filterOverlays('Drive Time Query', true);
         this.model.overlayLayers.push({
           id: 'Drive Time Query',
@@ -94,7 +93,6 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
         });
       }));
     }));
-    console.log(`the driveTimeID is ${this.driveTimeID} of type ${typeof this.driveTimeID}`);
   }
 
   ngOnDestroy() {

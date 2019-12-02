@@ -1,4 +1,6 @@
 /* Add application styles & imports to this file! */
+@import '@pebula/ngrid/themes/default-dark.css';
+
 html, body {
     margin: 0;
     height: 100%;

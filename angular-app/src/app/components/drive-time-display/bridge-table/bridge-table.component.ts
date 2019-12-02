@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
 import { MatTableDataSource } from '@angular/material';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './bridge-table.component.html',
   styleUrls: ['./bridge-table.component.css']
 })
-export class BridgeTableComponent implements OnInit {
+export class BridgeTableComponent implements OnInit, OnDestroy {
   bridgeDataSource: MatTableDataSource<NewYorkBridgeFeature> | null;
   driveTimeID: number | null;
 
@@ -38,6 +38,12 @@ export class BridgeTableComponent implements OnInit {
         () => console.log('params complete')
       )
     );
+  }
+
+  ngOnDestroy() {
+    if (this.subscriptions) {
+      this.subscriptions.unsubscribe();
+    }
   }
 
   onClick(row) {
