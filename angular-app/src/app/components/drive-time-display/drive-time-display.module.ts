@@ -19,6 +19,7 @@ import { PblNgridDetailRowModule } from '@pebula/ngrid/detail-row';
 import { PblNgridStickyModule } from '@pebula/ngrid/sticky';
 import { PblNgridStatePluginModule } from '@pebula/ngrid/state';
 import { PblNgridMaterialModule } from '@pebula/ngrid-material';
+import { FormsModule } from '@angular/forms';
 
 
 
@@ -31,6 +32,7 @@ import { PblNgridMaterialModule } from '@pebula/ngrid-material';
   ],
   imports: [
     CommonModule,
+    FormsModule,
     DriveTimeDisplayRoutingModule,
     LeafletModule,
     AngularSplitModule,

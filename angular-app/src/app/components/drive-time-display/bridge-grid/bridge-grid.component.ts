@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ChangeDetectionStrategy, Output, EventEmi
 import { createDS, PblNgridComponent } from '@pebula/ngrid';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import * as config from './bridge-grid.config';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
 import { Observable, Subscription } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
@@ -12,13 +12,13 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
   selector: 'app-bridge-grid',
   templateUrl: './bridge-grid.component.html',
   styleUrls: ['./bridge-grid.component.css'],
-  animations: [
-    trigger('detailExpand', [
-      state('void', style({height: '0px', minHeight: '0', visibility: 'hidden'})),
-      state('*', style({height: '*', visibility: 'visible'})),
-      transition('void <=> *', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
+  // animations: [
+  //   trigger('detailExpand', [
+  //     state('void', style({height: '0px', minHeight: '0', visibility: 'hidden'})),
+  //     state('*', style({height: '*', visibility: 'visible'})),
+  //     transition('void <=> *', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+  //   ]),
+  // ],
   // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BridgeGridComponent implements OnInit {
@@ -31,6 +31,7 @@ export class BridgeGridComponent implements OnInit {
     .create();
   columns = config.COLUMNS.build();
   driveTimeID: number;
+  useMapExtent = false;
 
   @ViewChild(PblNgridComponent, { static: true }) table: PblNgridComponent<NewYorkBridgeFeature>;
   @Output() tableWidth = new EventEmitter<number>();
@@ -38,7 +39,6 @@ export class BridgeGridComponent implements OnInit {
   constructor(
     private newYorkBridgeService: NewYorkBridgeService,
     private route: ActivatedRoute,
-    private router: Router,
   ) {  }
 
   ngOnInit() {
