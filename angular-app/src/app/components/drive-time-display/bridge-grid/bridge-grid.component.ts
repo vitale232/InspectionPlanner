@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ViewChild, ChangeDetectionStrategy, Output, EventEmitter } from '@angular/core';
 import { createDS, PblNgridComponent } from '@pebula/ngrid';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import * as config from './bridge-grid.config';
@@ -6,6 +6,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
 import { Observable, Subscription } from 'rxjs';
 import { trigger, state, style, transition, animate } from '@angular/animations';
+
 
 @Component({
   selector: 'app-bridge-grid',
@@ -32,6 +33,7 @@ export class BridgeGridComponent implements OnInit {
   driveTimeID: number;
 
   @ViewChild(PblNgridComponent, { static: true }) table: PblNgridComponent<NewYorkBridgeFeature>;
+  @Output() tableWidth = new EventEmitter<number>();
 
   constructor(
     private newYorkBridgeService: NewYorkBridgeService,
@@ -68,5 +70,10 @@ export class BridgeGridComponent implements OnInit {
       this.table.ds.refresh();
       console.log('refreshed table.ds.refresh', this.table.ds);
     }
+  }
+
+  closeTable() {
+    console.log('closeTable()', 0);
+    this.tableWidth.emit(0);
   }
 }

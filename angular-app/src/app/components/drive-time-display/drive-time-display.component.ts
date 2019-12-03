@@ -61,4 +61,9 @@ export class DriveTimeDisplayComponent implements OnInit, AfterViewInit {
     this.getSplitterOrientation();
   }
 
+  onWidthChange(event) {
+    console.log('onWidthChange()', event);
+    this.closeTable();
+  }
+
 }
