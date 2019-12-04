@@ -8,7 +8,7 @@
             cellTooltip
             matCheckboxSelection="selection"
             focusMode="cell"
-            [dataSource]="selectedDataSource"
+            [dataSource]="useMapExtent ? mapBridgesDataSource : allBridgesDataSource"
             [columns]="columns"
             (cellClick)="$event.context && $event.context.startEdit()"
             class="grid pbl-ngrid-cell-ellipsis pbl-ngrid-header-cell-ellipsis"
@@ -17,24 +17,29 @@
     <div *pblNgridOuterSection="'top'">
         <mat-toolbar>
             <div *ngIf="useMapExtent">
-                <button mat-icon-button
-                        color="warn"
-                        matTooltip="Use map extent to populate table"
-                        (click)="toggleMapExtent()"
+                <button mat-button
+                        matTooltip="Populate table with all bridges in this drive time search"
+                        (click)="toggleUseMapExtent()"
                         >
-                    <mat-icon>zoom_out_map</mat-icon>
+                    <mat-icon>visibility</mat-icon> Show All Bridges
                 </button>
             </div>
             <div *ngIf="!useMapExtent">
-                <button mat-icon-button
-                        matTooltip="Use map extent to populate table"
-                        (click)="toggleMapExtent()"
+                <button mat-button
+                        color="warn"
+                        matTooltip="Populate table with bridges displayed on the map"
+                        (click)="toggleUseMapExtent()"
                         >
-                    <mat-icon>zoom_out_map</mat-icon>
+                        <mat-icon>visibility_off</mat-icon> Show Map Bridges
                 </button>
             </div>
-            <p>useMapExtent: {{useMapExtent}}</p>
-            <button mat-icon-button><mat-icon>gps_fixed</mat-icon></button>  
+            <button mat-icon-button
+                   (click)="refresh()"
+                   matTooltip="Refresh grid data"
+                   >
+                   <mat-icon>refresh</mat-icon>
+            </button>
+            <!-- <button mat-icon-button><mat-icon>gps_fixed</mat-icon></button>   -->
             <span class="fill-remaining-space"></span>
             <button mat-icon-button
                     aria-label="Close table screen split"
@@ -43,8 +48,16 @@
                     > <mat-icon>close</mat-icon>
             </button>
         </mat-toolbar>
-        <div *ngIf="loading" class="spinner-container">
-            <mat-spinner color="accent" class="center-spinner"></mat-spinner>
+        <div *ngIf="loading">
+            <mat-progress-bar color="primary" mode="query"></mat-progress-bar>
         </div>
     </div>
-    </pbl-ngrid>
+    <div *pblNgridOuterSection="'bottom'" class="typography-container mat-typography">
+        <div *ngIf="useMapExtent; else allBridges">
+            Tabulated {{ mapBridgesDataSource.length }} bridges
+        </div>
+        <ng-template #allBridges>
+            Tabulated {{ allBridgesDataSource.length }} bridges
+        </ng-template>
+    </div>
+</pbl-ngrid>

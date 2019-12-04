@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from '../models/new-york-bridges.model';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject, of, EMPTY } from 'rxjs';
+import { Observable, Subject, of, EMPTY, BehaviorSubject } from 'rxjs';
 import { BridgeQuery } from '../models/bridge-query.model';
 import { map, mergeMap, expand, reduce, finalize } from 'rxjs/operators';
 
@@ -14,7 +14,7 @@ export class NewYorkBridgeService {
   newYorkBridgesLuckyUri = 'bridges/new-york-bridges/feeling-lucky/';
   driveTimeBridgesUri = 'bridges/new-york-bridges/drive-time-query/';
   loadingAllBridgesSubject = new Subject<boolean>();
-  displayedBridgesSubject = new Subject<NewYorkBridgeFeature[]>();
+  displayedBridgesSubject = new BehaviorSubject<NewYorkBridgeFeature[]>([]);
 
   constructor(
     private http: HttpClient
@@ -45,16 +45,12 @@ export class NewYorkBridgeService {
   }
 
   getAllDriveTimeBridges(driveTimeID: number|string): Observable<NewYorkBridgeFeature[]> {
-    console.log('getAllDriveTimeBridges driveTimeID:', driveTimeID);
     return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}`).pipe(
       expand(data => data.next ? this.http.get<NewYorkBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),
       map(d => d.results.features),
       reduce((x, acc) => acc.concat(x)),
       finalize(() => this.sendLoadingState(false)),
     );
-    // return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}/`)
-    //            .pipe(mergeMap(x => this.http.get<NewYorkBridgesApiResponse>(x.next)
-    //                                    .pipe(map(d => x.results.features.concat(d.results.features)))));
   }
 
   getNewYorkBridgesBounds(uri: string, pageNumber: number, bounds): Observable<NewYorkBridgesApiResponse> {
