@@ -12,8 +12,7 @@ export class DriveTimeDisplayComponent implements OnInit, AfterViewInit {
   tableSize = 0;
   visible = true;
 
-  @ViewChild(DriveTimeMapComponent, { static: false })
-  private driveTimeMapComponent: DriveTimeMapComponent;
+  @ViewChild(DriveTimeMapComponent, { static: false }) private driveTimeMapComponent: DriveTimeMapComponent;
 
   constructor() { }
 

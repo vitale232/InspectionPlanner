@@ -8,18 +8,19 @@
             cellTooltip
             matCheckboxSelection="selection"
             focusMode="cell"
-            [dataSource]="bridgesDataSource"
+            [dataSource]="selectedDataSource"
             [columns]="columns"
             (cellClick)="$event.context && $event.context.startEdit()"
             class="grid pbl-ngrid-cell-ellipsis pbl-ngrid-header-cell-ellipsis"
             >
+    <!-- <div *pblNgridCellTypeDef="'number'">123<div> -->
     <div *pblNgridOuterSection="'top'">
         <mat-toolbar>
             <div *ngIf="useMapExtent">
                 <button mat-icon-button
                         color="warn"
                         matTooltip="Use map extent to populate table"
-                        (click)="useMapExtent = false"
+                        (click)="toggleMapExtent()"
                         >
                     <mat-icon>zoom_out_map</mat-icon>
                 </button>
@@ -27,12 +28,13 @@
             <div *ngIf="!useMapExtent">
                 <button mat-icon-button
                         matTooltip="Use map extent to populate table"
-                        (click)="useMapExtent = true"
+                        (click)="toggleMapExtent()"
                         >
                     <mat-icon>zoom_out_map</mat-icon>
                 </button>
             </div>
-            <p>useMapExtent: {{useMapExtent}}</p>    
+            <p>useMapExtent: {{useMapExtent}}</p>
+            <button mat-icon-button><mat-icon>gps_fixed</mat-icon></button>  
             <span class="fill-remaining-space"></span>
             <button mat-icon-button
                     aria-label="Close table screen split"

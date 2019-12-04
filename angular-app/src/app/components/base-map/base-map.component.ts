@@ -505,6 +505,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
           this.openSnackbar(
             `Displaying ${data.results.features.length} ` +
             `of ${data.count.toLocaleString()} bridges`);
+          this.newYorkBridgeService.sendDisplayedBridges(data.results.features);
       },
       err => {
         // this.model.overlayLayers = this.model.overlayLayers
@@ -553,6 +554,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
           };
           this.bridges = bridgesGeoJSON;
           this.bridgeBounds = this.bridges.layer.getBounds();
+          this.newYorkBridgeService.sendDisplayedBridges(data.results.features);
         },
         err => {
           // this.model.overlayLayers = this.model.overlayLayers
