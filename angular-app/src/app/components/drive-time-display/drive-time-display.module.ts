@@ -6,7 +6,7 @@ import { DriveTimeDisplayComponent } from './drive-time-display.component';
 import { DriveTimeMapComponent } from './drive-time-map/drive-time-map.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { AngularSplitModule } from 'angular-split';
-import { MatTableModule, MatToolbarModule, MatButtonModule, MatIconModule, MatProgressBarModule } from '@angular/material';
+import { MatTableModule, MatToolbarModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatProgressSpinnerModule } from '@angular/material';
 import { BridgeGridComponent } from './bridge-grid/bridge-grid.component';
 
 import { PblNgridModule } from '@pebula/ngrid';
@@ -36,6 +36,7 @@ import { FormsModule } from '@angular/forms';
     AngularSplitModule,
     MatTableModule,
     MatProgressBarModule,
+    MatProgressSpinnerModule,
     MatToolbarModule,
     MatButtonModule,
     MatIconModule,

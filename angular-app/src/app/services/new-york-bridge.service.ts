@@ -3,7 +3,7 @@ import { NewYorkBridgesApiResponse, NewYorkBridgeFeature } from '../models/new-y
 import { HttpClient } from '@angular/common/http';
 import { Observable, Subject, of, EMPTY, BehaviorSubject } from 'rxjs';
 import { BridgeQuery } from '../models/bridge-query.model';
-import { map, mergeMap, expand, reduce, finalize } from 'rxjs/operators';
+import { map, expand, reduce } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -13,20 +13,11 @@ export class NewYorkBridgeService {
   newYorkBridgesUri = 'bridges/new-york-bridges/';
   newYorkBridgesLuckyUri = 'bridges/new-york-bridges/feeling-lucky/';
   driveTimeBridgesUri = 'bridges/new-york-bridges/drive-time-query/';
-  loadingAllBridgesSubject = new Subject<boolean>();
   displayedBridgesSubject = new BehaviorSubject<NewYorkBridgeFeature[]>([]);
 
   constructor(
     private http: HttpClient
   ) { }
-
-  getLoadingState$(): Observable<boolean> {
-    return this.loadingAllBridgesSubject.asObservable();
-  }
-
-  sendLoadingState(loadingBool: boolean): void {
-    this.loadingAllBridgesSubject.next(loadingBool);
-  }
 
   sendBridgeFeature(feature: NewYorkBridgeFeature): void {
     this.bridgeExtent.next(feature);
@@ -46,10 +37,11 @@ export class NewYorkBridgeService {
 
   getAllDriveTimeBridges(driveTimeID: number|string): Observable<NewYorkBridgeFeature[]> {
     return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}`).pipe(
+      // The API returns a URL for the next page of results as data.next
+      // Replace the "http://" with "https://"
       expand(data => data.next ? this.http.get<NewYorkBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),
       map(d => d.results.features),
       reduce((x, acc) => acc.concat(x)),
-      finalize(() => this.sendLoadingState(false)),
     );
   }
 

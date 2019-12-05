@@ -24,15 +24,15 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
   columns = config.COLUMNS.build();
   allBridgesDataSource = createDS()
     .keepAlive()
-    .onTrigger( () => this.getBridges() )
+    .onTrigger( () => this.getAllBridges() )
     .create();
   mapBridgesDataSource = createDS()
     .keepAlive()
     .onTrigger( () => this.getMapBridges() )
     .create();
 
-  @ViewChild(PblNgridComponent, { static: true }) table: PblNgridComponent<NewYorkBridgeFeature>;
-  @Output() tableWidth = new EventEmitter<number>();
+    @Output() tableWidth = new EventEmitter<number>();
+    @ViewChild(PblNgridComponent, { static: true }) table: PblNgridComponent<NewYorkBridgeFeature>;
 
   constructor(
     private newYorkBridgeService: NewYorkBridgeService,
@@ -40,12 +40,6 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.subscriptions.add(
-      this.newYorkBridgeService.getLoadingState$().subscribe(
-        loadingState => this.loading = loadingState,
-        (err) => console.error(err),
-      )
-    );
     this.subscriptions.add(
       this.route.params.subscribe(params => {
         this.driveTimeID = parseInt(params.driveTimeID, 10);
@@ -61,8 +55,7 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
     delete this.mapBridgesDataSource;
   }
 
-  getBridges(): Observable<NewYorkBridgeFeature[]> {
-    this.loading = true;
+  getAllBridges(): Observable<NewYorkBridgeFeature[]> {
     return this.newYorkBridgeService.getAllDriveTimeBridges(this.driveTimeID);
   }
 
@@ -74,7 +67,6 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
     if (this.table.ds) {
       this.table.ds.refresh();
     }
-    this.newYorkBridgeService.sendLoadingState(false);
   }
 
   closeTable(): void {
@@ -82,7 +74,6 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
   }
 
   toggleUseMapExtent(): void {
-    this.newYorkBridgeService.sendLoadingState(false);
     this.useMapExtent = !this.useMapExtent;
   }
 }

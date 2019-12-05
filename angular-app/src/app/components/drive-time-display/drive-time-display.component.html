@@ -1,10 +1,11 @@
 <div class="splitter-container" (window:resize)="onResize($event)">
-    <as-split [direction]="splitterOrientation" (dragEnd)="splitDragEnd($event)">
-        <as-split-area [size]="mapSize">
-            <app-drive-time-map></app-drive-time-map>  
-        </as-split-area>
-        <as-split-area [size]="tableSize">
-            <app-bridge-grid (tableWidth)="onWidthChange($event)"></app-bridge-grid>
-        </as-split-area>
+  <as-split [direction]="splitterOrientation" (dragEnd)="splitDragEnd($event)">
+    <as-split-area [size]="mapSize">
+      <app-drive-time-map></app-drive-time-map>  
+    </as-split-area>
+
+    <as-split-area [size]="tableSize">
+      <app-bridge-grid (tableWidth)="onWidthChange($event)"></app-bridge-grid>
+    </as-split-area>
   </as-split>
 </div>
