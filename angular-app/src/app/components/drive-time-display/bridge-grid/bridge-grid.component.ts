@@ -16,6 +16,8 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
   driveTimeID: number;
   loading = true;
   subscriptions = new Subscription();
+  showHelpCookieValue: boolean;
+  showHelpText = false;
   useMapExtent = true;
 
   // Set up NGrid data structures. allBridgesDataSource will call a function that returns all pages from the API,
@@ -40,6 +42,7 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.initializeShowHelpTextFromLocalStorage();
     this.subscriptions.add(
       this.route.params.subscribe(params => {
         this.driveTimeID = parseInt(params.driveTimeID, 10);
@@ -75,5 +78,33 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
 
   toggleUseMapExtent(): void {
     this.useMapExtent = !this.useMapExtent;
+    console.log('useMapExtent', this.useMapExtent);
+  }
+
+  toggleShowHelpText(): void {
+    this.showHelpText = !this.showHelpText;
+  }
+
+  initializeShowHelpTextFromLocalStorage(): void {
+    const showHelp = localStorage.getItem('showHelpText');
+    if (showHelp) {
+      this.showHelpText = false;
+      this.showHelpCookieValue = false;
+      console.log('initializeShowHelpText', this.showHelpText);
+      console.log('initializeShowHelp', showHelp);
+    } else {
+      this.showHelpText = true;
+      this.showHelpCookieValue = true;
+    }
+  }
+
+  writeDismissHelpCookie(): void {
+    localStorage.setItem('showHelpText', 'false');
+    this.showHelpCookieValue = false;
+    this.toggleShowHelpText();
+  }
+
+  cellClick(event) {
+    console.log('cellClick', event);
   }
 }

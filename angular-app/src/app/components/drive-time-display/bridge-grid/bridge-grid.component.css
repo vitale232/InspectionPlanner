@@ -22,5 +22,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  
+}
+
+.help-container {
+    padding: 15px 15px;
+}
+
+.help-buttons {
+    padding-bottom: 5px;
+}

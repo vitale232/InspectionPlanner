@@ -36,7 +36,7 @@ export class NewYorkBridgeService {
   }
 
   getAllDriveTimeBridges(driveTimeID: number|string): Observable<NewYorkBridgeFeature[]> {
-    return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}`).pipe(
+    return this.http.get<NewYorkBridgesApiResponse>(this.driveTimeBridgesUri + `${driveTimeID}/`).pipe(
       // The API returns a URL for the next page of results as data.next
       // Replace the "http://" with "https://"
       expand(data => data.next ? this.http.get<NewYorkBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),
