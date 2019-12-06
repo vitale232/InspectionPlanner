@@ -22,16 +22,16 @@
     <div *pblNgridOuterSection="'top'">
         <mat-toolbar>
             <button mat-icon-button
-                   (click)="refresh()"
-                   matTooltip="Refresh grid data"
-                   >
-                   <mat-icon>refresh</mat-icon>
+                    (click)="refresh()"
+                    matTooltip="Refresh grid data"
+                    >
+                    <mat-icon>refresh</mat-icon>
             </button>
             <button mat-icon-button
-                   (click)="refresh()"
-                   matTooltip="Copy selected grid cells"
-                   >
-                   <mat-icon>file_copy</mat-icon>
+                    (click)="refresh()"
+                    matTooltip="Copy selected grid cells"
+                    >
+                    <mat-icon>file_copy</mat-icon>
             </button>
             <button mat-icon-button
                     aria-label="Show help text for grid"
@@ -48,64 +48,25 @@
                     > <mat-icon>close</mat-icon>
             </button>
         </mat-toolbar>
-        <section class="mat-typography help-container" *ngIf="showHelpText">
-            <button mat-button
-                    class="help-button"
-                    color="accent"
-                    (click)="toggleShowHelpText()"
-                    matTooltip="Temporarily close help text. It can be toggled with the question mark icon.">
-                <mat-icon>close</mat-icon> Dismiss
-            </button>
-            <button mat-button
-                    class="help-button"
-                    *ngIf="showHelpCookieValue"
-                    color="warn"
-                    (click)="writeDismissHelpCookie()"
-                    matTooltip="This can be undone by clearing cookies">
-                <mat-icon>close</mat-icon> Dismiss Forever
-            </button>
-            <br>
-            <h2> Grid Help Document </h2>
-            <p>
-                Once you dismiss this help document, you'll be greeted by a feature rich grid (or table).
-                The grid is intended to provide attribute information about the bridges that are present on the map.
-            </p>
-            <h3> What's in the Grid </h3>
-            <p>
-                By default, the grid tabulates the bridges that are appearing on the map. 
-                Change the checkbox input below to toggle between all bridges and the map bridges.
-            </p>
-            <h3> Sort a Column </h3>
-            <p>
-                All columns are sortable by default. You can simply click a column header, and an arrow appears
-                to indicate sort order. An arrow pointing up means the column is sorted "ascending", while an arrow
-                pointing down means a column is sorted "descending".
-            </p>
-            <p>
-                Columns can also be sorted via their context menu. Click the 3 dots icon on the column header, hover over
-                the text "Sort", and pick "Ascending" or "Descending".
-            </p>
-            <p>
-                <strong> Note: </strong> Sometimes the column header text
-                obfuscates the 3 dots icon. You can widen the column by double clicking the right side of the header cell
-                (like in Excel), or dragging the right side of the column cell to the desired width.
-            </p>
-
-            <h3> Search a Column </h3>
-            <p>
-                Search functionality is accessed via the column context menu, accessed by clicking the 3 dot icon
-                in the column header. Searching will look for all cells that contain the input text. For example,
-                if you're drive time search includes Saratoga County, NY and Albany County, NY, but you're only,
-                interested in the Saratoga County bridges, you can search the county column for "Saratoga". You'll
-                be happy to find, the grid will only show Saratoga bridges.
-            </p>
-            <p>
-                
-            </p>
-            <h3> Hide a Column </h3>
-            <p>
-                You can easily hide a column using it's context menu
-            </p>
+        <section class="mat-typography help-container">
+            <div *ngIf="showHelpText">
+                <button mat-button
+                        class="help-button"
+                        color="accent"
+                        (click)="toggleShowHelpText()"
+                        matTooltip="Temporarily close help text. It can be toggled with the question mark icon.">
+                    <mat-icon>close</mat-icon> Dismiss
+                </button>
+                <button mat-button
+                        class="help-button"
+                        *ngIf="showHelpCookieValue"
+                        color="warn"
+                        (click)="writeDismissHelpCookie()"
+                        matTooltip="This can be undone by clearing cookies">
+                    <mat-icon>close</mat-icon> Dismiss Forever
+                </button>
+            </div>
+            <app-bridge-grid-outer-section *ngIf="showHelpText"></app-bridge-grid-outer-section>
             <mat-checkbox (click)="toggleUseMapExtent()">Show all bridges for this drive time search</mat-checkbox>
         </section>
     </div>

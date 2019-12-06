@@ -19,6 +19,7 @@ import { PblNgridStickyModule } from '@pebula/ngrid/sticky';
 import { PblNgridStatePluginModule } from '@pebula/ngrid/state';
 import { PblNgridMaterialModule } from '@pebula/ngrid-material';
 import { FormsModule } from '@angular/forms';
+import { BridgeGridOuterSectionComponent } from './bridge-grid-outer-section/bridge-grid-outer-section.component';
 
 
 
@@ -27,6 +28,7 @@ import { FormsModule } from '@angular/forms';
     DriveTimeDisplayComponent,
     DriveTimeMapComponent,
     BridgeGridComponent,
+    BridgeGridOuterSectionComponent,
   ],
   imports: [
     CommonModule,
