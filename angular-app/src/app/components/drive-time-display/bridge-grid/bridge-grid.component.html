@@ -12,6 +12,7 @@
             cellTooltip
             matCheckboxSelection="selection"
             focusMode="cell"
+            clipboard
             [dataSource]="useMapExtent ? mapBridgesDataSource : allBridgesDataSource"
             [columns]="columns"
             (cellClick)="cellClick($event)"

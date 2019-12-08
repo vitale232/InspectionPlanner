@@ -30,6 +30,6 @@ html, body {
 
 .fill-remaining-space {
     flex: 1 1 auto;
-    padding: 50px;
+    /* padding: 50px; */
     text-align: center;
 }
