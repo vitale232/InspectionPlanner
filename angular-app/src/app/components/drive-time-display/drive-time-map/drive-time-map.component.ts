@@ -149,13 +149,15 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
   }
 
   gridClickAddMarker(feature: NewYorkBridgeFeature): void {
+    const zoom = 13;
+
     console.log('grid click', feature);
-    const updateZoom = !(this.mapZoom === 14);
+    const updateZoom = !(this.mapZoom === zoom);
     this.mapCenter = new L.LatLng(
       feature.geometry.coordinates[1],
       feature.geometry.coordinates[0]
     );
-    this.mapZoom = 14;
+    this.mapZoom = zoom;
 
     this.model.overlayLayers.push({
       id: 'Grid click',
@@ -169,7 +171,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     // Allow time for map move animation to finish before fetching data,
     // since data fetching requires the map bounds and center
     if (updateZoom) {
-      setTimeout(() => this.onZoomChange(14), 750);
+      setTimeout(() => this.onZoomChange(zoom), 750);
     }
     this.onMapMove();
     this.apply();
