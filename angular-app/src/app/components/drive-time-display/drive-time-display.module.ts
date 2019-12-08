@@ -6,10 +6,18 @@ import { DriveTimeDisplayComponent } from './drive-time-display.component';
 import { DriveTimeMapComponent } from './drive-time-map/drive-time-map.component';
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { AngularSplitModule } from 'angular-split';
-import { MatTableModule, MatToolbarModule, MatButtonModule, MatIconModule, MatProgressBarModule, MatProgressSpinnerModule, MatCheckboxModule } from '@angular/material';
+import {
+  MatTableModule,
+  MatToolbarModule,
+  MatButtonModule,
+  MatIconModule,
+  MatProgressBarModule,
+  MatProgressSpinnerModule,
+  MatCheckboxModule,
+} from '@angular/material';
 import { BridgeGridComponent } from './bridge-grid/bridge-grid.component';
 
-import { PblNgridModule } from '@pebula/ngrid';
+import { PblNgridModule, PblNgridConfigService } from '@pebula/ngrid';
 import { PblNgridDragModule } from '@pebula/ngrid/drag';
 import { PblNgridTargetEventsModule } from '@pebula/ngrid/target-events';
 import { PblNgridTransposeModule } from '@pebula/ngrid/transpose';
@@ -54,4 +62,9 @@ import { BridgeGridOuterSectionComponent } from './bridge-grid-outer-section/bri
     PblNgridMaterialModule,
   ]
 })
-export class DriveTimeDisplayModule { }
+export class DriveTimeDisplayModule {
+
+  constructor(private ngridConfig: PblNgridConfigService) {
+    ngridConfig.set('targetEvents', { autoEnable: true });
+  }
+}
