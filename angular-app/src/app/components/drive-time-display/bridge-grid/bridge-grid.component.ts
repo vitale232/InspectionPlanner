@@ -112,4 +112,8 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
       this.mapToolsService.gridBinClick(event.row);
     }
   }
+
+  clearBridgeSelections(): void {
+    console.log('clearBridgeSelections() not implemented. You need to refactor your code');
+  }
 }

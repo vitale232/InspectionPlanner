@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { SearchService } from 'src/app/services/search.service';
 import { MatSnackBar } from '@angular/material';
@@ -39,7 +39,6 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     public route: ActivatedRoute,
     public router: Router,
     public location: Location,
-    public changeDetector: ChangeDetectorRef,
     public notifications: NotificationsService,
     public clientLocationService: ClientLocationService,
     public mapToolsService: MapToolsService,
@@ -56,7 +55,6 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       route,
       router,
       location,
-      changeDetector,
       notifications,
       clientLocationService,
       mapToolsService,
@@ -108,7 +106,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     this.filterOverlays('Drive Time Query', true);
   }
 
-  onMapMove(mapMoveEvent: Event) {
+  onMapMove() {
     const page = 1;
     let zoom = null;
     if (this.map) {
@@ -167,7 +165,10 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
         this.gridBinSelectionMarker
       ).bindPopup(this.bridgePopupHtml(feature))
     });
-    this.updateUrl(this.mapZoom);
+    // Allow time for map move animation to finish before fetching data,
+    // since data fetching requires the map bounds and center
+    setTimeout(() => this.onZoomChange(14), 750);
+    this.onMapMove();
     this.apply();
   }
 }

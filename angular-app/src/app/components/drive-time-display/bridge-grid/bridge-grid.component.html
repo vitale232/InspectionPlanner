@@ -38,6 +38,13 @@
                     <mat-icon>file_copy</mat-icon>
             </button>
             <button mat-icon-button
+                    aria-label="Clear bridge selections"
+                    (click)="clearBridgeSelections()"
+                    matTooltip="Clear bridge selections from the map"
+                    >
+                    <mat-icon>layers_clear</mat-icon>
+            </button>
+            <button mat-icon-button
                     aria-label="Show help text for grid"
                     (click)="toggleShowHelpText()"
                     matTooltip="Show help text"
