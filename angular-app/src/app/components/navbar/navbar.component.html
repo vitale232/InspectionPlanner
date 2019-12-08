@@ -48,7 +48,8 @@
     </ng-template>
 
     <span fxHide fxShow.gt-xs class="fill-remaining-space">Inspection Planner Application</span>
-    <span fxHide fxShow.lt-sm class="fill-remaining-space">IPA</span>
+    <span fxHide fxShow.lt-sm class="fill-remaining-space" *ngIf="!driveTimeVisible">IPA</span>
+    <span fxHide fxShow.lt-sm class="fill-remaining-space" *ngIf="driveTimeVisible"></span>
 
     <button mat-button
             *ngIf="driveTimeVisible"
