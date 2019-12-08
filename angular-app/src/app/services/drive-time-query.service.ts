@@ -3,6 +3,7 @@ import { timer, Observable, Subject } from 'rxjs';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { filter, take, mergeMap } from 'rxjs/operators';
 import { IDriveTimeQueryApiResponse, IDriveTimeQueryFeature, IQueryProperties } from '../models/drive-time-queries.model';
+import { Params } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -20,15 +21,15 @@ export class DriveTimeQueryService {
   ) { }
 
   pollDriveTimeQuery(searchText: string, driveTimeHours: number) {
-    return timer(0, 20000)
-      .pipe(
-        mergeMap((i) => {
-          console.log('from mergeMap, i=', i);
-          return this.newDriveTimeQuery(searchText, driveTimeHours);
-        }),
-        filter((response: HttpResponse<any>) => response.status === 200),
-        take(1),
+    return timer(0, 20000).pipe(
+      mergeMap(() => this.newDriveTimeQuery(searchText, driveTimeHours)),
+      filter((response: HttpResponse<any>) => response.status === 200),
+      take(1),
       );
+  }
+
+  getNewDriveTimeQuery(params: Params) {
+    return this.http.get(this.driveTimeUrl, { params } );
   }
 
   unshiftRecentQueries(query: IQueryProperties) {
@@ -90,12 +91,6 @@ export class DriveTimeQueryService {
 
   getDriveTimeQuery(queryId: number) {
     return this.http.get<IDriveTimeQueryFeature>(this.driveTimeQueryUrl + `${queryId}/`);
-  }
-
-  getNewDriveTimeQuery(queryParams) {
-    return this.http.get(this.driveTimeUrl, {
-      params: queryParams
-    });
   }
 
   newDriveTimeQuery(searchText: string, driveTimeHours: number) {

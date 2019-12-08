@@ -96,23 +96,9 @@ export class SearchComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.subscriptions.add(this.driveTimeForm.valueChanges.subscribe(
-      (data) => this._filter(this.driveTimeForm.value.searchText))
-    );
     this.subscriptions.add(
-      this.driveTimeQueryService.getNotification$().subscribe(
-        data => console.log('notifications data', data),
-        err => console.log(err),
-        () => console.log('notifications complete!')
-      )
+      this.driveTimeForm.valueChanges.subscribe(() => this._filter(this.driveTimeForm.value.searchText))
     );
-    // this.subscriptions.add(
-    //   this.driveTimeQueryService.pollDriveTimeQuery('50 wolf road, albany, ny', 1.232).subscribe(
-    //     data => console.log('data', data),
-    //     (err) => console.error(err),
-    //     () => console.log('Complete!')
-    //   )
-    // );
     this.getRecentQueries();
   }
 
