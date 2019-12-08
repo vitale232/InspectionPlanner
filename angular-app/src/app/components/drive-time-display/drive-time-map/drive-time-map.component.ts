@@ -151,9 +151,10 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
   }
 
   gridClickAddMarker(feature: NewYorkBridgeFeature): void {
+    console.log('grid click', feature);
     this.mapCenter = new L.LatLng(
-      feature.properties.latitude,
-      feature.properties.longitude,
+      feature.geometry.coordinates[1],
+      feature.geometry.coordinates[0]
     );
     this.mapZoom = 14;
 
@@ -162,8 +163,11 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       name: 'Grid click',
       enabled: true,
       layer: L.circleMarker(
-        new L.LatLng(feature.properties.latitude, feature.properties.longitude), this.gridBinSelectionMarker)
+        new L.LatLng(feature.properties.latitude, feature.properties.longitude),
+        this.gridBinSelectionMarker
+      ).bindPopup(this.bridgePopupHtml(feature))
     });
+    this.updateUrl(this.mapZoom);
     this.apply();
   }
 }
