@@ -168,7 +168,9 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     });
     // Allow time for map move animation to finish before fetching data,
     // since data fetching requires the map bounds and center
-    setTimeout(() => this.onZoomChange(14), 750);
+    if (updateZoom) {
+      setTimeout(() => this.onZoomChange(14), 750);
+    }
     this.onMapMove();
     this.apply();
   }
