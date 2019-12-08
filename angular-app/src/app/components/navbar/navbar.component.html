@@ -54,13 +54,21 @@
             *ngIf="driveTimeVisible"
             color="accent"
             matTooltip="Clear drive time search results"
-            matTooltipShowDelay="250"
             routerLink="/"
             [queryParams]="queryParams"
             aria-label="Clear drive time search results"
             >
       <mat-icon>cancel</mat-icon> Clear Results
     </button>
+
+    <button mat-button
+            matTooltip="Show attribute table of bridges"
+            aria-label="Show attribute table of bridges"
+            >
+      <mat-icon>table_chart</mat-icon> Show Table
+    </button>
+
+
     <button mat-button [matMenuTriggerFor]="menu">
       <mat-icon>menu</mat-icon>
     </button>

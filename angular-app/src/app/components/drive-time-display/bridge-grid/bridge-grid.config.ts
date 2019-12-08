@@ -3,6 +3,7 @@ import { columnFactory } from '@pebula/ngrid';
 export const COLUMNS = columnFactory()
   .default({ width: '75px', resize: true, reorder: true})
   .table(
+    { prop: 'zoom_to_icon', type: 'zoom_to_icon', minWidth: 24, width: '', maxWidth: 24, wontBudge: true, resize: false, },
     { prop: 'properties.bin', pIndex: true,  id: 'bin', sort: true, label: 'BIN', },
     { prop: 'properties.inspection', id: 'inspection', sort: true, label: 'Inspected Date' },
     { prop: 'properties.common_name', id: 'commonName', sort: true, label: 'Common Name', },

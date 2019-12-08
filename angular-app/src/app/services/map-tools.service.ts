@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { Subject, Observable } from 'rxjs';
 import { MapExtent } from '../models/map-tools.model';
 import { LocationSearchResult } from '../models/location-search.model';
+import { NewYorkBridgeFeature } from '../models/new-york-bridges.model';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ import { LocationSearchResult } from '../models/location-search.model';
 export class MapToolsService {
   mapHome = new Subject<MapExtent>();
   clearMarkers = new Subject<boolean>();
+  gridBinSubject = new Subject<NewYorkBridgeFeature>();
 
   constructor() { }
 
@@ -26,5 +28,13 @@ export class MapToolsService {
 
   getClearMarkers$(): Observable<boolean> {
     return this.clearMarkers.asObservable();
+  }
+
+  gridBinClick(feature: NewYorkBridgeFeature): void {
+    this.gridBinSubject.next(feature);
+  }
+
+  getBinClick$(): Observable<NewYorkBridgeFeature> {
+    return this.gridBinSubject.asObservable();
   }
 }

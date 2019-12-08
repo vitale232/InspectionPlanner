@@ -6,3 +6,16 @@
     background-color: #212121 !important;
     align-items: flex-end !important;
 }
+
+.table-button {
+    position: absolute;
+    bottom: 10px;
+    /* width: 100%; */
+    margin: auto;
+    width: 50%;
+    z-index: 2;
+}
+
+.drive-time-map {
+    z-index: 1;
+}

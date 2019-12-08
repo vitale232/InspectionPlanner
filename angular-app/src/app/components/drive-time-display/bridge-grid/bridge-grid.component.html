@@ -17,7 +17,11 @@
             (cellClick)="cellClick($event)"
             class="grid pbl-ngrid-cell-ellipsis pbl-ngrid-header-cell-ellipsis"
             >
-
+    <!-- <div *pblNgridCellTypeDef="'number'; value as value;">{{value | number:'1.2-2'}}</div> -->
+    <div *pblNgridHeaderCellTypeDef="'zoom_to_icon'"></div>
+    <div *pblNgridCellTypeDef="'zoom_to_icon'; value as value">
+        <mat-icon>gps_fixed</mat-icon>
+    </div>
     <!-- <div *pblNgridCellTypeDef="'number'">123<div> -->
     <div *pblNgridOuterSection="'top'">
         <mat-toolbar>

@@ -15,6 +15,7 @@ import * as driveTimeMapConfig from './drive-time-map-config';
 import { Title } from '@angular/platform-browser';
 import * as L from 'leaflet';
 import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
+import { NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
 
 
 @Component({
@@ -27,6 +28,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
   splitterOrientation = 'horizontal';
   bridgeMarker = driveTimeMapConfig.bridgeMarker;
   driveTimeSearchMarker = driveTimeMapConfig.driveTimeSearchMarker;
+  gridBinSelectionMarker = driveTimeMapConfig.gridBinSelectionMarker;
   maxVisibleZoom = 6;
   zoomInMessage = 'Zoom in to view drive-time bridges!';
 
@@ -93,6 +95,12 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
         });
       }));
     }));
+    this.subscriptions.add(
+      this.mapToolsService.getBinClick$().subscribe(
+        data => this.gridClickAddMarker(data),
+        err => console.error(err),
+      )
+    );
   }
 
   ngOnDestroy() {
@@ -140,5 +148,22 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       }
     }
     this.updateUrl(zoom);
+  }
+
+  gridClickAddMarker(feature: NewYorkBridgeFeature): void {
+    this.mapCenter = new L.LatLng(
+      feature.properties.latitude,
+      feature.properties.longitude,
+    );
+    this.mapZoom = 14;
+
+    this.model.overlayLayers.push({
+      id: 'Grid click',
+      name: 'Grid click',
+      enabled: true,
+      layer: L.circleMarker(
+        new L.LatLng(feature.properties.latitude, feature.properties.longitude), this.gridBinSelectionMarker)
+    });
+    this.apply();
   }
 }

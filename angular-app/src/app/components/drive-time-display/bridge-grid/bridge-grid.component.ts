@@ -5,6 +5,8 @@ import * as config from './bridge-grid.config';
 import { ActivatedRoute } from '@angular/router';
 import { NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
 import { Observable, Subscription } from 'rxjs';
+import { PblNgridDataCellEvent } from '@pebula/ngrid/target-events';
+import { MapToolsService } from 'src/app/services/map-tools.service';
 
 
 @Component({
@@ -39,6 +41,7 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
   constructor(
     private newYorkBridgeService: NewYorkBridgeService,
     private route: ActivatedRoute,
+    private mapToolsService: MapToolsService,
   ) { }
 
   ngOnInit() {
@@ -104,7 +107,9 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
     this.toggleShowHelpText();
   }
 
-  cellClick(event) {
-    console.log('cellClick', event);
+  cellClick(event: PblNgridDataCellEvent<NewYorkBridgeFeature>): void {
+    if ( event.column && event.column.id && event.column.id === 'zoom_to_icon') {
+      this.mapToolsService.gridBinClick(event.row);
+    }
   }
 }
