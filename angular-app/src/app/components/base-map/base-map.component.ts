@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import * as L from 'leaflet';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import {
@@ -94,7 +94,6 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     public route: ActivatedRoute,
     public router: Router,
     public location: Location,
-    public changeDetector: ChangeDetectorRef,
     public notifications: NotificationsService,
     public clientLocationService: ClientLocationService,
     public mapToolsService: MapToolsService,
@@ -246,8 +245,6 @@ export class BaseMapComponent implements OnInit, OnDestroy {
       );
       this.mapZoom = searchResult.z;
       this.mapCenter = latLong;
-      // Force angular change detection to update map
-      this.changeDetector.detectChanges();
       this.updateUrl(searchResult.z);
 
       const location: IStorageLocation = {
@@ -292,7 +289,6 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     );
     this.mapZoom = 14;
 
-    this.changeDetector.detectChanges();
     this.updateUrl(this.mapZoom);
 
     const location: IStorageLocation = {
@@ -331,7 +327,6 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     this.mapZoom = 14;
     this.mapCenter = latLong;
 
-    this.changeDetector.detectChanges();
     this.updateUrl(this.mapZoom);
 
     const location: IStorageLocation = {
@@ -401,7 +396,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
     }
   }
 
-  onMapMove(mapMoveEvent: Event) {
+  onMapMove() {
     const page = 1;
     let zoom = null;
     if (this.map) {
@@ -505,6 +500,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
           this.openSnackbar(
             `Displaying ${data.results.features.length} ` +
             `of ${data.count.toLocaleString()} bridges`);
+          this.newYorkBridgeService.sendDisplayedBridges(data.results.features);
       },
       err => {
         // this.model.overlayLayers = this.model.overlayLayers
@@ -553,6 +549,7 @@ export class BaseMapComponent implements OnInit, OnDestroy {
           };
           this.bridges = bridgesGeoJSON;
           this.bridgeBounds = this.bridges.layer.getBounds();
+          this.newYorkBridgeService.sendDisplayedBridges(data.results.features);
         },
         err => {
           // this.model.overlayLayers = this.model.overlayLayers

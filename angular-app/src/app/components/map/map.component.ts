@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BaseMapComponent } from '../base-map/base-map.component';
 import { MatSnackBar } from '@angular/material';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -27,7 +27,6 @@ export class MapComponent extends BaseMapComponent implements OnInit, OnDestroy 
     public route: ActivatedRoute,
     public router: Router,
     public location: Location,
-    public changeDetector: ChangeDetectorRef,
     public notifications: NotificationsService,
     public clientLocationService: ClientLocationService,
     public mapToolsService: MapToolsService,
@@ -43,7 +42,6 @@ export class MapComponent extends BaseMapComponent implements OnInit, OnDestroy 
       route,
       router,
       location,
-      changeDetector,
       notifications,
       clientLocationService,
       mapToolsService,

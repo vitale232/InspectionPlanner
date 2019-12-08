@@ -16,7 +16,10 @@ export interface NewYorkBridgeFeature {
     id: number;
   };
   bbox: Array<number>;
-  properties: {
+  properties: NewYorkBridgeProperties;
+}
+
+export interface NewYorkBridgeProperties {
     bin: string;
     common_name: string;
     local_bridge: string;
@@ -59,5 +62,4 @@ export interface NewYorkBridgeFeature {
     carried_la: string;
     created_time: Date;
     edited_time: Date;
-  };
 }

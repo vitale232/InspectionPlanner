@@ -1,50 +1,48 @@
-import { Component, OnInit } from '@angular/core';
-import { SearchService } from 'src/app/services/search.service';
-import { IDriveTimeQueryApiResponse, IDriveTimeQueryFeature } from 'src/app/models/drive-time-queries.model';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { IQueryProperties } from 'src/app/models/drive-time-queries.model';
 import { MatTableDataSource } from '@angular/material';
 import { Router } from '@angular/router';
 import { SidenavService } from 'src/app/services/sidenav.service';
+import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
+import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-query-history-table',
   templateUrl: './query-history-table.component.html',
   styleUrls: ['./query-history-table.component.css']
 })
-export class QueryHistoryTableComponent implements OnInit {
-  recentQueries: MatTableDataSource<IDriveTimeQueryFeature['properties']>;
+export class QueryHistoryTableComponent implements OnInit, OnDestroy {
+  recentQueries: MatTableDataSource<IQueryProperties>;
   displayedColumns: string[] = ['display_name', 'drive_time_hours'];
+  subscriptions = new Subscription();
 
   constructor(
-    private searchService: SearchService,
     private router: Router,
     private sidenavService: SidenavService,
+    private driveTimeQueryService: DriveTimeQueryService,
   ) { }
 
   ngOnInit() {
+    this.subscriptions.add(
+      this.driveTimeQueryService.receiveRecentQueriesArray$().subscribe(
+        data => {
+          this.recentQueries = new MatTableDataSource(data);
+          this.driveTimeQueryService.originalDriveTimeQueryCount = data.length;
+        },
+        err => console.error(err),
+        () => console.log('complete ngOnInit')
+      )
+    );
     this.getRecentQueries();
   }
 
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
   getRecentQueries() {
-    this.searchService.getDriveTimeQueries(1)
-      .subscribe(
-        (data: IDriveTimeQueryApiResponse) => {
-          const features = data.results.features;
-          const queryProperties = [];
-          features.forEach(element => {
-            queryProperties.push({
-              drive_time_hours: element.properties.drive_time_hours,
-              display_name: element.properties.display_name,
-              id: element.id,
-              lat: element.properties.lat,
-              lon: element.properties.lon,
-              polygon_pending: element.properties.polygon_pending,
-              search_text: element.properties.search_text,
-              });
-            });
-          this.recentQueries = new MatTableDataSource(queryProperties);
-        },
-        (err) => console.error(err),
-      );
+    this.driveTimeQueryService.getRecentQueries(1);
   }
 
   onClick(row) {

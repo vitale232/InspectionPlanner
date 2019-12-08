@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { SearchService } from 'src/app/services/search.service';
 import { MatSnackBar } from '@angular/material';
@@ -14,7 +14,8 @@ import { BaseMapComponent } from '../../base-map/base-map.component';
 import * as driveTimeMapConfig from './drive-time-map-config';
 import { Title } from '@angular/platform-browser';
 import * as L from 'leaflet';
-
+import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
+import { NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
 
 
 @Component({
@@ -23,10 +24,11 @@ import * as L from 'leaflet';
   styleUrls: ['./drive-time-map.component.css']
 })
 export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, OnDestroy {
-  driveTimeID: number|null;
+  driveTimeID: number;
   splitterOrientation = 'horizontal';
   bridgeMarker = driveTimeMapConfig.bridgeMarker;
   driveTimeSearchMarker = driveTimeMapConfig.driveTimeSearchMarker;
+  gridBinSelectionMarker = driveTimeMapConfig.gridBinSelectionMarker;
   maxVisibleZoom = 6;
   zoomInMessage = 'Zoom in to view drive-time bridges!';
 
@@ -37,14 +39,14 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     public route: ActivatedRoute,
     public router: Router,
     public location: Location,
-    public changeDetector: ChangeDetectorRef,
     public notifications: NotificationsService,
     public clientLocationService: ClientLocationService,
     public mapToolsService: MapToolsService,
     public sidenavService: SidenavService,
     public loadingIndicatorService: LoadingIndicatorService,
     public activatedRoute: ActivatedRoute,
-    public titleService: Title
+    public titleService: Title,
+    private driveTimeQueryService: DriveTimeQueryService,
   ) {
     super(
       newYorkBridgeService,
@@ -53,7 +55,6 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       route,
       router,
       location,
-      changeDetector,
       notifications,
       clientLocationService,
       mapToolsService,
@@ -70,8 +71,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       this.newYorkBridgesUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
       this.newYorkBridgesLuckyUri = `bridges/new-york-bridges/drive-time-query/${this.driveTimeID}/`;
       this.titleService.setTitle(`IPA - Drive Time Query ${this.driveTimeID}`);
-      this.subscriptions.add(this.searchService.getDriveTimeQuery(this.driveTimeID).subscribe((data) => {
-        console.log('driveTime data', data);
+      this.subscriptions.add(this.driveTimeQueryService.getDriveTimeQuery(this.driveTimeID).subscribe((data) => {
         this.filterOverlays('Drive Time Query', true);
         this.model.overlayLayers.push({
           id: 'Drive Time Query',
@@ -81,7 +81,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
             new L.LatLng(data.properties.lat, data.properties.lon),
             { icon: this.driveTimeSearchMarker }
           ).bindPopup(
-            `<h3> Drive Time Search: ${data.properties.drive_time_hours} hours </h3>` +
+            `<h3> Drive Time Search: ${data.properties.drive_time_hours.toFixed(2)} hours </h3>` +
             `<dl> <dt> Search Location: </dt> <dd> ${data.properties.display_name} </dd>` +
             `<dt> Latitude, Longitude: </dt> <dd> ` +
               `${data.properties.lat.toFixed(4)}, ` +
@@ -93,7 +93,12 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
         });
       }));
     }));
-    console.log(`the driveTimeID is ${this.driveTimeID} of type ${typeof this.driveTimeID}`);
+    this.subscriptions.add(
+      this.mapToolsService.getBinClick$().subscribe(
+        data => this.gridClickAddMarker(data),
+        err => console.error(err),
+      )
+    );
   }
 
   ngOnDestroy() {
@@ -101,7 +106,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     this.filterOverlays('Drive Time Query', true);
   }
 
-  onMapMove(mapMoveEvent: Event) {
+  onMapMove() {
     const page = 1;
     let zoom = null;
     if (this.map) {
@@ -141,5 +146,32 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
       }
     }
     this.updateUrl(zoom);
+  }
+
+  gridClickAddMarker(feature: NewYorkBridgeFeature): void {
+    console.log('grid click', feature);
+    const updateZoom = !(this.mapZoom === 14);
+    this.mapCenter = new L.LatLng(
+      feature.geometry.coordinates[1],
+      feature.geometry.coordinates[0]
+    );
+    this.mapZoom = 14;
+
+    this.model.overlayLayers.push({
+      id: 'Grid click',
+      name: 'Grid click',
+      enabled: true,
+      layer: L.circleMarker(
+        new L.LatLng(feature.properties.latitude, feature.properties.longitude),
+        this.gridBinSelectionMarker
+      ).bindPopup(this.bridgePopupHtml(feature))
+    });
+    // Allow time for map move animation to finish before fetching data,
+    // since data fetching requires the map bounds and center
+    if (updateZoom) {
+      setTimeout(() => this.onZoomChange(14), 750);
+    }
+    this.onMapMove();
+    this.apply();
   }
 }

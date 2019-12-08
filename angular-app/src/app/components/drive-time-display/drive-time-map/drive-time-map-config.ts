@@ -15,3 +15,12 @@ export const driveTimeSearchMarker = L.icon({
   iconAnchor: [12.5, 41],
   popupAnchor: [0, -20.5]
 });
+
+export const gridBinSelectionMarker = {
+  radius: 10,
+  color: '#2A82CB',
+  weight: 5,
+  fill: true,
+  fillColor: '#CAC42B',
+  fillOpacity: 0.5,
+};

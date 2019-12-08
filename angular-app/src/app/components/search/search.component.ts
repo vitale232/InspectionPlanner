@@ -19,6 +19,7 @@ import {
   IDriveTimeQueryApiResponse,
   IQueryProperties} from 'src/app/models/drive-time-queries.model';
 import { startWith, map } from 'rxjs/operators';
+import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
 
 
 @Component({
@@ -91,12 +92,27 @@ export class SearchComponent implements OnInit, OnDestroy {
     private mapToolsService: MapToolsService,
     private newYorkBridgeService: NewYorkBridgeService,
     private router: Router,
+    private driveTimeQueryService: DriveTimeQueryService,
   ) { }
 
   ngOnInit() {
     this.subscriptions.add(this.driveTimeForm.valueChanges.subscribe(
       (data) => this._filter(this.driveTimeForm.value.searchText))
     );
+    this.subscriptions.add(
+      this.driveTimeQueryService.getNotification$().subscribe(
+        data => console.log('notifications data', data),
+        err => console.log(err),
+        () => console.log('notifications complete!')
+      )
+    );
+    // this.subscriptions.add(
+    //   this.driveTimeQueryService.pollDriveTimeQuery('50 wolf road, albany, ny', 1.232).subscribe(
+    //     data => console.log('data', data),
+    //     (err) => console.error(err),
+    //     () => console.log('Complete!')
+    //   )
+    // );
     this.getRecentQueries();
   }
 
@@ -116,6 +132,10 @@ export class SearchComponent implements OnInit, OnDestroy {
     this.Blur.emit(allowSidenavEscape);
   }
 
+  historyPanelOpened() {
+    this.pastPanelOpen = true;
+    this.driveTimeQueryService.addNotifications(0);
+  }
   filterQueries() {
     this.filteredRecentQueries = this.driveTimeSearchTextControl.valueChanges
       .pipe(
@@ -144,7 +164,7 @@ export class SearchComponent implements OnInit, OnDestroy {
   }
 
   getRecentQueries() {
-    this.searchService.getDriveTimeQueries(1)
+    this.driveTimeQueryService.getDriveTimeQueries(1)
       .subscribe(
         (data: IDriveTimeQueryApiResponse) => {
           const features = data.results.features;
@@ -216,7 +236,7 @@ export class SearchComponent implements OnInit, OnDestroy {
       .filter(q => q.display_name === this.driveTimeForm.value.searchText)
       .filter(q => q.drive_time_hours === this.formHoursToNumber(this.driveTimeForm.value.driveTimeHours));
 
-    let querySearchText = '';
+    let querySearchText;
     if (selectedQuery.length === 1) {
       querySearchText = selectedQuery[0].search_text;
     } else {
@@ -227,15 +247,11 @@ export class SearchComponent implements OnInit, OnDestroy {
       drive_time_hours: driveTimeHours,
       return_bridges: false
     };
-    this.searchService.getNewDriveTimeQuery(requestQueryParams).subscribe((data: DriveTimeEndpoint) => {
+    this.driveTimeQueryService.getNewDriveTimeQuery(requestQueryParams).subscribe((data: DriveTimeEndpoint) => {
       if ((data as IDriveTimeQueryFeature).id) {
         this.handleExistingDriveTimeQuery((data as IDriveTimeQueryFeature), driveTimeHours);
       } else if ((data as ISubmittedDriveTimeQuery).msg === 'The request has been added to the queue') {
-        this.notifications.info(
-          'Hold up!',
-          `This is a new drive time request, which takes a while to process. ` +
-          `Check the "Search History" for your results in a bit. Note: ` +
-          `The longer the drive time, the longer the wait!`, this.notificationSettings);
+        this.handleNewDriveTimeQuery(querySearchText, parseFloat(driveTimeHours));
       }
     },
     err => {
@@ -259,6 +275,27 @@ export class SearchComponent implements OnInit, OnDestroy {
     () => this.searchLoading = false);
   }
 
+  handleNewDriveTimeQuery(searchText: string, hours: number) {
+    this.sidenavService.close();
+    this.notifications.info(
+      'Hold up!',
+      `This is a new drive time request, which takes a while to process. ` +
+      `Check the "Search History" for your results in a bit. Note: ` +
+      `The longer the drive time, the longer the wait!`, this.notificationSettings);
+    this.driveTimeQueryService.pollDriveTimeQuery(searchText, hours).subscribe(
+      pollData => this.driveTimeQueryService.unshiftRecentQueries({
+        drive_time_hours: pollData.body.properties.drive_time_hours,
+        display_name: pollData.body.properties.display_name,
+        id: pollData.body.id,
+        lat: pollData.body.properties.lat,
+        lon: pollData.body.properties.lon,
+        polygon_pending: pollData.body.polygon_pending,
+        search_text: pollData.body.search_text,
+      }),
+      err => console.log(err),
+      () => this.driveTimeQueryService.getRecentQueries(1)
+    );
+  }
   handleExistingDriveTimeQuery(data: IDriveTimeQueryFeature, inputDriveTimeHours: string) {
     const driveTimeId = data.id;
     const driveTimeHours = parseFloat(inputDriveTimeHours);

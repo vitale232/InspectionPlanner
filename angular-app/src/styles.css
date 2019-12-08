@@ -1,4 +1,6 @@
 /* Add application styles & imports to this file! */
+@import '@pebula/ngrid/themes/default-dark.css';
+
 html, body {
     margin: 0;
     height: 100%;
@@ -24,4 +26,10 @@ html, body {
 
 .typography-container a {
     color: #FFC23D;
+}
+
+.fill-remaining-space {
+    flex: 1 1 auto;
+    /* padding: 50px; */
+    text-align: center;
 }

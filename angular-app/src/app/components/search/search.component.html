@@ -127,7 +127,7 @@
                         (closed)="detailsPanelOpen = false;">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          Search filters
+          Search Filters
         </mat-panel-title>
       </mat-expansion-panel-header>
     
@@ -202,11 +202,11 @@
     </mat-expansion-panel>
 
     <mat-expansion-panel
-      (opened)="pastPanelOpen = true;"
+      (opened)="historyPanelOpened()"
       (closed)="pastPanelOpen = false;">
       <mat-expansion-panel-header>
         <mat-panel-title>
-          Search history
+          Drive Time Search History
         </mat-panel-title>
       </mat-expansion-panel-header>
       <app-query-history-table></app-query-history-table>

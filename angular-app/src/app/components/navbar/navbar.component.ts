@@ -4,6 +4,7 @@ import { Subscription, Observable } from 'rxjs';
 import { Router, NavigationEnd, ActivatedRoute, Params } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Location } from '@angular/common';
+import { DriveTimeQueryService } from 'src/app/services/drive-time-query.service';
 
 
 @Component({
@@ -14,18 +15,21 @@ import { Location } from '@angular/common';
 export class NavbarComponent implements OnInit, OnDestroy {
   sidenavSubscription: Subscription|null;
   sidenavState$: Observable<boolean>|null;
+  queryNotification$: Observable<number>;
   routerSubscription: Subscription|null;
   driveTimeVisible = false;
+  notificationCount = 0;
   queryParamsSubscription: Subscription|null;
   queryParams: Params;
 
   constructor(
     public sidenavService: SidenavService,
     private router: Router,
-    private activatedRoute: ActivatedRoute,
     private location: Location,
+    private driveTimeQueryService: DriveTimeQueryService,
   ) {
     this.sidenavState$ = this.sidenavService.getSidenavState$();
+    this.queryNotification$ = this.driveTimeQueryService.getNotification$();
     this.routerSubscription = this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((val: NavigationEnd) => {
@@ -62,6 +66,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
       });
       this.queryParams = queryParams;
     });
+    this.driveTimeQueryService.getNotification$().subscribe(data => this.notificationCount = data);
   }
 
   ngOnDestroy() {

@@ -9,36 +9,14 @@ import { LocationSearchResult, FilterSearch, NominatimApiResponse } from '../mod
   providedIn: 'root'
 })
 export class SearchService {
-  driveTimeQueryUrl = 'routing/drive-time-queries/';
   nominatimUrl = 'https://nominatim.openstreetmap.org/search';
   photonUrl = 'https://photon.komoot.de/api';
   locationSearchSubject = new Subject<LocationSearchResult>();
-  newDriveTimeUrl = 'routing/drive-time/';
 
   constructor(
     private http: HttpClient
   ) { }
 
-  getDriveTimeQueries(pageNumber: number|null = null): Observable<IDriveTimeQueryApiResponse> {
-    if (pageNumber === undefined || pageNumber === null) {
-      pageNumber = 1;
-    }
-    return this.http.get<IDriveTimeQueryApiResponse>(this.driveTimeQueryUrl, {
-      params: {
-        page: `${pageNumber}`
-      }
-    });
-  }
-
-  getDriveTimeQuery(queryId: number) {
-    return this.http.get<IDriveTimeQueryFeature>(this.driveTimeQueryUrl + `${queryId}/`);
-  }
-
-  getNewDriveTimeQuery(queryParams) {
-    return this.http.get(this.newDriveTimeUrl, {
-      params: queryParams
-    });
-  }
 
   sendLocationSearchResult(locationResult: LocationSearchResult) {
     this.locationSearchSubject.next(locationResult);
