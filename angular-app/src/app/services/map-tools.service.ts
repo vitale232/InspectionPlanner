@@ -10,6 +10,7 @@ import { NewYorkBridgeFeature } from '../models/new-york-bridges.model';
 export class MapToolsService {
   mapHome = new Subject<MapExtent>();
   clearMarkers = new Subject<boolean>();
+  clearGridMarkersSubject = new Subject<boolean>();
   gridBinSubject = new Subject<NewYorkBridgeFeature>();
 
   constructor() { }
@@ -36,5 +37,13 @@ export class MapToolsService {
 
   getBinClick$(): Observable<NewYorkBridgeFeature> {
     return this.gridBinSubject.asObservable();
+  }
+
+  getClearGridBinMarker$(): Observable<boolean> {
+    return this.clearGridMarkersSubject.asObservable();
+  }
+
+  sendClearGridBinMarkers(val: boolean): void {
+    this.clearGridMarkersSubject.next(val);
   }
 }
