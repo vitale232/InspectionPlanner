@@ -99,6 +99,11 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
         err => console.error(err),
       )
     );
+    this.subscriptions.add(
+      this.mapToolsService.getClearGridBinMarker$().subscribe(data => {
+        if (data) { this.filterOverlays('Grid click', true); }
+      })
+    );
   }
 
   ngOnDestroy() {

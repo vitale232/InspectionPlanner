@@ -4,14 +4,14 @@
 
 <pbl-ngrid id="newYorkBridgeGrid" persistState
             matHeaderContextMenu="excelMenu"
-            rowReorder
             columnReorder
             blockUi
             matSort
             vScrollFixed
             cellTooltip
-            matCheckboxSelection="selection"
+            targetEvents
             clipboard
+            clpCellSep="," clpRowSep="\n\n\n"
             focusMode="cell"
             [dataSource]="useMapExtent ? mapBridgesDataSource : allBridgesDataSource"
             [columns]="columns"
