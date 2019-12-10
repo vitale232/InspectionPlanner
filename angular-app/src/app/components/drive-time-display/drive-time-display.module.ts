@@ -66,10 +66,5 @@ export class DriveTimeDisplayModule {
 
   constructor(private ngridConfig: PblNgridConfigService) {
     ngridConfig.set('targetEvents', { autoEnable: true });
-    // ngridConfig.set('clipboard', {
-    //   autoEnable: true,
-    //   cellSeparator: ',',
-    //   rowSeparator: '\n',
-    // });
   }
 }

@@ -157,7 +157,7 @@ export class DriveTimeMapComponent extends BaseMapComponent implements OnInit, O
     const zoom = 13;
 
     console.log('grid click', feature);
-    const updateZoom = !(this.mapZoom === 14);
+    const updateZoom = !(this.mapZoom === zoom);
     this.mapCenter = new L.LatLng(
       feature.geometry.coordinates[1],
       feature.geometry.coordinates[0]
