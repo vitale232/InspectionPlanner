@@ -65,7 +65,7 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
     return this.newYorkBridgeService.getAllDriveTimeBridges(this.driveTimeID);
   }
 
-  getMapBridges(): Observable<NewYorkBridgeFeature[]> {
+  getMapBridges() {
     return this.newYorkBridgeService.getDisplayedBridge$();
   }
 
@@ -114,6 +114,6 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
   }
 
   clearBridgeSelections(): void {
-    this.mapToolsService.sendClearGridBinMarkers(true);
+    console.log('clearBridgeSelections() not implemented. You need to refactor your code');
   }
 }
