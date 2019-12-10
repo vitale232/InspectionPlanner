@@ -65,7 +65,7 @@ export class BridgeGridComponent implements OnInit, OnDestroy {
     return this.newYorkBridgeService.getAllDriveTimeBridges(this.driveTimeID);
   }
 
-  getMapBridges() {
+  getMapBridges(): Observable<NewYorkBridgeFeature[]> {
     return this.newYorkBridgeService.getDisplayedBridge$();
   }
 
