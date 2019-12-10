@@ -96,8 +96,8 @@ export class SearchComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.subscriptions.add(this.driveTimeForm.valueChanges.subscribe(
-      (data) => this._filter(this.driveTimeForm.value.searchText))
+    this.subscriptions.add(
+      this.driveTimeForm.valueChanges.subscribe(() => this._filter(this.driveTimeForm.value.searchText))
     );
     this.subscriptions.add(
       this.driveTimeQueryService.getNotification$().subscribe(
