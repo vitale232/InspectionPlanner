@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { MapComponent } from './components/map/map.component';
 import { QueryHistoryTableComponent } from './components/query-history-table/query-history-table.component';
+import { BrowseDisplayComponent } from './components/browse/browse-display/browse-display.component';
 
 
 const routes: Routes = [
@@ -17,6 +18,10 @@ const routes: Routes = [
   {
     path: 'table-test',
     component: QueryHistoryTableComponent
+  },
+  {
+    path: 'openlayers',
+    component: BrowseDisplayComponent,
   },
   {
     path: '404',

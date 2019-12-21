@@ -20,6 +20,7 @@ import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsen
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { SimpleNotificationsModule } from 'angular2-notifications';
 import { QueryHistoryTableComponent } from './components/query-history-table/query-history-table.component';
+import { BrowseModule } from './components/browse/browse.module';
 
 
 const cookieConfig: NgcCookieConsentConfig = {
@@ -61,6 +62,7 @@ const cookieConfig: NgcCookieConsentConfig = {
     NgcCookieConsentModule.forRoot(cookieConfig),
     SimpleNotificationsModule.forRoot(),
     AppRoutingModule,
+    BrowseModule,
   ],
   providers: [
     SidenavService
