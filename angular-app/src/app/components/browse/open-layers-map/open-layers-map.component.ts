@@ -16,10 +16,11 @@ import { Subscription } from 'rxjs';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import Group from 'ol/layer/Group';
-import { defaults as defaultControls } from 'ol/control';
+import { defaults as defaultControls, Attribution } from 'ol/control';
 import ZoomToExtent from 'ol/control/ZoomToExtent';
 import Select from 'ol/interaction/Select';
 import { singleClick } from 'ol/events/condition';
+import OSM from 'ol/source/OSM';
 
 import LayerSwitcher from 'ol-layerswitcher';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
@@ -134,30 +135,33 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
                 type: 'base',
                 visible: true,
                 source: new XYZ({
-                    url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png'
+                    url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
+                    attributions: '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+                      'OpenStreetMap</a> contributors'
                   })
             }),
             new TileLayer({
                 title: 'OpenStreetMap',
                 type: 'base',
                 visible: false,
-                source: new XYZ({
-                  url: 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                })
+                source : new OSM()
               })
         ]
     });
 
+    const attribution = new Attribution({
+      collapsible: true,
+      collapsed: true,
+    });
     this.map = new Map({
       target: 'open-layers-map',
       layers: [ basemapGroup, overlayGroup ],
-      // TODO: Make this a property on the class that can be altered. Also update the url
       view: this.view,
-      controls: defaultControls().extend([
+      controls: defaultControls({attribution: false}).extend([
           new ZoomToExtent({
               extent: this.extentFromLonLat([ -74.5313, 41.9309, -71.8753, 43.1731 ])
           })
-      ])
+      ]).extend([attribution])
   });
 
     // Add the layer switcher from ol-layerswitcher 3rd party package to the map
@@ -169,7 +173,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
       multi: true,
       condition: singleClick
     });
-    this.map.addInteraction(select);
     const popup = new PopupFeature({
       popupClass: 'default anim',
       select,
@@ -193,7 +196,10 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
         }
       }
     });
+    this.map.addInteraction(select);
     this.map.addOverlay(popup);
+
+    setTimeout(() => this.map.updateSize(), 200);
 
     // Bind to the map move end event. Update the URL query params.
     // Turn off overlay if zoom < 9 or turn it on if zooming in and it was forced off previously
@@ -216,6 +222,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes.mapView) {
       this.updateView(changes.mapView.currentValue);
+      setTimeout(() => this.map.updateSize(), 200);
     }
   }
 
@@ -229,12 +236,12 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
   updateUrl() {
     const view: View = this.map.getView();
     const center = toLonLat(view.getCenter());
-    const zoom = view.getZoom();
+    const zoom = parseInt(view.getZoom().toString(), 10); // Round zoom to an integer
 
     const queryParams = {
       lon: center[0].toFixed(4),
       lat: center[1].toFixed(4),
-      z: zoom
+      z: zoom.toString()
     };
 
     this.router.navigate(['.'], { relativeTo: this.activatedRoute, queryParams});
@@ -262,10 +269,10 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
     ];
     const styles = rgbaValues.map((values) => {
       const fill = new Fill({
-        color: `rgba(${values[0]}, ${values[1]}, ${values[2]}, 0.4)`
+        color: `rgba(${values[0]}, ${values[1]}, ${values[2]}, 0.75)`
       });
       const stroke = new Stroke({
-        color: `rgba(${values[0]}, ${values[1]}, ${values[2]}, 1)`,
+        color: 'rgba(0, 0, 0, 1)',
         width: 1.25
       });
       return [
