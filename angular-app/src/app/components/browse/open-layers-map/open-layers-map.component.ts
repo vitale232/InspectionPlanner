@@ -236,7 +236,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
   updateUrl() {
     const view: View = this.map.getView();
     const center = toLonLat(view.getCenter());
-    const zoom = parseInt(view.getZoom().toString(), 10); // Round zoom to an integer
+    const zoom = Math.round(view.getZoom()); // Round zoom to an integer
 
     const queryParams = {
       lon: center[0].toFixed(4),
