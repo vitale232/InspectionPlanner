@@ -68,6 +68,11 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
         featureProjection: getProjection('EPSG:3857'),
       }),
       strategy: (extent: number[], resolution: number) => {
+        // The default bbox strategy doesn't quite fit our needs. Default bbox will cache extents,
+        // and forces download of all features for the largest extent encountered. This means that if you
+        // zoom out to the entire state, find Rochester, then zoom in on Rochester, the data will not display
+        // until the entire state has loaded. Since the entire state is time prohibitive, we'll force reload
+        // every time the resolution changes.
         if (this.resolution && this.resolution !== resolution) {
           if (this.bridgeObservable) { this.bridgeObservable.unsubscribe(); }
           vectorSource.loadedExtentsRtree_.clear();
