@@ -98,6 +98,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
           () => {
             console.log('Completed observable!');
             this.loadingIndicatorService.sendLoadingIndicatorState(false);
+            setTimeout(() => this.map.updateSize(), 1);
           }
         );
       },
