@@ -16,6 +16,7 @@ import { SearchService } from 'src/app/services/search.service';
 export class BrowseDisplayComponent implements OnInit, OnDestroy {
 
   mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
+  markerInput;
 
   subscriptions = new Subscription();
 
@@ -41,6 +42,14 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.clientLocationService.getClientLocation$().subscribe(
       (geoloc: ClientLocation) => {
         this.mapView = { zoom: 14, center: [ geoloc.lon, geoloc.lat ] };
+        this.markerInput = {
+          lonLat: [ geoloc.lon, geoloc.lat ],
+          props: {
+            'Lat/Lon': geoloc.lon.toFixed(4) + ', ' + geoloc.lat.toFixed(4),
+            Timestamp: geoloc.timestamp
+          },
+          title: 'Browser Location'
+        };
       }
     ));
     this.subscriptions.add(this.searchService.getLocationSearchResult$().subscribe(

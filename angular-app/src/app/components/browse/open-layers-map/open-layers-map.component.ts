@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
 
@@ -6,7 +6,7 @@ import Map from 'ol/Map';
 import View from 'ol/View';
 import { fromLonLat, toLonLat } from 'ol/proj';
 import { buffer } from 'ol/extent';
-import {Fill, Stroke, Circle, Style} from 'ol/style';
+import {Fill, Stroke, Circle, Icon, Style} from 'ol/style';
 import {get as getProjection} from 'ol/proj';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
@@ -21,9 +21,13 @@ import ZoomToExtent from 'ol/control/ZoomToExtent';
 import Select from 'ol/interaction/Select';
 import { singleClick } from 'ol/events/condition';
 import OSM from 'ol/source/OSM';
+import Feature from 'ol/Feature';
+import Polygon from 'ol/geom/Polygon';
+import Point from 'ol/geom/Point';
 
 import LayerSwitcher from 'ol-layerswitcher';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
+import Popup from 'ol-ext/overlay/Popup';
 import Legend from 'ol-ext/control/Legend';
 import { IMapView, IStyleStoreAADT } from 'src/app/models/open-layers-map.model';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -34,18 +38,23 @@ import { Router, ActivatedRoute } from '@angular/router';
   templateUrl: './open-layers-map.component.html',
   styleUrls: ['./open-layers-map.component.css']
 })
-export class OpenLayersMapComponent implements OnInit, OnChanges {
+export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
+  // Component inputs
   @Input() mapView: IMapView;
+  @Input() markerInput: { lonLat: [number, number], props: any, title?: string };
 
+  // OpenLayers objects
   private map: Map;
-  private zoom: number;
-  private forcedInvisible: boolean;
   private view: View;
-  private styleGroups: IStyleStoreAADT;
-  private bridgeObservable: Subscription;
   private resolution: number;
   private vectorLayer: VectorLayer;
+  private zoom: number;
+
+  // Custom behaviors
+  private forcedInvisible: boolean;
+  private styleGroups: IStyleStoreAADT;
+  private bridgeObservable: Subscription;
 
   constructor(
     private bridgeService: NewYorkBridgeService,
@@ -160,7 +169,10 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
               visible: false,
               source: new XYZ({
                 attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
-                    'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+                    'rest/services/World_Topo_Map/MapServer">Powered by Esri, HERE, Garmin, Intermap, ' +
+                    'increment P Corp., GEBCO, USGS, FAO, NPS, NRCAN, GeoBase, IGN, Kadaster NL, ' +
+                    'Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), ' +
+                    '© OpenStreetMap contributors, and the GIS User Community</a>',
                 url: 'https://server.arcgisonline.com/ArcGIS/rest/services/' +
                     'World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
               })
@@ -171,7 +183,9 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
               visible: false,
               source: new XYZ({
                 attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
-                    'rest/services/World_Imagery/MapServer">ArcGIS</a>',
+                    'rest/services/World_Imagery/MapServer">Powered by Esri, DigitalGlobe, GeoEye, ' +
+                    'Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AeroGRID, IGN, ' +
+                    'and the GIS User Community</a>',
                 url: 'https://server.arcgisonline.com/ArcGIS/rest/services/' +
                     'World_Imagery/MapServer/tile/{z}/{y}/{x}'
               })
@@ -201,7 +215,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
     const select = new Select({
       hitTolerance: 5,
       multi: true,
-      condition: singleClick
+      condition: singleClick,
+      layers: [ this.vectorLayer ],
     });
     const popup = new PopupFeature({
       popupClass: 'default anim',
@@ -221,7 +236,9 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
           crossed: { title: 'Crossed Feature' },
           condition_field: {
             title: 'Condition Rating',
-            format: (val, feature) => (feature.get('condition_field')).toFixed(2)
+            format: (val, feature) => {
+              if (feature.get('condition_field')) {(feature.get('condition_field')).toFixed(2); }
+            }
           },
         }
       }
@@ -263,12 +280,29 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
         this.forcedInvisible = false;
       }
     });
+    if (this.markerInput) {
+      console.log('adding marker in init');
+      this.addMarker(this.markerInput);
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (changes.mapView) {
-      this.updateView(changes.mapView.currentValue);
-      setTimeout(() => this.map.updateSize(), 200);
+    if (this.map) {
+      if (changes.mapView) {
+        this.updateView(changes.mapView.currentValue);
+        setTimeout(() => this.map.updateSize(), 200);
+      }
+      if (changes.markerInput) {
+        console.log('changes', changes);
+        console.log('changes.markerInput.currentValue', changes.markerInput.currentValue);
+        this.addMarker(changes.markerInput.currentValue);
+      }
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.bridgeObservable) {
+      this.bridgeObservable.unsubscribe();
     }
   }
 
@@ -340,5 +374,68 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
       group3: styles[3],
       group4: styles[4],
     };
+  }
+
+  addMarker(markerIn: { lonLat: [number, number], props: any, title?: string }) {
+    const lonLat = markerIn.lonLat;
+    const props = markerIn.props;
+    let title;
+    if (markerIn.title) { title = markerIn.title; }
+
+    const iconStyle = new Style({
+      image: new Icon({
+        anchor: [0.5, 1],
+        src: 'assets/marker-icon-black.png'
+      })
+    });
+
+    const feature = new Feature({
+      type: 'icon',
+      geometry: new Point(fromLonLat(lonLat))
+    });
+    feature.setStyle(iconStyle);
+
+    if (title) {
+      props.title = title;
+    }
+    feature.setProperties(props);
+
+    const vectorLayer = new VectorLayer({
+      source: new VectorSource({
+        features: [ feature ],
+      })
+    });
+
+    this.map.addLayer(vectorLayer);
+
+    const select = new Select({
+      hitTolerance: 5,
+      multi: true,
+      condition: singleClick,
+      layers: [ vectorLayer ],
+    });
+    const popup = new PopupFeature({
+      popupClass: 'default anim',
+      select,
+      canFix: true,
+      template: {
+        title: (f) => {
+          if (f.get('title')) {
+            return f.get('title') + ' Marker';
+          } else {
+            return 'Marker';
+          }
+        },
+        attributes: {
+          'Lat/Lon': { title: 'Lat/Lon' },
+          Timestamp: {
+            title: 'Timestamp',
+            format: (val: number) => new Date(val).toLocaleTimeString()
+          }
+        }
+      }
+    });
+    this.map.addInteraction(select);
+    this.map.addOverlay(popup);
   }
 }
