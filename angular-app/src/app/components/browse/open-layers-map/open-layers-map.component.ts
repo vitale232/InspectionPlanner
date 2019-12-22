@@ -1,16 +1,16 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
+import { IMapView, IStyleStoreAADT, IMarker } from 'src/app/models/open-layers-map.model';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { fromLonLat, toLonLat } from 'ol/proj';
-import { buffer } from 'ol/extent';
-import {Fill, Stroke, Circle, Icon, Style} from 'ol/style';
-import {get as getProjection} from 'ol/proj';
+import { Fill, Stroke, Circle, Icon, Style } from 'ol/style';
+import { get as getProjection } from 'ol/proj';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
-// import { Extent } from 'openlayers';
 import GeoJSON from 'ol/format/GeoJSON';
 import { Subscription } from 'rxjs';
 import TileLayer from 'ol/layer/Tile';
@@ -27,10 +27,7 @@ import Point from 'ol/geom/Point';
 
 import LayerSwitcher from 'ol-layerswitcher';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
-import Popup from 'ol-ext/overlay/Popup';
 import Legend from 'ol-ext/control/Legend';
-import { IMapView, IStyleStoreAADT, IMarker } from 'src/app/models/open-layers-map.model';
-import { Router, ActivatedRoute } from '@angular/router';
 
 
 @Component({
