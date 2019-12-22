@@ -61,7 +61,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
     this.view = new View({
       center: fromLonLat(this.mapView.center),
       zoom: this.zoom,
-      extent: buffer(this.extentFromLonLat( [ -80.541, 40.305, -69.917, 45.252 ]), 100000),
     });
 
     const vectorSource = new VectorSource({
