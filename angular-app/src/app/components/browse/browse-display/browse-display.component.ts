@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { IMapView } from 'src/app/models/open-layers-map.model';
+import { IMapView, IMarker } from 'src/app/models/open-layers-map.model';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { MapToolsService } from 'src/app/services/map-tools.service';
@@ -16,7 +16,7 @@ import { SearchService } from 'src/app/services/search.service';
 export class BrowseDisplayComponent implements OnInit, OnDestroy {
 
   mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
-  markerInput;
+  markerInput: IMarker;
 
   subscriptions = new Subscription();
 
@@ -48,7 +48,8 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
             'Lat/Lon': geoloc.lon.toFixed(4) + ', ' + geoloc.lat.toFixed(4),
             Timestamp: geoloc.timestamp
           },
-          title: 'Browser Location'
+          title: 'Browser Location',
+          src: 'assets/marker-icon-black.png'
         };
       }
     ));
@@ -62,5 +63,18 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
+  }
+
+  newMarker() {
+    this.markerInput = {
+      lonLat: [ -75.6834, 42.9981 ],
+      props: {
+        'Lat/Lon': '42.9981, -75.6834',
+        Test: 'Nothing more'
+      },
+      src: 'assets/marker-icon-violet.png',
+      title: 'Test'
+    };
+    this.mapView = {zoom: 14, center: [-75.6834, 42.9981]};
   }
 }

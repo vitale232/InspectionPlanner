@@ -12,3 +12,10 @@ export interface IStyleStoreAADT {
   group3: Style[];
   group4: Style[];
 }
+
+export interface IMarker {
+  lonLat: [number, number];
+  src: string;
+  props: any;
+  title?: string;
+}

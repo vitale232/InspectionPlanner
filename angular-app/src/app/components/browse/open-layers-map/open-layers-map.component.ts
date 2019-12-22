@@ -29,8 +29,9 @@ import LayerSwitcher from 'ol-layerswitcher';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Popup from 'ol-ext/overlay/Popup';
 import Legend from 'ol-ext/control/Legend';
-import { IMapView, IStyleStoreAADT } from 'src/app/models/open-layers-map.model';
+import { IMapView, IStyleStoreAADT, IMarker } from 'src/app/models/open-layers-map.model';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Feature } from 'openlayers';
 
 
 @Component({
@@ -236,9 +237,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
           crossed: { title: 'Crossed Feature' },
           condition_field: {
             title: 'Condition Rating',
-            format: (val, feature) => {
-              if (feature.get('condition_field')) {(feature.get('condition_field')).toFixed(2); }
-            }
+            format: (val: number) => val.toFixed(2)
           },
         }
       }
@@ -376,16 +375,18 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  addMarker(markerIn: { lonLat: [number, number], props: any, title?: string }) {
+  addMarker(markerIn: IMarker) {
     const lonLat = markerIn.lonLat;
     const props = markerIn.props;
     let title;
     if (markerIn.title) { title = markerIn.title; }
 
+    // TODO: Create a class that handles each marker type (CurrentLocation, Search, BinSearch etc)
+    // and exposes a VectorLayer, Select, and PopupFeature to add to the map
     const iconStyle = new Style({
       image: new Icon({
         anchor: [0.5, 1],
-        src: 'assets/marker-icon-black.png'
+        src: markerIn.src
       })
     });
 
@@ -419,7 +420,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       select,
       canFix: true,
       template: {
-        title: (f) => {
+        title: (f: Feature) => {
           if (f.get('title')) {
             return f.get('title') + ' Marker';
           } else {
@@ -430,7 +431,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
           'Lat/Lon': { title: 'Lat/Lon' },
           Timestamp: {
             title: 'Timestamp',
-            format: (val: number) => new Date(val).toLocaleTimeString()
+            format: (time: number) => new Date(time).toLocaleTimeString()
           }
         }
       }
