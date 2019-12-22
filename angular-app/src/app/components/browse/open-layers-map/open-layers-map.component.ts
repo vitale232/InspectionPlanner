@@ -42,13 +42,14 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
   // Component inputs
   @Input() mapView: IMapView;
-  @Input() markerInput: IMarker;
+  @Input() markerInputs: IMarker[];
 
   // OpenLayers objects
   private map: Map;
   private view: View;
   private resolution: number;
   private vectorLayer: VectorLayer;
+  private markerVectorLayers: VectorLayer[] = [];
   private zoom: number;
 
   // Custom behaviors
@@ -66,7 +67,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit() {
     this.zoom = this.mapView.zoom;
     this.forcedInvisible = false;
-    console.log('this.mapView', this.mapView);
     this.view = new View({
       center: fromLonLat(this.mapView.center),
       zoom: this.zoom,
@@ -278,9 +278,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         this.forcedInvisible = false;
       }
     });
-    if (this.markerInput) {
-      console.log('adding marker in init');
-      this.addMarker(this.markerInput);
+    if (this.markerInputs) {
+      this.addMarker(this.markerInputs);
     }
   }
 
@@ -290,10 +289,11 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         this.updateView(changes.mapView.currentValue);
         setTimeout(() => this.map.updateSize(), 200);
       }
-      if (changes.markerInput) {
-        console.log('changes', changes);
-        console.log('changes.markerInput.currentValue', changes.markerInput.currentValue);
-        this.addMarker(changes.markerInput.currentValue);
+      if (changes.markerInputs) {
+        if (changes.markerInputs.currentValue && changes.markerInputs.currentValue.length === 0) {
+          this.clearMarkers();
+        }
+        this.addMarker(changes.markerInputs.currentValue);
       }
     }
   }
@@ -374,68 +374,79 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  addMarker(markerIn: IMarker) {
-    const lonLat = markerIn.lonLat;
-    const props = markerIn.props;
-    let title;
-    if (markerIn.title) { title = markerIn.title; }
+  addMarker(markersIn: IMarker[]) {
+    markersIn.forEach(marker => {
+      const lonLat = marker.lonLat;
+      const props = marker.props;
+      let title: string;
+      if (marker.title) { title = marker.title; }
+      // TODO: Create a class that handles each marker type (CurrentLocation, Search, BinSearch etc)
+      // and exposes a VectorLayer, Select, and PopupFeature to add to the map
+      const iconStyle = new Style({
+        image: new Icon({
+          anchor: [0.5, 1],
+          src: marker.src
+        })
+      });
 
-    // TODO: Create a class that handles each marker type (CurrentLocation, Search, BinSearch etc)
-    // and exposes a VectorLayer, Select, and PopupFeature to add to the map
-    const iconStyle = new Style({
-      image: new Icon({
-        anchor: [0.5, 1],
-        src: markerIn.src
-      })
-    });
+      const feature = new Feature({
+        type: 'icon',
+        geometry: new Point(fromLonLat(lonLat))
+      });
+      feature.setStyle(iconStyle);
 
-    const feature = new Feature({
-      type: 'icon',
-      geometry: new Point(fromLonLat(lonLat))
-    });
-    feature.setStyle(iconStyle);
+      if (title) {
+        props.title = title;
+      }
+      feature.setProperties(props);
 
-    if (title) {
-      props.title = title;
-    }
-    feature.setProperties(props);
+      const vectorLayer = new VectorLayer({
+        source: new VectorSource({
+          features: [ feature ],
+        })
+      });
+      this.markerVectorLayers.push(vectorLayer);
+      // this.map.addLayer(this.markerVectorLayers);
+      this.markerVectorLayers.forEach(layer => this.map.addLayer(layer));
 
-    const vectorLayer = new VectorLayer({
-      source: new VectorSource({
-        features: [ feature ],
-      })
-    });
-
-    this.map.addLayer(vectorLayer);
-
-    const select = new Select({
-      hitTolerance: 5,
-      multi: true,
-      condition: singleClick,
-      layers: [ vectorLayer ],
-    });
-    const popup = new PopupFeature({
-      popupClass: 'default anim',
-      select,
-      canFix: true,
-      template: {
-        title: (f: Feature) => {
-          if (f.get('title')) {
-            return f.get('title') + ' Marker';
-          } else {
-            return 'Marker';
-          }
-        },
-        attributes: {
-          'Lat/Lon': { title: 'Lat/Lon' },
-          Timestamp: {
-            title: 'Timestamp',
-            format: (time: number) => new Date(time).toLocaleTimeString()
+      const select = new Select({
+        hitTolerance: 5,
+        multi: true,
+        condition: singleClick,
+        layers: [ vectorLayer ],
+      });
+      const popup = new PopupFeature({
+        popupClass: 'default anim',
+        select,
+        canFix: true,
+        template: {
+          title: (f: Feature) => {
+            if (f.get('title')) {
+              return f.get('title') + ' Marker';
+            } else {
+              return 'Marker';
+            }
+          },
+          attributes: {
+            'Lat/Lon': { title: 'Lat/Lon' },
+            Timestamp: {
+              title: 'Timestamp',
+              format: (time: number) => new Date(time).toLocaleTimeString()
+            }
           }
         }
-      }
+      });
+      this.map.addInteraction(select);
+      this.map.addOverlay(popup);
     });
-    this.map.addInteraction(select);
-    this.map.addOverlay(popup);
+  }
+
+  clearMarkers() {
+    this.markerVectorLayers.forEach(layer => this.map.removeLayer(layer));
+    this.markerVectorLayers = [];
+  }
+
+  onButton() {
+    this.clearMarkers();
   }
 }

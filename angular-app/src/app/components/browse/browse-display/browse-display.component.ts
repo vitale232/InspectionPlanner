@@ -16,7 +16,7 @@ import { SearchService } from 'src/app/services/search.service';
 export class BrowseDisplayComponent implements OnInit, OnDestroy {
 
   mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
-  markerInput: IMarker;
+  markerInputs: IMarker[];
 
   subscriptions = new Subscription();
 
@@ -42,7 +42,7 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.clientLocationService.getClientLocation$().subscribe(
       (geoloc: ClientLocation) => {
         this.mapView = { zoom: 14, center: [ geoloc.lon, geoloc.lat ] };
-        this.markerInput = {
+        this.markerInputs = [{
           lonLat: [ geoloc.lon, geoloc.lat ],
           props: {
             'Lat/Lon': geoloc.lon.toFixed(4) + ', ' + geoloc.lat.toFixed(4),
@@ -50,31 +50,20 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
           },
           title: 'Browser Location',
           src: 'assets/marker-icon-black.png'
-        };
+        }];
       }
     ));
     this.subscriptions.add(this.searchService.getLocationSearchResult$().subscribe(
       (searchResult: LocationSearchResult) => {
-        console.log('searchResult', searchResult);
         this.mapView = {zoom: searchResult.z, center: [ parseFloat(searchResult.lon), parseFloat(searchResult.lat) ] };
       }
+    ));
+    this.subscriptions.add(this.mapToolsService.getClearMarkers$().subscribe(
+      (clear: boolean) => { if (clear === true) { this.markerInputs = []; } }
     ));
   }
 
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
-  }
-
-  newMarker() {
-    this.markerInput = {
-      lonLat: [ -75.6834, 42.9981 ],
-      props: {
-        'Lat/Lon': '42.9981, -75.6834',
-        Test: 'Nothing more'
-      },
-      src: 'assets/marker-icon-violet.png',
-      title: 'Test'
-    };
-    this.mapView = {zoom: 14, center: [-75.6834, 42.9981]};
   }
 }
