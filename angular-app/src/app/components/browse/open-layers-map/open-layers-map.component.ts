@@ -24,6 +24,7 @@ import OSM from 'ol/source/OSM';
 
 import LayerSwitcher from 'ol-layerswitcher';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
+import Legend from 'ol-ext/control/Legend';
 import { IMapView, IStyleStoreAADT } from 'src/app/models/open-layers-map.model';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -98,28 +99,30 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
       },
     });
 
+    const selectAADTStyle = (f) => {
+      const aadt = f.get('aadt');
+      if (aadt <= 235) {
+        return this.styleGroups.group0;
+      } else if (aadt > 235 && aadt <= 1005) {
+        return this.styleGroups.group1;
+      } else if (aadt > 1005 && aadt <= 3735) {
+        return this.styleGroups.group2;
+      } else if (aadt > 3735 && aadt <= 11350) {
+        return this.styleGroups.group3;
+      } else if (aadt > 11350) {
+        return this.styleGroups.group4;
+      } else {
+        return this.styleGroups.group0; // Fallback to group0 if aadt selection fails
+      }
+    };
+
     this.generateAADTStyles();
     this.vectorLayer = new VectorLayer({
       source: vectorSource,
       title: 'New York Bridges',
       type: 'overlay',
       visible: true,
-      style: (f) => {
-        const aadt = f.get('aadt');
-        if (aadt <= 235) {
-          return this.styleGroups.group0;
-        } else if (aadt > 235 && aadt <= 1005) {
-          return this.styleGroups.group1;
-        } else if (aadt > 1005 && aadt <= 3735) {
-          return this.styleGroups.group2;
-        } else if (aadt > 3735 && aadt <= 11350) {
-          return this.styleGroups.group3;
-        } else if (aadt > 11350) {
-          return this.styleGroups.group4;
-        } else {
-          return this.styleGroups.group0; // Fallback to group0 if aadt selection fails
-        }
-      }
+      style: selectAADTStyle
     });
 
     const overlayGroup = new Group({
@@ -198,6 +201,22 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
     });
     this.map.addInteraction(select);
     this.map.addOverlay(popup);
+
+    const legend = new Legend({
+      title: 'Bridge Marker Legend',
+      style: selectAADTStyle,
+      collapsible: true,
+      margin: 5,
+      size: [40, 10]
+    });
+    this.map.addControl(legend);
+
+    legend.addRow();
+    legend.addRow({ title: 'AADT < 235', properties: { aadt: 100 }, typeGeom: 'Point' });
+    legend.addRow({ title: '235 < AADT <= 1005', properties: { aadt: 500 }, typeGeom: 'Point' });
+    legend.addRow({ title: '1005 < AADT <= 3735', properties: { aadt: 2000 }, typeGeom: 'Point' });
+    legend.addRow({ title: '3735 < AADT <= 11350', properties: { aadt: 5000 }, typeGeom: 'Point' });
+    legend.addRow({ title: 'AADT > 11350', properties: { aadt: 12000 }, typeGeom: 'Point' });
 
     setTimeout(() => this.map.updateSize(), 200);
 
