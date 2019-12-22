@@ -18,6 +18,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   queryNotification$: Observable<number>;
   routerSubscription: Subscription|null;
   driveTimeVisible = false;
+  openLayersVisible = false;
   notificationCount = 0;
   queryParamsSubscription: Subscription|null;
   queryParams: Params;
@@ -33,11 +34,16 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.routerSubscription = this.router.events
       .pipe(filter(e => e instanceof NavigationEnd))
       .subscribe((val: NavigationEnd) => {
-        const urlParts = val.url.split('/');
+        const urlParts = val.url.split(/[?,&,/]/).map(x => x.replace('/', ''));
         if (urlParts.includes('drive-time')) {
           this.driveTimeVisible = true;
         } else {
           this.driveTimeVisible = false;
+        }
+        if (urlParts.includes('openlayers')) {
+          this.openLayersVisible = true;
+        } else {
+          this.openLayersVisible = false;
         }
       });
   }
