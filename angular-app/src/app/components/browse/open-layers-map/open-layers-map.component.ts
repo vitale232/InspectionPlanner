@@ -31,7 +31,6 @@ import Popup from 'ol-ext/overlay/Popup';
 import Legend from 'ol-ext/control/Legend';
 import { IMapView, IStyleStoreAADT, IMarker } from 'src/app/models/open-layers-map.model';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Feature } from 'openlayers';
 
 
 @Component({
@@ -43,7 +42,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
   // Component inputs
   @Input() mapView: IMapView;
-  @Input() markerInput: { lonLat: [number, number], props: any, title?: string };
+  @Input() markerInput: IMarker;
 
   // OpenLayers objects
   private map: Map;
