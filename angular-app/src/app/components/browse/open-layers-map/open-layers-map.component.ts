@@ -147,7 +147,29 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
                 type: 'base',
                 visible: false,
                 source : new OSM()
+              }),
+            new TileLayer({
+              title: 'Esri World Topo',
+              type: 'base',
+              visible: false,
+              source: new XYZ({
+                attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Topo_Map/MapServer">ArcGIS</a>',
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/' +
+                    'World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
               })
+            }),
+            new TileLayer({
+              title: 'Esri World Imagery',
+              type: 'base',
+              visible: false,
+              source: new XYZ({
+                attributions: 'Tiles © <a href="https://services.arcgisonline.com/ArcGIS/' +
+                    'rest/services/World_Imagery/MapServer">ArcGIS</a>',
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/' +
+                    'World_Imagery/MapServer/tile/{z}/{y}/{x}'
+              })
+            })
         ]
     });
 
