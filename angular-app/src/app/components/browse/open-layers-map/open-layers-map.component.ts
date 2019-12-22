@@ -55,7 +55,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   // Custom behaviors
   private forcedInvisible: boolean;
   private styleGroups: IStyleStoreAADT;
-  private bridgeObservable: Subscription;
+  private bridgeSubscription: Subscription;
 
   constructor(
     private bridgeService: NewYorkBridgeService,
@@ -83,7 +83,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         // until the entire state has loaded. Since the entire state is time prohibitive, we'll force reload
         // every time the resolution changes.
         if (this.resolution && this.resolution !== resolution) {
-          if (this.bridgeObservable) { this.bridgeObservable.unsubscribe(); }
+          if (this.bridgeSubscription) { this.bridgeSubscription.unsubscribe(); }
           vectorSource.loadedExtentsRtree_.clear();
         }
         return [ extent ];
@@ -92,8 +92,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         this.loadingIndicatorService.sendLoadingIndicatorState(true);
         console.log('loader!!!');
         this.resolution = res;
-        if (this.bridgeObservable) { this.bridgeObservable.unsubscribe(); }
-        this.bridgeObservable = this.bridgeService.getAllBridgesInBounds(this.extentToLonLat(extent)).subscribe(
+        if (this.bridgeSubscription) { this.bridgeSubscription.unsubscribe(); }
+        this.bridgeSubscription = this.bridgeService.getAllBridgesInBounds(this.extentToLonLat(extent)).subscribe(
           bridges => {
             const geojsonData = {
               type: 'FeatureCollection',
@@ -299,8 +299,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    if (this.bridgeObservable) {
-      this.bridgeObservable.unsubscribe();
+    if (this.bridgeSubscription) {
+      this.bridgeSubscription.unsubscribe();
     }
   }
 
