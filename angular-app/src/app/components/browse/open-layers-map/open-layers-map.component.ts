@@ -189,7 +189,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges {
       view: this.view,
       controls: defaultControls({attribution: false}).extend([
           new ZoomToExtent({
-              extent: this.extentFromLonLat([ -74.5313, 41.9309, -71.8753, 43.1731 ])
+              extent: this.extentFromLonLat([ -79.0878, 42.7959, -78.4238, 43.1045 ])
           })
       ]).extend([attribution])
   });

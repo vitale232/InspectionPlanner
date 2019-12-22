@@ -2,6 +2,11 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IMapView } from 'src/app/models/open-layers-map.model';
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { MapToolsService } from 'src/app/services/map-tools.service';
+import { MapExtent } from 'src/app/models/map-tools.model';
+import { ClientLocationService } from 'src/app/services/client-location.service';
+import { ClientLocation, LocationSearchResult } from 'src/app/models/location-search.model';
+import { SearchService } from 'src/app/services/search.service';
 
 @Component({
   selector: 'app-browse-display',
@@ -16,6 +21,9 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private mapToolsService: MapToolsService,
+    private clientLocationService: ClientLocationService,
+    private searchService: SearchService,
   ) { }
 
   ngOnInit() {
@@ -27,8 +35,23 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
         this.mapView =  { zoom, center: [ lon, lat ] };
       }
     ));
+    this.subscriptions.add(this.mapToolsService.getMapHome$().subscribe(
+      (home: MapExtent) => this.mapView = { zoom: home.z, center: [ home.lon, home.lat ]}
+    ));
+    this.subscriptions.add(this.clientLocationService.getClientLocation$().subscribe(
+      (geoloc: ClientLocation) => {
+        this.mapView = { zoom: 14, center: [ geoloc.lon, geoloc.lat ] };
+      }
+    ));
+    this.subscriptions.add(this.searchService.getLocationSearchResult$().subscribe(
+      (searchResult: LocationSearchResult) => {
+        console.log('searchResult', searchResult);
+        this.mapView = {zoom: searchResult.z, center: [ parseFloat(searchResult.lon), parseFloat(searchResult.lat) ] };
+      }
+    ));
   }
 
-  ngOnDestroy() {}
-
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
 }
