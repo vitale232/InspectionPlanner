@@ -1,3 +1,15 @@
+/* Warning: This portion of the application does not use TypeScript. Getting
+* full fledged TypeScript support is an open issue with OpenLayers. See this
+* link: https://github.com/openlayers/openlayers/pull/9178
+* About halfway through the discussion, the conflicts between OpenLayers current
+* TypeScript support and the rest of the Angular app are discussed.
+* Until TypeScript is well supported in OL 6, this file will be vanilla JavaScript.\
+* Fortunately, the OpenLayers API is well documented using JsDoc here:
+* https://openlayers.org/en/latest/apidoc/
+* Just search for the object you're using, and you essentially get type info.
+* */
+
+
 import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
@@ -28,6 +40,7 @@ import Point from 'ol/geom/Point';
 import LayerSwitcher from 'ol-layerswitcher';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
+import { TypeScriptEmitter } from '@angular/compiler'
 
 
 @Component({
@@ -171,7 +184,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
                     'Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), ' +
                     '© OpenStreetMap contributors, and the GIS User Community</a>',
                 url: 'https://server.arcgisonline.com/ArcGIS/rest/services/' +
-                    'World_Topo_Map/MapServer/tile/{z}/{y}/{x}'
+                    'World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
               })
             }),
             new TileLayer({
