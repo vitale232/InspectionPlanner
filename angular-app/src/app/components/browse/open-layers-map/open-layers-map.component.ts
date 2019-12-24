@@ -24,7 +24,7 @@ import { get as getProjection } from 'ol/proj';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import GeoJSON from 'ol/format/GeoJSON';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import TileLayer from 'ol/layer/Tile';
 import XYZ from 'ol/source/XYZ';
 import Group from 'ol/layer/Group';
@@ -66,6 +66,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   private forcedInvisible: boolean;
   private styleGroups: IStyleStoreAADT;
   private bridgeSubscription: Subscription;
+  private loadingIndicator$: Observable<boolean>;
+
 
   constructor(
     private bridgeService: NewYorkBridgeService,
@@ -75,6 +77,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
+    this.loadingIndicator$ = this.loadingIndicatorService.getLoadingIndicatorState$();
     this.zoom = this.mapView.zoom;
     this.forcedInvisible = false;
     this.view = new View({
