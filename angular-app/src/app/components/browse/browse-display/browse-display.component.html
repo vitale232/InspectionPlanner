@@ -1,4 +1,5 @@
 <app-open-layers-map [mapView]="mapView"
                      [markerInputs]="markerInputs"
                      [loadingIndicator$]="loadingIndicatorState"
+                     (bbox)="onMapMove($event)"
                     ></app-open-layers-map>

@@ -19,3 +19,15 @@ export interface IMarker {
   props: any;
   title?: string;
 }
+
+export type TExtent = [ number, number, number, number ];
+
+/*
+* The IExtent interface represents an array of 4 numbers: [ xmin, xmax, ymin, ymax ]
+*/
+export interface IExtent {
+  0: number;
+  1: number;
+  2: number;
+  3: number;
+}

@@ -70,6 +70,10 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
     ));
   }
 
+  onMapMove(bbox: [number, number, number, number]) {
+    console.log('onMapMove', bbox);
+  }
+
   ngOnDestroy() {
     this.subscriptions.unsubscribe();
   }

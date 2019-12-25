@@ -10,11 +10,11 @@
 * */
 
 
-import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
 import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
-import { IMapView, IStyleStoreAADT, IMarker } from 'src/app/models/open-layers-map.model';
+import { IMapView, IStyleStoreAADT, IMarker, TExtent } from 'src/app/models/open-layers-map.model';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -40,7 +40,6 @@ import Point from 'ol/geom/Point';
 import LayerSwitcher from 'ol-layerswitcher';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
-import { TypeScriptEmitter } from '@angular/compiler'
 
 
 @Component({
@@ -54,6 +53,9 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() mapView: IMapView;
   @Input() markerInputs: IMarker[];
   @Input() loadingIndicator$: Observable<boolean>;
+
+  // Component outputs
+  @Output() bbox = new EventEmitter<TExtent>();
 
   // OpenLayers objects
   private map: Map;
@@ -88,7 +90,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       format: new GeoJSON({
         featureProjection: getProjection('EPSG:3857'),
       }),
-      strategy: (extent: number[], resolution: number) => {
+      strategy: (extent: TExtent, resolution: number): TExtent[] => {
         // The default bbox strategy doesn't quite fit our needs. Default bbox will cache extents,
         // and forces download of all features for the largest extent encountered. This means that if you
         // zoom out to the entire state, find Rochester, then zoom in on Rochester, the data will not display
@@ -100,7 +102,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         }
         return [ extent ];
       },
-      loader: (extent: number[], res: number) => {
+      loader: (extent: TExtent, res: number) => {
         this.loadingIndicatorService.sendLoadingIndicatorState(true);
         console.log('loader!!!');
         this.resolution = res;
@@ -274,7 +276,13 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.map.updateSize();
 
-    this.map.on('moveend', () => this.updateUrl() );
+    this.map.on('moveend', () => {
+      // To satisfy TypeScript, calculate the extent then unpack it before emitting as an event. This
+      // allows TS to know the definitive shape of the extent matches the Tuple Type definitions
+      const boundingBox = this.extentToLonLat( this.map.getView().calculateExtent() );
+      this.bbox.emit( [ boundingBox[0], boundingBox[1], boundingBox[2], boundingBox[3] ] );
+      this.updateUrl();
+    } );
 
     if (this.markerInputs) {
       this.addMarker(this.markerInputs);
@@ -323,13 +331,15 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     this.router.navigate(['.'], { relativeTo: this.activatedRoute, queryParams});
   }
 
-  extentFromLonLat(extent: number[]) {
+  extentFromLonLat(extent: TExtent) {
+    // This method returns a TExtent, but TS won't allow the notation until OL types are in place
     const lowerLeft = extent.slice(0, 2);
     const upperRight = extent.slice(2, 4);
     return [ ...fromLonLat(lowerLeft), ...fromLonLat(upperRight) ];
   }
 
-  extentToLonLat(extent: number[]): number[] {
+  extentToLonLat(extent: TExtent) {
+    // This method returns a TExtent, but TS won't allow the notation until OL types are in place
     const lowerLeft = extent.slice(0, 2);
     const upperRight = extent.slice(2, 4);
     return [ ...toLonLat(lowerLeft), ...toLonLat(upperRight) ];
