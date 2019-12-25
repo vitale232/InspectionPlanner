@@ -157,9 +157,39 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       style: selectAADTStyle
     });
 
+    const studyAreaVectorSource = new VectorSource({
+      features: [
+        new Feature({
+          geometry: new Polygon([[
+            fromLonLat( [ -78.3377, 41.5679 ] ),
+            fromLonLat( [ -72.7328, 41.5679 ] ),
+            fromLonLat( [ -72.7328, 44.2841 ] ),
+            fromLonLat( [ -78.3377, 44.2841 ] ),
+            fromLonLat( [ -78.3377, 41.5679 ] ),
+          ]])
+        })
+      ]
+    });
+
+    const studyAreaVectorLayer = new VectorLayer({
+      source: studyAreaVectorSource,
+      title: 'Routable Network Extent',
+      type: 'overlay',
+      visible: true,
+      style: new Style({
+        fill: new Fill({
+          color: [ 255, 0, 0, 0 ]
+        }),
+        stroke: new Stroke({
+          color: [0, 31, 204, 1],
+          width: 1.5
+        })
+      })
+    });
+
     const overlayGroup = new Group({
         title: 'Overlays',
-        layers: [ this.vectorLayer ]
+        layers: [ studyAreaVectorLayer, this.vectorLayer ]
     });
 
     const basemapGroup = new Group({
@@ -217,7 +247,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     });
     this.map = new Map({
       target: 'open-layers-map',
-      layers: [ basemapGroup, overlayGroup ],
+      layers: [ basemapGroup, overlayGroup, ],
       view: this.view,
       controls: defaultControls({attribution: false}).extend([
           new ZoomToExtent({
