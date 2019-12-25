@@ -92,8 +92,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       center: fromLonLat(this.mapView.center),
       zoom: this.zoom,
     });
-    console.log('zoom', this.zoom);
-    console.log('center', fromLonLat(this.mapView.center));
+
     const vectorSource = new VectorSource({
       format: new GeoJSON({
         featureProjection: getProjection('EPSG:3857'),
@@ -120,14 +119,12 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         // observable in the loader, we'll be reacting to reception of new data by
         // replacing the vectorSource features
         this.bridgeSubscription = this.bridges$.subscribe(
-          bridges => {
-            const geojsonData = {
+          (bridges: NewYorkBridgeFeature[]) => {
+            vectorSource.clear();
+            vectorSource.addFeatures(vectorSource.getFormat().readFeatures({
               type: 'FeatureCollection',
               features: bridges
-            };
-            console.log('geojsonData', geojsonData);
-            vectorSource.clear();
-            vectorSource.addFeatures(vectorSource.getFormat().readFeatures(geojsonData));
+            }));
           },
           (err) => console.error('error from loader', err),
           () => setTimeout(() => this.map.updateSize(), 200)

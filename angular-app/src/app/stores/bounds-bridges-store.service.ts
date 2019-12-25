@@ -39,9 +39,7 @@ export class BoundsBridgesStoreService {
     this.loadingIndicatorService.sendLoadingIndicatorState(true);
     if (this.bridgeSubscription) { this.bridgeSubscription.unsubscribe(); }
     this.bridgeSubscription = this.bridgeService.getAllBridgesInBounds(extent).subscribe(
-      (data) => {
-        this.bridges = data;
-      },
+      (data) => this.bridges = data,
       (err) => {
         console.error('err from fetchBridges()', err);
         this.loadingIndicatorService.sendLoadingIndicatorState(false);
