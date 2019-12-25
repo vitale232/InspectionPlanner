@@ -76,20 +76,24 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
 
   constructor(
-    private bridgeService: NewYorkBridgeService,
     private router: Router,
     private activatedRoute: ActivatedRoute,
-    private loadingIndicatorService: LoadingIndicatorService,
-    private boundsBridgesStore: BoundsBridgesStoreService,
   ) { }
 
   ngOnInit() {
+    // this.updateUrl gets called during init, so if no mapView was passed in, the URL params
+    // will include NaN values, which breaks the map until they're deleted from the URL. Let's
+    // test for NaNs, and force the map to Albany if there are any
+    if (!this.mapView || [ this.mapView.zoom, ...this.mapView.center ].some(x => Number.isNaN(x))) {
+      this.mapView = { zoom: 10, center: [ -74.0234, 42.8337 ] };
+    }
     this.zoom = this.mapView.zoom;
     this.view = new View({
       center: fromLonLat(this.mapView.center),
       zoom: this.zoom,
     });
-
+    console.log('zoom', this.zoom);
+    console.log('center', fromLonLat(this.mapView.center));
     const vectorSource = new VectorSource({
       format: new GeoJSON({
         featureProjection: getProjection('EPSG:3857'),
