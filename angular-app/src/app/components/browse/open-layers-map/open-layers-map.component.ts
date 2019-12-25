@@ -53,6 +53,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   // Component inputs
   @Input() mapView: IMapView;
   @Input() markerInputs: IMarker[];
+  @Input() loadingIndicator$: Observable<boolean>;
 
   // OpenLayers objects
   private map: Map;
@@ -63,10 +64,10 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   private zoom: number;
 
   // Custom behaviors
-  private forcedInvisible: boolean;
   private styleGroups: IStyleStoreAADT;
   private bridgeSubscription: Subscription;
-  private loadingIndicator$: Observable<boolean>;
+
+  // public loadingIndicator$: Observable<boolean>;
 
 
   constructor(
@@ -77,9 +78,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.loadingIndicator$ = this.loadingIndicatorService.getLoadingIndicatorState$();
     this.zoom = this.mapView.zoom;
-    this.forcedInvisible = false;
     this.view = new View({
       center: fromLonLat(this.mapView.center),
       zoom: this.zoom,
@@ -273,24 +272,10 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     legend.addRow({ title: '3735 < AADT <= 11350', properties: { aadt: 5000 }, typeGeom: 'Point' });
     legend.addRow({ title: 'AADT > 11350', properties: { aadt: 12000 }, typeGeom: 'Point' });
 
-    setTimeout(() => this.map.updateSize(), 200);
+    this.map.updateSize();
 
-    // Bind to the map move end event. Update the URL query params.
-    // Turn off overlay if zoom < 9 or turn it on if zooming in and it was forced off previously
-    this.map.on('moveend', () => {
-      this.updateUrl();
+    this.map.on('moveend', () => this.updateUrl() );
 
-      const currentZoom = this.view.getZoom();
-      const zoomChanged = currentZoom === this.zoom ? false : true;
-
-      if (zoomChanged && currentZoom && currentZoom < 9) {
-        this.vectorLayer.setVisible(false);
-        this.forcedInvisible = true;
-      } else if (zoomChanged && currentZoom && currentZoom >= 9 && this.forcedInvisible) {
-        this.vectorLayer.setVisible(true);
-        this.forcedInvisible = false;
-      }
-    });
     if (this.markerInputs) {
       this.addMarker(this.markerInputs);
     }

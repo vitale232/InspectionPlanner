@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IMapView, IMarker } from 'src/app/models/open-layers-map.model';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { MapToolsService } from 'src/app/services/map-tools.service';
 import { MapExtent } from 'src/app/models/map-tools.model';
 import { ClientLocationService } from 'src/app/services/client-location.service';
 import { ClientLocation, LocationSearchResult } from 'src/app/models/location-search.model';
 import { SearchService } from 'src/app/services/search.service';
+import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
 
 @Component({
   selector: 'app-browse-display',
@@ -18,6 +19,8 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
   mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
   markerInputs: IMarker[];
 
+  loadingIndicatorState: Observable<boolean>;
+
   subscriptions = new Subscription();
 
   constructor(
@@ -25,7 +28,11 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
     private mapToolsService: MapToolsService,
     private clientLocationService: ClientLocationService,
     private searchService: SearchService,
-  ) { }
+    private loadingIndicatorService: LoadingIndicatorService,
+  ) {
+    this.loadingIndicatorState = this.loadingIndicatorService
+      .getLoadingIndicatorState$();
+  }
 
   ngOnInit() {
     this.subscriptions.add(this.activatedRoute.queryParamMap.subscribe(
