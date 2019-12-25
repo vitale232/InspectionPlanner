@@ -105,10 +105,14 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         return [ extent ];
       },
       loader: (extent: TExtent, res: number) => {
-        console.log('loader!!!');
         this.resolution = res;
         if (this.bridgeSubscription) { this.bridgeSubscription.unsubscribe(); }
-        this.bbox.emit( this.extentToLonLat(extent) );
+        // Data fetching is triggered by the bbox output event. The bbox output
+        // is emitting new values when a map move event ends. The parent component
+        // of .this component must call fetchBridges(bbox) in the bridge store
+        // when .this component emits a bbox event. By subscribing to the bridges$
+        // observable in the loader, we'll be reacting to reception of new data by
+        // replacing the vectorSource features
         this.bridgeSubscription = this.boundsBridgesStore.bridges$.subscribe(
           bridges => {
             const geojsonData = {
@@ -120,10 +124,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
             vectorSource.addFeatures(vectorSource.getFormat().readFeatures(geojsonData));
           },
           (err) => console.error('error from loader', err),
-          () => {
-            console.log('UNSUBSCRIBED!');
-            setTimeout(() => this.map.updateSize(), 200);
-          });
+          () => setTimeout(() => this.map.updateSize(), 200)
+        );
       },
     });
 
