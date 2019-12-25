@@ -9,6 +9,7 @@ import { ClientLocation, LocationSearchResult } from 'src/app/models/location-se
 import { SearchService } from 'src/app/services/search.service';
 import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
 import { BoundsBridgesStoreService } from 'src/app/stores/bounds-bridges-store.service';
+import { NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
 
 @Component({
   selector: 'app-browse-display',
@@ -20,7 +21,8 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
   mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
   markerInputs: IMarker[];
 
-  loadingIndicatorState: Observable<boolean>;
+  loadingIndicatorState$: Observable<boolean>;
+  bridges$: Observable<NewYorkBridgeFeature[]>;
 
   subscriptions = new Subscription();
 
@@ -32,8 +34,9 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
     private loadingIndicatorService: LoadingIndicatorService,
     private boundsBridgesStore: BoundsBridgesStoreService,
   ) {
-    this.loadingIndicatorState = this.loadingIndicatorService
+    this.loadingIndicatorState$ = this.loadingIndicatorService
       .getLoadingIndicatorState$();
+    this.bridges$ = this.boundsBridgesStore.bridges$;
   }
 
   ngOnInit() {
