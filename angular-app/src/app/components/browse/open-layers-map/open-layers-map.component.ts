@@ -108,7 +108,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         console.log('loader!!!');
         this.resolution = res;
         if (this.bridgeSubscription) { this.bridgeSubscription.unsubscribe(); }
-        this.boundsBridgesStore.fetchBridges( this.extentToLonLat(extent) );
+        this.bbox.emit( this.extentToLonLat(extent) );
         this.bridgeSubscription = this.boundsBridgesStore.bridges$.subscribe(
           bridges => {
             const geojsonData = {
