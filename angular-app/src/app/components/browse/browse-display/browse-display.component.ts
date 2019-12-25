@@ -8,6 +8,7 @@ import { ClientLocationService } from 'src/app/services/client-location.service'
 import { ClientLocation, LocationSearchResult } from 'src/app/models/location-search.model';
 import { SearchService } from 'src/app/services/search.service';
 import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
+import { BoundsBridgesStoreService } from 'src/app/stores/bounds-bridges-store.service';
 
 @Component({
   selector: 'app-browse-display',
@@ -29,6 +30,7 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
     private clientLocationService: ClientLocationService,
     private searchService: SearchService,
     private loadingIndicatorService: LoadingIndicatorService,
+    private boundsBridgesStore: BoundsBridgesStoreService,
   ) {
     this.loadingIndicatorState = this.loadingIndicatorService
       .getLoadingIndicatorState$();
@@ -68,10 +70,15 @@ export class BrowseDisplayComponent implements OnInit, OnDestroy {
     this.subscriptions.add(this.mapToolsService.getClearMarkers$().subscribe(
       (clear: boolean) => { if (clear === true) { this.markerInputs = []; } }
     ));
+    // this.subscriptions.add(this.boundsBridgesStore.bridges$.subscribe(
+    //   (data) => console.log('data from boundsBridgesStore.bridges$ sub', data),
+    //   (err) => console.log('err from boundsBridgesStore.bridges$', err),
+    //   () => console.log('complete boundsBridgesStore.bridges$')
+    // ));
   }
 
   onMapMove(bbox: [number, number, number, number]) {
-    console.log('onMapMove', bbox);
+    // console.log('onMapMove', bbox);
   }
 
   ngOnDestroy() {

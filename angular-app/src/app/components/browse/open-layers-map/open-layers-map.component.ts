@@ -40,6 +40,7 @@ import Point from 'ol/geom/Point';
 import LayerSwitcher from 'ol-layerswitcher';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
+import { BoundsBridgesStoreService } from 'src/app/stores/bounds-bridges-store.service';
 
 
 @Component({
@@ -77,6 +78,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     private router: Router,
     private activatedRoute: ActivatedRoute,
     private loadingIndicatorService: LoadingIndicatorService,
+    private boundsBridgesStore: BoundsBridgesStoreService,
   ) { }
 
   ngOnInit() {
@@ -103,11 +105,11 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         return [ extent ];
       },
       loader: (extent: TExtent, res: number) => {
-        this.loadingIndicatorService.sendLoadingIndicatorState(true);
         console.log('loader!!!');
         this.resolution = res;
         if (this.bridgeSubscription) { this.bridgeSubscription.unsubscribe(); }
-        this.bridgeSubscription = this.bridgeService.getAllBridgesInBounds(this.extentToLonLat(extent)).subscribe(
+        this.boundsBridgesStore.fetchBridges( this.extentToLonLat(extent) );
+        this.bridgeSubscription = this.boundsBridgesStore.bridges$.subscribe(
           bridges => {
             const geojsonData = {
               type: 'FeatureCollection',
@@ -117,13 +119,11 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
             vectorSource.clear();
             vectorSource.addFeatures(vectorSource.getFormat().readFeatures(geojsonData));
           },
-          err => console.error(err),
+          (err) => console.error('error from loader', err),
           () => {
-            console.log('Completed observable!');
-            this.loadingIndicatorService.sendLoadingIndicatorState(false);
-            setTimeout(() => this.map.updateSize(), 1);
-          }
-        );
+            console.log('UNSUBSCRIBED!');
+            setTimeout(() => this.map.updateSize(), 200);
+          });
       },
     });
 
@@ -274,7 +274,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     legend.addRow({ title: '3735 < AADT <= 11350', properties: { aadt: 5000 }, typeGeom: 'Point' });
     legend.addRow({ title: 'AADT > 11350', properties: { aadt: 12000 }, typeGeom: 'Point' });
 
-    this.map.updateSize();
+    setTimeout(() => this.map.updateSize(), 200);
 
     this.map.on('moveend', () => {
       // To satisfy TypeScript, calculate the extent then unpack it before emitting as an event. This
@@ -331,18 +331,18 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     this.router.navigate(['.'], { relativeTo: this.activatedRoute, queryParams});
   }
 
-  extentFromLonLat(extent: TExtent) {
-    // This method returns a TExtent, but TS won't allow the notation until OL types are in place
+  extentFromLonLat(extent: TExtent): TExtent {
     const lowerLeft = extent.slice(0, 2);
     const upperRight = extent.slice(2, 4);
-    return [ ...fromLonLat(lowerLeft), ...fromLonLat(upperRight) ];
+    const returnExtent = [ ...fromLonLat(lowerLeft), ...fromLonLat(upperRight) ];
+    return [ returnExtent[0], returnExtent[1], returnExtent[2], returnExtent[3] ];
   }
 
-  extentToLonLat(extent: TExtent) {
-    // This method returns a TExtent, but TS won't allow the notation until OL types are in place
+  extentToLonLat(extent: TExtent): TExtent {
     const lowerLeft = extent.slice(0, 2);
     const upperRight = extent.slice(2, 4);
-    return [ ...toLonLat(lowerLeft), ...toLonLat(upperRight) ];
+    const returnArray = [ ...toLonLat(lowerLeft), ...toLonLat(upperRight) ];
+    return [ returnArray[0], returnArray[1], returnArray[2], returnArray[3] ];
   }
 
   generateAADTStyles(): void {
