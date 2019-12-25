@@ -41,6 +41,7 @@ import LayerSwitcher from 'ol-layerswitcher';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
 import { BoundsBridgesStoreService } from 'src/app/stores/bounds-bridges-store.service';
+import { NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
 
 
 @Component({
@@ -54,6 +55,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() mapView: IMapView;
   @Input() markerInputs: IMarker[];
   @Input() loadingIndicator$: Observable<boolean>;
+  @Input() bridges$: Observable<NewYorkBridgeFeature[]>;
 
   // Component outputs
   @Output() bbox = new EventEmitter<TExtent>();
@@ -113,7 +115,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         // when .this component emits a bbox event. By subscribing to the bridges$
         // observable in the loader, we'll be reacting to reception of new data by
         // replacing the vectorSource features
-        this.bridgeSubscription = this.boundsBridgesStore.bridges$.subscribe(
+        this.bridgeSubscription = this.bridges$.subscribe(
           bridges => {
             const geojsonData = {
               type: 'FeatureCollection',
