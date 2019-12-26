@@ -20,6 +20,16 @@ import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsen
 import { NotFoundComponent } from './components/not-found/not-found.component';
 import { SimpleNotificationsModule } from 'angular2-notifications';
 import { QueryHistoryTableComponent } from './components/query-history-table/query-history-table.component';
+import { BrowseModule } from './components/browse/browse.module';
+import { PblNgridModule } from '@pebula/ngrid';
+import { PblNgridDragModule } from '@pebula/ngrid/drag';
+import { PblNgridTargetEventsModule } from '@pebula/ngrid/target-events';
+import { PblNgridBlockUiModule } from '@pebula/ngrid/block-ui';
+import { PblNgridTransposeModule } from '@pebula/ngrid/transpose';
+import { PblNgridStickyModule } from '@pebula/ngrid/sticky';
+import { PblNgridStatePluginModule } from '@pebula/ngrid/state';
+import { PblNgridMaterialModule } from '@pebula/ngrid-material';
+import { AngularSplitModule } from 'angular-split';
 
 
 const cookieConfig: NgcCookieConsentConfig = {
@@ -61,6 +71,16 @@ const cookieConfig: NgcCookieConsentConfig = {
     NgcCookieConsentModule.forRoot(cookieConfig),
     SimpleNotificationsModule.forRoot(),
     AppRoutingModule,
+    BrowseModule,
+    AngularSplitModule,
+    PblNgridModule,
+    PblNgridDragModule.withDefaultTemplates(),
+    PblNgridTargetEventsModule,
+    PblNgridBlockUiModule,
+    PblNgridTransposeModule,
+    PblNgridStickyModule,
+    PblNgridStatePluginModule,
+    PblNgridMaterialModule,
   ],
   providers: [
     SidenavService

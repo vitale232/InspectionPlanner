@@ -47,9 +47,28 @@
         </ng-template>
     </ng-template>
 
+    <div *ngIf="!driveTimeVisible && !openLayersVisible" class="explore-button">
+      <button mat-button
+              routerLink="/openlayers"
+              [queryParams]="{lon: -73.6457, lat: 40.8078, z: 10}"
+              color="accent"
+              >
+        <mat-icon>explore</mat-icon> OpenLayers Dev Map
+      </button>
+    </div>
+    <div *ngIf="!driveTimeVisible && openLayersVisible" class="explore-button">
+      <button mat-button
+              routerLink="/"
+              color="accent"
+              >
+        <mat-icon>home</mat-icon> Home (Leaflet Map)
+      </button>
+    </div>
+
     <span fxHide fxShow.gt-xs class="fill-remaining-space">Inspection Planner Application</span>
-    <span fxHide fxShow.lt-sm class="fill-remaining-space" *ngIf="!driveTimeVisible">IPA</span>
-    <span fxHide fxShow.lt-sm class="fill-remaining-space" *ngIf="driveTimeVisible"></span>
+    <!-- <span fxHide fxShow.lt-sm class="fill-remaining-space" *ngIf="!driveTimeVisible">IPA</span> -->
+    <!-- <span fxHide fxShow.lt-sm class="fill-remaining-space" *ngIf="driveTimeVisible"></span> -->
+    <span fxHide fxShow.lt-sm class="fill-remaining-space"></span>
 
     <button mat-button
             *ngIf="driveTimeVisible"

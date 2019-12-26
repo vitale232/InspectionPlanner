@@ -4,6 +4,8 @@ import { SidenavService } from './services/sidenav.service';
 import { NgcCookieConsentService } from 'ngx-cookieconsent';
 import { Subscription, Observable } from 'rxjs';
 import { LoadingIndicatorService } from './services/loading-indicator.service';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 
 @Component({
@@ -16,13 +18,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   loadingIndicator$: Observable<boolean>;
   sidenavOpen: boolean;
   allowSidenavEscape = true;
+  routerSubscription: Subscription;
+  openLayersVisible = false;
 
   @ViewChild('sidenav', { static: false }) public sidenav: MatSidenav;
 
   constructor(
     private sidenavService: SidenavService,
     private ccService: NgcCookieConsentService,
-    private loadingIndicatorService: LoadingIndicatorService
+    private loadingIndicatorService: LoadingIndicatorService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -31,6 +36,16 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.sidenavService.getSidenavState$().subscribe((data: boolean) => {
       this.sidenavOpen = data;
     });
+    this.routerSubscription = this.router.events
+      .pipe(filter(e => e instanceof NavigationEnd))
+      .subscribe((val: NavigationEnd) => {
+        const urlParts = val.url.split(/[?,&,/]/).map(x => x.replace('/', ''));
+        if (urlParts.includes('openlayers')) {
+          this.openLayersVisible = true;
+        } else {
+          this.openLayersVisible = false;
+        }
+      });
   }
   ngAfterViewInit() {
     this.sidenavService.setSidenav(this.sidenav);

@@ -2,7 +2,7 @@
      fxLayoutAlign="start none">
 
   <app-navbar></app-navbar>
-  <div *ngIf="loadingIndicator$ | async as loading">
+  <div *ngIf="!openLayersVisible && loadingIndicator$ | async as loading" class="on-top">
     <mat-progress-bar mode="query" color="accent"></mat-progress-bar>
   </div>
 
