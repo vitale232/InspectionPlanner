@@ -1,0 +1,16 @@
+<div class="splitter-container" (window:resize)="onResize($event)">
+    <as-split [direction]="splitterOrientation" (dragEnd)="splitDragEnd($event)">
+      <as-split-area [size]="mapSize">
+        <section class="mat-typography typography-container">
+          <p>This is where the map goes</p>
+        </section>
+      </as-split-area>
+  
+      <as-split-area [size]="tableSize">
+        <section class="mat-typography typography-container">
+          <p>This is where the nGrid goes</p>
+        </section>
+    </as-split-area>
+    </as-split>
+  </div>
+  

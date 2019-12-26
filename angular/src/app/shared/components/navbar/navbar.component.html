@@ -22,6 +22,26 @@
     <span fxHide fxShow.gt-xs class="fill-remaining-space">Inspection Planner Application</span>
     <span fxHide fxShow.lt-sm class="fill-remaining-space"></span>
 
+    <div *ngIf="tableOpen$ | async as tableOpen; else tableClosed">
+      <button mat-icon-button
+              matTooltip="Close attribute table of bridge features"
+              aria-label="Close attribute table of bridges"
+              color="accent"
+              (click)="closeTable()"
+              >
+        <mat-icon>table_chart</mat-icon> 
+      </button>
+    </div>
+    <ng-template #tableClosed>
+      <button mat-icon-button
+              matTooltip="Show attribute table of bridge features"
+              aria-label="Show attribute table of bridges"
+              (click)="openTable()"
+              >
+        <mat-icon>table_chart</mat-icon> 
+      </button>
+    </ng-template>
+
     <button mat-button [matMenuTriggerFor]="menu">
       <mat-icon>menu</mat-icon>
     </button>

@@ -3,12 +3,15 @@ import { NgModule } from '@angular/core';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
+import { AngularSplitModule } from 'angular-split';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
+import { BrowseBridgesModule } from './modules/browse-bridges/browse-bridges.module';
+import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 
 const cookieConfig: NgcCookieConsentConfig = {
   cookie: {
@@ -29,7 +32,8 @@ const cookieConfig: NgcCookieConsentConfig = {
 @NgModule({
   declarations: [
     AppComponent,
-    NavbarComponent
+    NavbarComponent,
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
@@ -38,6 +42,8 @@ const cookieConfig: NgcCookieConsentConfig = {
     MaterialModule,
     FlexLayoutModule,
     NgcCookieConsentModule.forRoot(cookieConfig),
+    AngularSplitModule.forRoot(),
+    BrowseBridgesModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

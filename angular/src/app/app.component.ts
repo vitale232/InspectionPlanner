@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, ViewChild, OnInit, AfterViewInit, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { MatSidenav } from '@angular/material';
 import { SidenavService } from './shared/services/sidenav.service';
 import { NgcCookieConsentService } from 'ngx-cookieconsent';
@@ -13,6 +13,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private subscriptions = new Subscription();
   private sidenavState$: Observable<boolean>;
+
+  @Output() TABLE_CLOSED = new EventEmitter<boolean>();
 
   @ViewChild('sidenav', { static: false }) public sidenav: MatSidenav;
 
@@ -50,4 +52,5 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   fKey(event) {
     this.sidenav.open();
   }
+
 }
