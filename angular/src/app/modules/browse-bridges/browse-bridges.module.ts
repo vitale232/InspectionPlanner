@@ -4,11 +4,11 @@ import { BrowseBridgesDisplayComponent } from './browse-bridges-display/browse-b
 import { BrowseBridgesRoutingModule } from './browse-bridges-routing.module';
 import { AngularSplitModule } from 'angular-split';
 import { MatButtonModule } from '@angular/material';
-
+import { OpenLayersMapComponent } from '../../shared/components/open-layers-map/open-layers-map.component';
 
 
 @NgModule({
-  declarations: [BrowseBridgesDisplayComponent],
+  declarations: [BrowseBridgesDisplayComponent, OpenLayersMapComponent],
   imports: [
     CommonModule,
     BrowseBridgesRoutingModule,

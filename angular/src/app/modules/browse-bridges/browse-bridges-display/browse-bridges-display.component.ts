@@ -46,8 +46,12 @@ export class BrowseBridgesDisplayComponent implements OnInit, AfterViewInit, OnD
   }
 
   openTable() {
-    this.mapSize = 50;
-    this.tableSize = 50;
+    if (this.tableSize > 1) {
+      return;
+    } else {
+      this.mapSize = 50;
+      this.tableSize = 50;
+    }
   }
 
   getSplitterOrientation() {
