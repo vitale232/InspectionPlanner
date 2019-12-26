@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSidenav } from '@angular/material';
-import { Subject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,19 +9,18 @@ export class SidenavService {
 
   private sidenav: MatSidenav;
 
-  private sidenavOpen = new Subject<boolean>();
-  public sidenavState$ = this.sidenavOpen.asObservable();
+  private readonly _sidenavOpen = new BehaviorSubject<boolean>(false);
+  public readonly sidenavState$ = this._sidenavOpen.asObservable();
 
+  get sidenavOpen(): boolean {
+    return this._sidenavOpen.getValue();
+  }
+
+  set sidenavOpen(val: boolean) {
+    this._sidenavOpen.next(val);
+  }
 
   constructor() { }
-
-  // public getSidenavState$(): Observable<boolean> {
-  //   return this.sidenavOpen.asObservable();
-  // }
-
-  public sendSidenavState(openBool: boolean): void {
-    this.sidenavOpen.next(openBool);
-  }
 
   public setSidenav(sidenav: MatSidenav): void {
     this.sidenav = sidenav;
@@ -30,7 +29,7 @@ export class SidenavService {
   public open(): boolean {
     this.sidenav.open().then((val) => {
       if (val === 'open') {
-        this.sendSidenavState(true);
+        this.sidenavOpen = true;
       }
     });
     return true;
@@ -39,7 +38,7 @@ export class SidenavService {
   public close(): boolean {
     this.sidenav.close().then((val) =>  {
       if (val === 'close') {
-        this.sendSidenavState(false);
+        this.sidenavOpen = false;
       }
     });
     return true;
@@ -48,9 +47,9 @@ export class SidenavService {
   public toggle() {
     this.sidenav.toggle().then((val) => {
       if (val === 'open') {
-        this.sendSidenavState(true);
+        this.sidenavOpen = true;
       } else if (val === 'close') {
-        this.sendSidenavState(false);
+        this.sidenavOpen = false;
       }
     });
   }

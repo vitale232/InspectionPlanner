@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class NavbarService {
   private readonly _tableOpen = new BehaviorSubject<boolean>(false);
-  readonly tableOpen$ = this._tableOpen.asObservable();
+  public readonly tableOpen$ = this._tableOpen.asObservable();
 
   get tableOpen() {
     return this._tableOpen.getValue();
