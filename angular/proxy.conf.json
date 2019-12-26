@@ -1,0 +1,10 @@
+{
+    "/routing": {
+      "target": "http://localhost:8000",
+      "secure": false
+    },
+    "/bridges": {
+      "target": "http://localhost:8000",
+      "secure": false
+    }
+}
