@@ -1,2 +1,19 @@
-<mat-toolbar><button mat-flat-button color="accent">click</button></mat-toolbar>
-<p>hi</p>
+<div fxFlexFill
+     fxLayout="column"
+     fxLayoutAlign="start none"
+     >
+  <app-navbar [sidenavState$]="sidenavState$"
+              (sidenavAction)="onSidenavAction($event)"
+              ></app-navbar>
+  <mat-sidenav-container fxFlex hasBackdrop="false">
+    <mat-sidenav #sidenav
+                 disableClose
+                 mode="over"
+                 (keydown.escape)="escape($event)"
+                 (document:keydown.f)="fKey($event)"
+                 >
+      <p>hi, i'm in a sidenav</p>
+    </mat-sidenav>
+    <router-outlet></router-outlet>
+  </mat-sidenav-container>
+</div>

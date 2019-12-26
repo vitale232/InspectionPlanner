@@ -24,3 +24,8 @@ $app-theme: mat-dark-theme($app-primary, $app-accent, $app-warn);
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.fill-remaining-space {
+    flex: 1 1 auto;
+    text-align: center;
+}

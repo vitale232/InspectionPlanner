@@ -1,0 +1,36 @@
+<div>
+  <mat-toolbar color="primary">
+    <div *ngIf="sidenavState$ | async as sidenavVisible; else sidenavClosed">
+      <button mat-icon-button
+              (click)="closeSidenav()"
+              aria-label="Toggle search panel"
+              matTooltip="Close search panel (try using 'esc' key)"
+              matTooltipShowDelay="250"
+              matBadgeColor="accent"
+              > <mat-icon>close</mat-icon> </button>
+    </div>
+    <ng-template #sidenavClosed>
+      <button mat-icon-button
+              (click)="openSidenav()"
+              aria-label="Toggle search panel"
+              matTooltip="Open search panel (try using 'f' key)"
+              matTooltipShowDelay="250"
+              matBadgeColor="accent"
+              > <mat-icon>search</mat-icon> </button>
+    </ng-template>
+
+    <span fxHide fxShow.gt-xs class="fill-remaining-space">Inspection Planner Application</span>
+    <span fxHide fxShow.lt-sm class="fill-remaining-space"></span>
+
+    <button mat-button [matMenuTriggerFor]="menu">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <mat-menu #menu="matMenu" aria-label="Main menu">
+      <a mat-menu-item href="https://openstreetmap.org" aria-label="Navigate to open street map website"> OpenStreetMap.org </a>
+      <a mat-menu-item href="https://timelinetamer.com" aria-label="Navigate to timeline tamer website"> TimelineTamer.com </a>
+      <a mat-menu-item href="https://andrew.vitale.timelinetamer.com" aria-label="Visit author's website"> About the Author </a>
+      <a mat-menu-item href="https://github.com/vitale232/InspectionPlanner" aria-label="Navigate to source code on github"> Source Code </a>
+    </mat-menu>
+
+  </mat-toolbar>
+</div>
