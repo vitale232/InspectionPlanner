@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { BrowseBridgesDisplayComponent } from './browse-bridges-display/browse-bridges-display.component';
 import { BrowseBridgesRoutingModule } from './browse-bridges-routing.module';
 import { AngularSplitModule } from 'angular-split';
-import { MatButtonModule } from '@angular/material';
+import { MatButtonModule, MatProgressBarModule } from '@angular/material';
 import { OpenLayersMapComponent } from '../../shared/components/open-layers-map/open-layers-map.component';
 
 
@@ -14,6 +14,7 @@ import { OpenLayersMapComponent } from '../../shared/components/open-layers-map/
     BrowseBridgesRoutingModule,
     AngularSplitModule,
     MatButtonModule,
+    MatProgressBarModule,
   ],
   exports: [
     BrowseBridgesDisplayComponent,

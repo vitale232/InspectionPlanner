@@ -34,7 +34,6 @@ export class NavbarComponent implements OnInit {
   }
 
   openTable() {
-    console.log('call openTable');
     this.navbarService.tableOpen = true;
   }
 

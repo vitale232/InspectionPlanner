@@ -1,14 +1,18 @@
 <div class="splitter-container" (window:resize)="onResize($event)">
     <as-split [direction]="splitterOrientation" (dragEnd)="splitDragEnd($event)">
       <as-split-area [size]="mapSize">
-        <section class="mat-typography typography-container">
-          <app-open-layers-map></app-open-layers-map>
-        </section>
+        <app-open-layers-map [mapView]="mapView"
+                             [markerInputs]="markerInputs"
+                             [loading$]="loading$"
+                             [bridges$]="bridges$"
+                             (bbox)="onMapMove($event)"
+                            ></app-open-layers-map>
       </as-split-area>
   
       <as-split-area [size]="tableSize">
         <section class="mat-typography typography-container">
           <p>This is where the nGrid goes</p>
+          <h2> Test CSS </h2>
         </section>
     </as-split-area>
     </as-split>

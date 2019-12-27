@@ -5,15 +5,18 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root'
 })
 export class NavbarService {
-  private readonly _tableOpen = new BehaviorSubject<boolean>(false);
-  public readonly tableOpen$ = this._tableOpen.asObservable();
 
-  get tableOpen() {
+  private readonly _tableOpen = new BehaviorSubject<boolean>(false);
+  readonly tableOpen$ = this._tableOpen.asObservable();
+
+  get tableOpen(): boolean {
     return this._tableOpen.getValue();
   }
 
   set tableOpen(val: boolean) {
     this._tableOpen.next(val);
   }
+
   constructor() { }
+
 }

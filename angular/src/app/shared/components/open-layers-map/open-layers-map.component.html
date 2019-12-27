@@ -1,1 +1,8 @@
-<p>open-layers-map works!</p>
+<div class="container map">
+  <div class="content">
+      <div id="open-layers-map" class="map"></div>
+  </div>
+  <div *ngIf="loading$ | async as loading" class="overlay">
+      <mat-progress-bar mode="query" color="accent"></mat-progress-bar>
+  </div>
+</div>

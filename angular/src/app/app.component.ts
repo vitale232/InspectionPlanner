@@ -46,11 +46,11 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   escape(event) {
-    this.sidenav.close();
+    this.sidenavService.close();
   }
 
   fKey(event) {
-    this.sidenav.open();
+    this.sidenavService.open();
   }
 
 }

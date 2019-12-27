@@ -12,6 +12,7 @@ import { MaterialModule } from './material.module';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { BrowseBridgesModule } from './modules/browse-bridges/browse-bridges.module';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
+import { HttpClientModule } from '@angular/common/http';
 
 const cookieConfig: NgcCookieConsentConfig = {
   cookie: {
@@ -39,6 +40,7 @@ const cookieConfig: NgcCookieConsentConfig = {
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     MaterialModule,
     FlexLayoutModule,
     NgcCookieConsentModule.forRoot(cookieConfig),
