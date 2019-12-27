@@ -255,12 +255,12 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       view: this.view,
       controls: defaultControls({attribution: false}).extend([
           new ZoomToExtent({
-              extent: this.extentFromLonLat([ -79.0878, 42.7959, -78.4238, 43.1045 ])
+              extent: this.extentFromLonLat([ -78.4, 41.5679, -72.65, 44.2841 ])
           })
       ]).extend([attribution])
   });
 
-    // Add the layer switcher from ol-layerswitcher 3rd party package to the map
+  // Add the layer switcher from ol-layerswitcher 3rd party package to the map
     // const layerSwitcher = new LayerSwitcher({});
     // this.map.addControl(layerSwitcher);
 

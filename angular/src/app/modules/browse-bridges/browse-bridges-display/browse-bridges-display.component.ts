@@ -8,6 +8,7 @@ import { LoadingIndicatorService } from 'src/app/shared/services/loading-indicat
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
 import { Title } from '@angular/platform-browser';
 import { SidenavService } from 'src/app/shared/services/sidenav.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-browse-bridges-display',
@@ -29,8 +30,10 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   splitterOrientation: 'horizontal' | 'vertical' = 'horizontal';
   mapSize = 50;
   tableSize = 50;
+  minTableSize = 5;
 
   constructor(
+    private activatedRoute: ActivatedRoute,
     private navbarService: NavbarService,
     private bridgesStore: BridgesStoreService,
     private loadingIndicatorService: LoadingIndicatorService,
@@ -61,6 +64,15 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
     this.tableSize = 50;
     this.mapSize = 50;
     this.navbarService.tableOpen = true;
+    this.subscriptions.add(this.activatedRoute.queryParamMap.subscribe(
+      (params) => {
+        const lon = parseFloat(params.get('lon'));
+        const lat = parseFloat(params.get('lat'));
+        const zoom = parseInt(params.get('z'), 10);
+        this.mapView =  { zoom, center: [ lon, lat ] };
+      }
+    ));
+
   }
 
   ngOnDestroy() {
@@ -74,7 +86,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   }
 
   openTable() {
-    if (this.tableSize > 1) {
+    if (this.tableSize > this.minTableSize) {
       return;
     } else {
       this.mapSize = 50;
@@ -95,7 +107,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
     console.log('drag');
     this.mapSize = event.sizes[0];
     this.tableSize = event.sizes[1];
-    if (this.tableSize <= 1) {
+    if (this.tableSize <= this.minTableSize) {
       this.navbarService.tableOpen = false;
     } else {
       this.navbarService.tableOpen = true;

@@ -15,8 +15,7 @@ export class AttributeGridComponent implements OnInit {
 
   columns: PblNgridColumnSet = config.COLUMNS.build();
   mapBridgesDataSource: PblDataSource = createDS<BridgeFeature>()
-    .keepAlive()
-    .onTrigger( () => this.getBBoxBridges() )
+    .onTrigger( () => this.bridges$ )
     .create();
 
   @ViewChild(PblNgridComponent, { static: true }) table: PblNgridComponent<BridgeFeature>;
@@ -24,10 +23,6 @@ export class AttributeGridComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-  }
-
-  getBBoxBridges(): Observable<BridgeFeature[]> {
-    return this.bridges$;
   }
 
 }
