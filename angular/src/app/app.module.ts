@@ -23,6 +23,7 @@ import { PblNgridBlockUiModule } from '@pebula/ngrid/block-ui';
 // import { PblNgridStickyModule } from '@pebula/ngrid/sticky';
 import { PblNgridStatePluginModule } from '@pebula/ngrid/state';
 import { PblNgridMaterialModule } from '@pebula/ngrid-material';
+import { SearchModule } from './modules/search/search.module';
 
 
 const cookieConfig: NgcCookieConsentConfig = {
@@ -66,6 +67,7 @@ const cookieConfig: NgcCookieConsentConfig = {
     PblNgridMaterialModule,
 
     BrowseBridgesModule,
+    SearchModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,0 +1,29 @@
+<section class="mat-typography space-below">
+  Search the map for an address. All fields are optional.
+</section>
+
+<form [formGroup]="osmFilterForm" (keydown.enter)="onFilterSearch()">
+  <mat-form-field class="detailed-form-field" color="accent">
+    <input matInput formControlName="streetAddress" placeholder="Street address">
+  </mat-form-field>
+
+  <mat-form-field class="detailed-form-field" color="accent">
+    <input matInput formControlName="city" placeholder="City">
+  </mat-form-field>
+
+  <mat-form-field class="detailed-form-field" color="accent">
+    <input matInput formControlName="state" placeholder="State">
+  </mat-form-field>
+
+  <mat-form-field class="detailed-form-field" color="accent">
+    <input matInput formControlName="country" placeholder="Country">
+  </mat-form-field>
+</form>
+
+<mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
+
+<button mat-flat-button
+        color="primary"
+        (click)="onFilterSearch()"
+        class="center-button"
+      > Search </button>
