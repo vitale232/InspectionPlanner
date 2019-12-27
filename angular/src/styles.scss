@@ -16,8 +16,13 @@ $app-theme: mat-dark-theme($app-primary, $app-accent, $app-warn);
 @include angular-material-theme($app-theme);
 
 
-/* Global Styles */
 
+/* Add application styles & imports to this file! */
+@import '@pebula/ngrid/themes/default-dark.css';
+
+
+
+/* Global Styles */
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 

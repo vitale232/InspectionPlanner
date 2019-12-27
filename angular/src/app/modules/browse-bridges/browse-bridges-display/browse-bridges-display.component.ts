@@ -6,6 +6,7 @@ import { BridgeFeature } from 'src/app/shared/models/bridges.model';
 import { BridgesStoreService } from 'src/app/shared/store/bridges-store.service';
 import { LoadingIndicatorService } from 'src/app/shared/services/loading-indicator.service';
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-browse-bridges-display',
@@ -32,15 +33,20 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
     private navbarService: NavbarService,
     private bridgesStore: BridgesStoreService,
     private loadingIndicatorService: LoadingIndicatorService,
+    private titleService: Title,
   ) {
     this.bridges$ = this.bridgesStore.bridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
+
+    this.titleService.setTitle('IPA - Browse Bridges');
 
     this.subscriptions.add(this.navbarService.tableOpen$.subscribe(
       (tableOpen: boolean) => {
         if (tableOpen) { this.openTable(); } else { this.closeTable(); }
       }
     ));
+
+    this.bridges$.subscribe(data => console.log('bridges', data));
   }
 
   ngOnInit() {

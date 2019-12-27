@@ -13,6 +13,17 @@ import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { BrowseBridgesModule } from './modules/browse-bridges/browse-bridges.module';
 import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { HttpClientModule } from '@angular/common/http';
+import { TemplateGridComponent } from './shared/components/grid-components/template-grid/template-grid.component';
+import { AttributeGridComponent } from './shared/components/grid-components/attribute-grid/attribute-grid.component';
+import { PblNgridModule } from '@pebula/ngrid';
+import { PblNgridDragModule } from '@pebula/ngrid/drag';
+import { PblNgridTargetEventsModule } from '@pebula/ngrid/target-events';
+import { PblNgridTransposeModule } from '@pebula/ngrid/transpose';
+import { PblNgridBlockUiModule } from '@pebula/ngrid/block-ui';
+// import { PblNgridStickyModule } from '@pebula/ngrid/sticky';
+import { PblNgridStatePluginModule } from '@pebula/ngrid/state';
+import { PblNgridMaterialModule } from '@pebula/ngrid-material';
+
 
 const cookieConfig: NgcCookieConsentConfig = {
   cookie: {
@@ -34,7 +45,8 @@ const cookieConfig: NgcCookieConsentConfig = {
   declarations: [
     AppComponent,
     NavbarComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    // TemplateGridComponent,
   ],
   imports: [
     BrowserModule,
@@ -45,9 +57,20 @@ const cookieConfig: NgcCookieConsentConfig = {
     FlexLayoutModule,
     NgcCookieConsentModule.forRoot(cookieConfig),
     AngularSplitModule.forRoot(),
+    // PblNgridModule.withCommon([ { component: TemplateGridComponent } ]),
+
+    // PblNgridModule.withCommon([ { component: TemplateGridComponent } ]),
+    // PblNgridDragModule,
+    // PblNgridTargetEventsModule,
+    // PblNgridBlockUiModule,
+    // PblNgridTransposeModule,
+    // // PblNgridStickyModule,
+    // PblNgridStatePluginModule,
+    // PblNgridMaterialModule,
+
     BrowseBridgesModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

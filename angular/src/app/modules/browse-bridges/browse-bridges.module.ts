@@ -5,16 +5,41 @@ import { BrowseBridgesRoutingModule } from './browse-bridges-routing.module';
 import { AngularSplitModule } from 'angular-split';
 import { MatButtonModule, MatProgressBarModule } from '@angular/material';
 import { OpenLayersMapComponent } from '../../shared/components/open-layers-map/open-layers-map.component';
+import { AttributeGridComponent } from 'src/app/shared/components/grid-components/attribute-grid/attribute-grid.component';
+import { PblNgridModule } from '@pebula/ngrid';
+import { PblNgridDragModule } from '@pebula/ngrid/drag';
+import { PblNgridTargetEventsModule } from '@pebula/ngrid/target-events';
+import { PblNgridBlockUiModule } from '@pebula/ngrid/block-ui';
+import { PblNgridTransposeModule } from '@pebula/ngrid/transpose';
+import { PblNgridStickyModule } from '@pebula/ngrid/sticky';
+import { PblNgridStatePluginModule } from '@pebula/ngrid/state';
+import { PblNgridMaterialModule } from '@pebula/ngrid-material';
+import { TemplateGridComponent } from 'src/app/shared/components/grid-components/template-grid/template-grid.component';
+import { MaterialModule } from 'src/app/material.module';
 
 
 @NgModule({
-  declarations: [BrowseBridgesDisplayComponent, OpenLayersMapComponent],
+  declarations: [
+    AttributeGridComponent,
+    BrowseBridgesDisplayComponent,
+    OpenLayersMapComponent,
+    TemplateGridComponent,
+  ],
   imports: [
     CommonModule,
     BrowseBridgesRoutingModule,
     AngularSplitModule,
-    MatButtonModule,
-    MatProgressBarModule,
+    MaterialModule,
+
+    PblNgridModule.withCommon([ { component: TemplateGridComponent } ]),
+    PblNgridDragModule,
+    PblNgridTargetEventsModule,
+    PblNgridBlockUiModule,
+    PblNgridTransposeModule,
+    // PblNgridStickyModule,
+    PblNgridStatePluginModule,
+    PblNgridMaterialModule,
+
   ],
   exports: [
     BrowseBridgesDisplayComponent,

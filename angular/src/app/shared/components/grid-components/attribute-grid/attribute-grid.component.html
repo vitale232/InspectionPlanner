@@ -1,0 +1,15 @@
+<pbl-ngrid persistState id="browse-bridges-grid"
+           matHeaderContextMenu="excelMenu"
+           rowReorder
+           columnReorder
+           blockUi
+           matSort
+           vScrollFixed
+           cellTooltip
+           focusMode="cell"
+           [dataSource]="mapBridgesDataSource"
+           [columns]="columns"
+           (cellClick)="$event.context && $event.context.startEdit()"
+           style="height: 500px"
+           class="pbl-ngrid-cell-ellipsis pbl-ngrid-header-cell-ellipsis">
+</pbl-ngrid>
