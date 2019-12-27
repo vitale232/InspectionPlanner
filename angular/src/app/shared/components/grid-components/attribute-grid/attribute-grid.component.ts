@@ -14,7 +14,7 @@ export class AttributeGridComponent implements OnInit {
   @Input() bridges$: Observable<BridgeFeature[]>;
 
   columns: PblNgridColumnSet = config.COLUMNS.build();
-  mapBridgesDataSource: PblDataSource = createDS()
+  mapBridgesDataSource: PblDataSource = createDS<BridgeFeature>()
     .keepAlive()
     .onTrigger( () => this.getBBoxBridges() )
     .create();

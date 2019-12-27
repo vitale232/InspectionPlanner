@@ -7,6 +7,7 @@ import { BridgesStoreService } from 'src/app/shared/store/bridges-store.service'
 import { LoadingIndicatorService } from 'src/app/shared/services/loading-indicator.service';
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
 import { Title } from '@angular/platform-browser';
+import { SidenavService } from 'src/app/shared/services/sidenav.service';
 
 @Component({
   selector: 'app-browse-bridges-display',
@@ -34,6 +35,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
     private bridgesStore: BridgesStoreService,
     private loadingIndicatorService: LoadingIndicatorService,
     private titleService: Title,
+    private sidenavService: SidenavService,
   ) {
     this.bridges$ = this.bridgesStore.bridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
@@ -46,7 +48,12 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
       }
     ));
 
-    this.bridges$.subscribe(data => console.log('bridges', data));
+    this.subscriptions.add(this.bridges$.subscribe(data => console.log('bridges', data)));
+    this.subscriptions.add(this.sidenavService.sidenavState$.subscribe(
+      data => this.updateMapSize(),
+      err => console.error(err),
+      () => this.updateMapSize()
+    ));
   }
 
   ngOnInit() {

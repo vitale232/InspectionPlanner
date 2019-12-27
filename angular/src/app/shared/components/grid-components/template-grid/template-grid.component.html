@@ -26,3 +26,8 @@
   <mat-icon pblDragHandle class="pbl-ngrid-row-drag-handle">drag_handle</mat-icon>
   <div class="pbl-ngrid-row-drag-placeholder" *cdkDragPlaceholder></div>
 </div>
+
+<div *pblNgridHeaderCellTypeDef="'zoom_to_icon'"></div>
+<div *pblNgridCellTypeDef="'zoom_to_icon'; value as value">
+    <mat-icon>gps_fixed</mat-icon>
+</div>

@@ -6,7 +6,7 @@ import { AngularSplitModule } from 'angular-split';
 import { MatButtonModule, MatProgressBarModule } from '@angular/material';
 import { OpenLayersMapComponent } from '../../shared/components/open-layers-map/open-layers-map.component';
 import { AttributeGridComponent } from 'src/app/shared/components/grid-components/attribute-grid/attribute-grid.component';
-import { PblNgridModule } from '@pebula/ngrid';
+import { PblNgridModule, PblNgridComponent } from '@pebula/ngrid';
 import { PblNgridDragModule } from '@pebula/ngrid/drag';
 import { PblNgridTargetEventsModule } from '@pebula/ngrid/target-events';
 import { PblNgridBlockUiModule } from '@pebula/ngrid/block-ui';
@@ -36,7 +36,7 @@ import { MaterialModule } from 'src/app/material.module';
     PblNgridTargetEventsModule,
     PblNgridBlockUiModule,
     PblNgridTransposeModule,
-    // PblNgridStickyModule,
+    PblNgridStickyModule,
     PblNgridStatePluginModule,
     PblNgridMaterialModule,
 
