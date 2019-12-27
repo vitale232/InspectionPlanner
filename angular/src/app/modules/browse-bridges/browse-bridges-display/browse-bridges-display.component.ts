@@ -53,7 +53,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(this.bridges$.subscribe(data => console.log('bridges', data)));
     this.subscriptions.add(this.sidenavService.sidenavState$.subscribe(
-      data => this.updateMapSize(),
+      () => this.updateMapSize(),
       err => console.error(err),
       () => this.updateMapSize()
     ));

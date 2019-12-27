@@ -112,7 +112,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         return [ extent ];
       },
       loader: (extent: TExtent, res: number) => {
-        console.log('loader!');
         this.resolution = res;
         if (this.bridgeSubscription) { this.bridgeSubscription.unsubscribe(); }
         // Data fetching is triggered by the bbox output event. The bbox output
