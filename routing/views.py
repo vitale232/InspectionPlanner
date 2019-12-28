@@ -52,7 +52,7 @@ class DriveTimeQueryList(generics.ListAPIView):
     def get_queryset(self):
         return DriveTimeQuery.objects.filter(
             polygon_pending=False
-        ).order_by('-created_time')
+        ).order_by('display_name')
 
 
 class DriveTimeQueryDetail(generics.RetrieveAPIView):
