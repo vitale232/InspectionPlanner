@@ -43,6 +43,8 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
       data => {
         this.driveTimeQueries = data;
         // Wait until there is data before applying the first filter to the mat-autocomplete
+        // If we don't wait until there's data to trigger _filter, there will be an empty list 
+        // in the autocomplete until the user starts to type
         this.filteredOptions = this.searchTextControl.valueChanges.pipe(
           startWith(''),
           map(value => this._filter(value))
