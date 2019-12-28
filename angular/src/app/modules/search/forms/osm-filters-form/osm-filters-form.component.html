@@ -22,8 +22,10 @@
 
 <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
 
-<button mat-flat-button
-        color="primary"
-        (click)="onFilterSearch()"
-        class="center-button"
-      > Search </button>
+<div class="center-button">
+  <button mat-flat-button
+          color="primary"
+          (click)="onFilterSearch()"
+          class="search-button"
+        > Search </button>
+</div>

@@ -3,7 +3,7 @@ import { NavbarService } from 'src/app/shared/services/navbar.service';
 import { Subscription, Observable } from 'rxjs';
 import { IMapView, IMarker, TExtent } from 'src/app/shared/models/open-layers-map.model';
 import { BridgeFeature } from 'src/app/shared/models/bridges.model';
-import { BridgesStoreService } from 'src/app/shared/store/bridges-store.service';
+import { BridgesStoreService } from 'src/app/shared/stores/bridges-store.service';
 import { LoadingIndicatorService } from 'src/app/shared/services/loading-indicator.service';
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
 import { Title } from '@angular/platform-browser';

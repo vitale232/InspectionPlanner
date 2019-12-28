@@ -3,9 +3,9 @@
   <div class="accordion-container">
     <mat-accordion>
   
-      <mat-expansion-panel>
+      <mat-expansion-panel expanded="true">
         <mat-expansion-panel-header>
-          <mat-panel-title> OmniSearch </mat-panel-title>
+          <mat-panel-title> Search the Map </mat-panel-title>
         </mat-expansion-panel-header>
         <app-omni-search-form></app-omni-search-form>
       </mat-expansion-panel>
@@ -14,7 +14,7 @@
         <mat-expansion-panel-header>
           <mat-panel-title> Drive Time Search </mat-panel-title>
         </mat-expansion-panel-header>
-        <app-omni-search-form></app-omni-search-form>
+        <app-drive-time-form [driveTimeQueries$]="driveTimeQueries$"></app-drive-time-form>
       </mat-expansion-panel>
   
       <mat-expansion-panel>

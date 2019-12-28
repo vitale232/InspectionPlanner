@@ -26,6 +26,27 @@ $app-theme: mat-dark-theme($app-primary, $app-accent, $app-warn);
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+.form-field {
+  width: 306px;
+  margin: 0 auto;
+  display: block;
+}
+
+.center-button {
+	text-align: center;
+}
+
+.search-button {
+	width: 200px;
+}
+
+.center-spinner {
+  margin: 0 auto;
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 .fill-remaining-space {
     flex: 1 1 auto;
     text-align: center;
