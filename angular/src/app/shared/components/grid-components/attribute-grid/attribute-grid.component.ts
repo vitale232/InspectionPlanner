@@ -1,8 +1,10 @@
 import { Component, OnInit, Input, ViewChild } from '@angular/core';
-import * as config from './columns.config';
 import { PblNgridColumnSet, PblDataSource, createDS, PblNgridComponent } from '@pebula/ngrid';
 import { Observable } from 'rxjs';
 import { IBridgeFeature } from 'src/app/shared/models/bridges.model';
+
+import * as config from './columns.config';
+
 
 @Component({
   selector: 'app-attribute-grid',

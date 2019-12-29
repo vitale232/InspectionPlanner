@@ -161,12 +161,12 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     const studyAreaVectorSource = new VectorSource({
       features: [
         new Feature({
-          geometry: new Polygon([[
-            fromLonLat( [ -78.3377, 41.5679 ] ),
+          geometry: new Polygon([[               // Note array depth
+            fromLonLat( [ -78.3377, 41.5679 ] ), // Same as last point
             fromLonLat( [ -72.7328, 41.5679 ] ),
             fromLonLat( [ -72.7328, 44.2841 ] ),
             fromLonLat( [ -78.3377, 44.2841 ] ),
-            fromLonLat( [ -78.3377, 41.5679 ] ),
+            fromLonLat( [ -78.3377, 41.5679 ] ), // Same as first point
           ]])
         })
       ]
@@ -324,8 +324,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         console.log('searchMarkers data from OLM', data);
         if (data.length === 0) { this.clearMarkers(); } else { this.addSearchMarkers(data); }
       },
-      (err) => console.error(err),
-      () => console.log('complete')
+      (err) => console.error('this.markersSearch$ subscribe error', err),
     ));
 
   }
@@ -335,7 +334,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     if (this.map) {
       if (changes.mapView) {
         this.updateView(changes.mapView.currentValue);
-        setTimeout(() => this.map.updateSize(), 200);
+        setTimeout(() => this.map.updateSize(), 100);
       }
     }
   }
@@ -390,25 +389,10 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       [115, 208, 85], // group3 colors
       [253, 231, 58]  // group4 colors
     ];
-    const styles = rgbaValues.map((values) => {
-      const fill = new Fill({
-        color: `rgba(${values[0]}, ${values[1]}, ${values[2]}, 0.75)`
-      });
-      const stroke = new Stroke({
-        color: 'rgba(0, 0, 0, 1)',
-        width: 1.25
-      });
-      return [
-        new Style({
-          image: new Circle({
-            fill,
-            stroke,
-            radius: 4
-          }),
-          fill,
-          stroke
-        })
-      ];
+    const styles = rgbaValues.map((rgba) => {
+      const fill = new Fill({ color: `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, 0.75)` });
+      const stroke = new Stroke({ color: 'rgba(0, 0, 0, 1)', width: 1.25 });
+      return [ new Style({ image: new Circle({ fill, stroke, radius: 4 }), fill, stroke }) ];
     });
     this.styleGroups = {
       group0: styles[0],
@@ -441,80 +425,13 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
     });
 
-    // center on last search marker
+    // Center on the last search marker in the input array
     if (markersIn.length > 0) {
       this.map.getView().setCenter( fromLonLat(markersIn[markersIn.length - 1].lonLat) );
       this.map.getView().setZoom( 14 );
     }
 
   }
-
-  // addMarker(markersIn: IMarker[]) {
-  //   markersIn.forEach(marker => {
-  //     const lonLat = marker.lonLat;
-  //     const props = marker.props;
-  //     let title: string;
-  //     if (marker.title) { title = marker.title; }
-  //     // TODO: Create a class that handles each marker type (CurrentLocation, Search, BinSearch etc)
-  //     // and exposes a VectorLayer, Select, and PopupFeature to add to the map
-  //     const iconStyle = new Style({
-  //       image: new Icon({
-  //         anchor: [0.5, 1],
-  //         src: marker.src
-  //       })
-  //     });
-
-  //     const feature = new Feature({
-  //       type: 'icon',
-  //       geometry: new Point(fromLonLat(lonLat))
-  //     });
-  //     feature.setStyle(iconStyle);
-
-  //     if (title) {
-  //       props.title = title;
-  //     }
-  //     feature.setProperties(props);
-
-  //     const vectorLayer = new VectorLayer({
-  //       source: new VectorSource({
-  //         features: [ feature ],
-  //       })
-  //     });
-  //     this.markerVectorLayers.push(vectorLayer);
-  //     // this.map.addLayer(this.markerVectorLayers);
-  //     this.markerVectorLayers.forEach(layer => this.map.addLayer(layer));
-
-  //     const select = new Select({
-  //       hitTolerance: 5,
-  //       multi: true,
-  //       condition: singleClick,
-  //       layers: [ vectorLayer ],
-  //     });
-  //     const popup = new PopupFeature({
-  //       popupClass: 'default anim',
-  //       select,
-  //       canFix: true,
-  //       template: {
-  //         title: (f: Feature) => {
-  //           if (f.get('title')) {
-  //             return f.get('title') + ' Marker';
-  //           } else {
-  //             return 'Marker';
-  //           }
-  //         },
-  //         attributes: {
-  //           'Lat/Lon': { title: 'Lat/Lon' },
-  //           Timestamp: {
-  //             title: 'Timestamp',
-  //             format: (time: number) => new Date(time).toLocaleTimeString()
-  //           }
-  //         }
-  //       }
-  //     });
-  //     this.map.addInteraction(select);
-  //     this.map.addOverlay(popup);
-  //   });
-  // }
 
   clearMarkers() {
     this.markerVectorLayers.forEach(layer => this.map.removeLayer(layer));
