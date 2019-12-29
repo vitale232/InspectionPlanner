@@ -38,7 +38,7 @@ import Point from 'ol/geom/Point';
 
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
-import { BridgeFeature } from '../../models/bridges.model';
+import { IBridgeFeature } from '../../models/bridges.model';
 import { SearchMarker, TPoint } from '../../models/markers.model';
 
 
@@ -52,7 +52,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   // Component inputs
   @Input() mapView: IMapView;
   @Input() loading$: Observable<boolean>;
-  @Input() bridges$: Observable<BridgeFeature[]>;
+  @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() markersSearch$: Observable<SearchMarker[]>;
   // @Input() test: string;
 
@@ -119,7 +119,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         // observable in the loader, we'll be reacting to reception of new data by
         // replacing the vectorSource features
         this.bridgeSubscription = this.bridges$.subscribe(
-          (bridges: BridgeFeature[]) => {
+          (bridges: IBridgeFeature[]) => {
             vectorSource.clear();
             vectorSource.addFeatures(vectorSource.getFormat().readFeatures({
               type: 'FeatureCollection',

@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild } from '@
 import { NavbarService } from 'src/app/shared/services/navbar.service';
 import { Subscription, Observable } from 'rxjs';
 import { IMapView, IMarker, TExtent } from 'src/app/shared/models/open-layers-map.model';
-import { BridgeFeature } from 'src/app/shared/models/bridges.model';
+import { IBridgeFeature } from 'src/app/shared/models/bridges.model';
 import { BridgesStoreService } from 'src/app/shared/stores/bridges-store.service';
 import { LoadingIndicatorService } from 'src/app/shared/services/loading-indicator.service';
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
@@ -25,7 +25,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
 
   loading$: Observable<boolean>;
-  bridges$: Observable<BridgeFeature[]>;
+  bridges$: Observable<IBridgeFeature[]>;
   searchMarker$: Observable<SearchMarker[]>;
 
   subscriptions = new Subscription();

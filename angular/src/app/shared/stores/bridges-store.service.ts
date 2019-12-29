@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subscription, BehaviorSubject } from 'rxjs';
-import { BridgeFeature } from '../models/bridges.model';
+import { IBridgeFeature } from '../models/bridges.model';
 import { BridgesService } from '../services/bridges.service';
 import { LoadingIndicatorService } from '../services/loading-indicator.service';
 import { TExtent } from '../models/open-layers-map.model';
@@ -14,14 +14,14 @@ export class BridgesStoreService {
   // to be cancelled when no longer required by unsubscribing
   bridgeSubscription: Subscription;
 
-  private readonly _bridges = new BehaviorSubject<BridgeFeature[]>( [ ] );
+  private readonly _bridges = new BehaviorSubject<IBridgeFeature[]>( [ ] );
   readonly bridges$ = this._bridges.asObservable();
 
-  get bridges(): BridgeFeature[] {
+  get bridges(): IBridgeFeature[] {
     return this._bridges.getValue();
   }
 
-  set bridges(val: BridgeFeature[]) {
+  set bridges(val: IBridgeFeature[]) {
     this._bridges.next(val);
   }
 

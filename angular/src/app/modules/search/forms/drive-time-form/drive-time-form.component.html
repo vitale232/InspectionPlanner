@@ -26,7 +26,7 @@
                 name="time">
       <mat-option *ngFor="let time of timeIntervals"
                   [value]="time.value"
-                > {{time.viewValue}} </mat-option>
+                 > {{ time.viewValue }} </mat-option>
     </mat-select>
   </mat-form-field>
 
@@ -40,6 +40,6 @@
             (click)="onDriveTimeQuery()"
             color="primary"
             [disabled]="driveTimeForm.invalid"
-            > Search </button>
+           > Search </button>
   </div> 
 </form>

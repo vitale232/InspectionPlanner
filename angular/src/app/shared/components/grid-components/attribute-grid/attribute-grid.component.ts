@@ -2,7 +2,7 @@ import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import * as config from './columns.config';
 import { PblNgridColumnSet, PblDataSource, createDS, PblNgridComponent } from '@pebula/ngrid';
 import { Observable } from 'rxjs';
-import { BridgeFeature } from 'src/app/shared/models/bridges.model';
+import { IBridgeFeature } from 'src/app/shared/models/bridges.model';
 
 @Component({
   selector: 'app-attribute-grid',
@@ -11,14 +11,14 @@ import { BridgeFeature } from 'src/app/shared/models/bridges.model';
 })
 export class AttributeGridComponent implements OnInit {
 
-  @Input() bridges$: Observable<BridgeFeature[]>;
+  @Input() bridges$: Observable<IBridgeFeature[]>;
 
   columns: PblNgridColumnSet = config.COLUMNS.build();
-  mapBridgesDataSource: PblDataSource = createDS<BridgeFeature>()
+  mapBridgesDataSource: PblDataSource = createDS<IBridgeFeature>()
     .onTrigger( () => this.bridges$ )
     .create();
 
-  @ViewChild(PblNgridComponent, { static: true }) table: PblNgridComponent<BridgeFeature>;
+  @ViewChild(PblNgridComponent, { static: true }) table: PblNgridComponent<IBridgeFeature>;
 
   constructor() { }
 

@@ -4,9 +4,7 @@
                   color="accent">
     <input matInput
            formControlName="searchText"
-           color="warn"
-           (mouseup)="$event.preventDefault()"
-          >
+           >
     <mat-label>
       Search address, BIN, or place name
     </mat-label>
@@ -15,7 +13,7 @@
             (click)="onSearch()"
             aria-label="Execute search"
             [disabled]="this.omniSearchForm.invalid"
-            >
+           >
       <mat-icon>search</mat-icon>
     </button>
   </mat-form-field>

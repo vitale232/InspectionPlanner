@@ -1,14 +1,14 @@
-export interface BridgesApiResponse {
+export interface IBridgesApiResponse {
   count: number;
   next: string|null;
   previous: string|null;
   results: {
     type: string;
-    features: Array<BridgeFeature>
+    features: Array<IBridgeFeature>
   };
 }
 
-export interface BridgeFeature {
+export interface IBridgeFeature {
   id: number;
   type: string;
   geometry: {
@@ -16,10 +16,10 @@ export interface BridgeFeature {
     id: number;
   };
   bbox: Array<number>;
-  properties: BridgeProperties;
+  properties: IBridgeProperties;
 }
 
-export interface BridgeProperties {
+export interface IBridgeProperties {
     bin: string;
     common_name: string;
     local_bridge: string;

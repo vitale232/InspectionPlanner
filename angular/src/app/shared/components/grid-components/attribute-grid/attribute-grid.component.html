@@ -1,17 +1,16 @@
-
-<pbl-ngrid persistState id="browse-bridges-grid"
-          matHeaderContextMenu="excelMenu"
-          rowReorder
-          columnReorder
-          blockUi
-          matSort
-          vScrollFixed
-          cellTooltip
-          focusMode="cell"
-          [dataSource]="mapBridgesDataSource"
-          [columns]="columns"
-          (cellClick)="$event.context && $event.context.startEdit()"
-          class="grid pbl-ngrid-cell-ellipsis pbl-ngrid-header-cell-ellipsis"
+<pbl-ngrid id="browse-bridges-grid"
+           matHeaderContextMenu="excelMenu"
+           rowReorder
+           columnReorder
+           blockUi
+           matSort
+           vScrollFixed
+           cellTooltip
+           focusMode="cell"
+           [dataSource]="mapBridgesDataSource"
+           [columns]="columns"
+           (cellClick)="$event.context && $event.context.startEdit()"
+           class="grid pbl-ngrid-cell-ellipsis pbl-ngrid-header-cell-ellipsis"
           >
 
   <div *pblNgridOuterSection="'bottom'" class="typography-container mat-typography">
@@ -19,6 +18,3 @@
   </div>
 
 </pbl-ngrid>
-
-
-
