@@ -126,14 +126,21 @@ export class SearchMarker extends Marker {
           } else {
             return 'Marker';
           }
-        }
-      },
-      attributes: {
-        display_name: { title: 'Address' },
-         lonLat: {
-           title: 'Lat/Lon',
-           format: (xyPoint: TPoint) => `${xyPoint[0].toFixed(4)}, ${xyPoint[1].toFixed(4)}`
-         }
+        },
+      //   attributes: {
+      //     display_name: { title: 'Address' },
+      //     lonLat: {
+      //       title: 'Lat/Lon',
+      //       format: (xyPoint: TPoint) => `${xyPoint[0].toFixed(4)}, ${xyPoint[1].toFixed(4)}`
+      //     }
+      //   }
+      // },
+      // attributes: {
+      //   display_name: { title: 'Address' },
+      //    lonLat: {
+      //      title: 'Lat/Lon',
+      //      format: (xyPoint: TPoint) => `${xyPoint[0].toFixed(4)}, ${xyPoint[1].toFixed(4)}`
+      //    }
       }
     });
 

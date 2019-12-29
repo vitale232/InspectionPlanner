@@ -5,11 +5,10 @@
                 >
     <input matInput
            [formControl]="searchTextControl"
-           color="warn"
            [matAutocomplete]="auto"
           >
     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-      <mat-option *ngFor="let query of filteredOptions | async"
+      <mat-option *ngFor="let query of filteredOptions$ | async"
                   [value]="query.properties.display_name"
                   matTooltip="{{ query.properties.display_name }}"
                 > {{ query.properties.display_name }} </mat-option>

@@ -33,7 +33,7 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
   // This form will use material autocomplete:
   // https://material.angular.io/components/autocomplete/overview
   subscriptions = new Subscription();
-  filteredOptions: Observable<IDriveTimeQueryFeature[]>;
+  filteredOptions$: Observable<IDriveTimeQueryFeature[]>;
   driveTimeQueries: IDriveTimeQueryFeature[];
 
   constructor( private fb: FormBuilder ) { }
@@ -45,7 +45,7 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
         // Wait until there is data before applying the first filter to the mat-autocomplete
         // If we don't wait until there's data to trigger _filter, there will be an empty list 
         // in the autocomplete until the user starts to type
-        this.filteredOptions = this.searchTextControl.valueChanges.pipe(
+        this.filteredOptions$ = this.searchTextControl.valueChanges.pipe(
           startWith(''),
           map(value => this._filter(value))
         );
