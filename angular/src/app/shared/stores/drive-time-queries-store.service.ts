@@ -8,7 +8,7 @@ import { DriveTimeQueriesService } from '../services/drive-time-queries.service'
 })
 export class DriveTimeQueriesStoreService {
 
-  private readonly _driveTimeQueries = new BehaviorSubject<IDriveTimeQueryFeature>([]);
+  private readonly _driveTimeQueries = new BehaviorSubject<IDriveTimeQueryFeature[]>([]);
   readonly driveTimeQueries$ = this._driveTimeQueries.asObservable();
 
   get driveTimeQueries(): IDriveTimeQueryFeature[] {
@@ -30,4 +30,5 @@ export class DriveTimeQueriesStoreService {
       () => console.log('loaded dtqs in store')
     );
   }
+
 }

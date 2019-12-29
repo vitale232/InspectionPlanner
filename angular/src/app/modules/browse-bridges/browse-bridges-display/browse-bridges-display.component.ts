@@ -9,6 +9,9 @@ import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-ma
 import { Title } from '@angular/platform-browser';
 import { SidenavService } from 'src/app/shared/services/sidenav.service';
 import { ActivatedRoute } from '@angular/router';
+import { SearchMarker } from 'src/app/shared/models/markers.model';
+import { SearchMarkersStoreService } from 'src/app/shared/stores/search-markers-store.service';
+
 
 @Component({
   selector: 'app-browse-bridges-display',
@@ -20,10 +23,10 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   @ViewChild(OpenLayersMapComponent, { static: false }) private openLayersMapComponent: OpenLayersMapComponent;
 
   mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
-  markerInputs: IMarker[];
 
   loading$: Observable<boolean>;
   bridges$: Observable<BridgeFeature[]>;
+  searchMarker$: Observable<SearchMarker[]>;
 
   subscriptions = new Subscription();
 
@@ -39,10 +42,12 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
     private loadingIndicatorService: LoadingIndicatorService,
     private titleService: Title,
     private sidenavService: SidenavService,
+    private searchMarkerStore: SearchMarkersStoreService,
   ) {
     this.bridges$ = this.bridgesStore.bridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
-
+    this.searchMarker$ = this.searchMarkerStore.searchMarker$;
+    console.log('this.searchMarker$', this.searchMarker$);
     this.titleService.setTitle('IPA - Browse Bridges');
 
     this.subscriptions.add(this.navbarService.tableOpen$.subscribe(

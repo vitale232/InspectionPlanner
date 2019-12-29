@@ -12,8 +12,6 @@
 
 import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-// import { NewYorkBridgeService } from 'src/app/services/new-york-bridge.service';
-// import { LoadingIndicatorService } from 'src/app/services/loading-indicator.service';
 import { IMapView, IStyleStoreAADT, IMarker, TExtent } from 'src/app/shared/models/open-layers-map.model';
 
 
@@ -38,12 +36,10 @@ import Feature from 'ol/Feature';
 import Polygon from 'ol/geom/Polygon';
 import Point from 'ol/geom/Point';
 
-// import LayerSwitcher from 'ol-layerswitcher';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
 import { BridgeFeature } from '../../models/bridges.model';
-// import { BoundsBridgesStoreService } from 'src/app/stores/bounds-bridges-store.service';
-// import { NewYorkBridgeFeature } from 'src/app/models/new-york-bridges.model';
+import { SearchMarker, TPoint } from '../../models/markers.model';
 
 
 @Component({
@@ -55,9 +51,10 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
   // Component inputs
   @Input() mapView: IMapView;
-  @Input() markerInputs: IMarker[];
   @Input() loading$: Observable<boolean>;
   @Input() bridges$: Observable<BridgeFeature[]>;
+  @Input() markersSearch$: Observable<SearchMarker[]>;
+  // @Input() test: string;
 
   // Component outputs
   @Output() bbox = new EventEmitter<TExtent>();
@@ -73,9 +70,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   // Custom behaviors
   private styleGroups: IStyleStoreAADT;
   private bridgeSubscription: Subscription;
-
-  // public loadingIndicator$: Observable<boolean>;
-
+  private subscriptions = new Subscription();
 
   constructor(
     private router: Router,
@@ -83,6 +78,9 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
+    // console.log('this.test', this.test);
+    // console.log('this.mapView', this.mapView);
+    // console.log('this.searchMarker$', this.searchMarkers$);
     // this.updateUrl gets called during init, so if no mapView was passed in, the URL params
     // will include NaN values, which breaks the map until they're deleted from the URL. Let's
     // test for NaNs, and force the map to Albany if there are any
@@ -321,22 +319,23 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.updateUrl();
     } );
 
-    if (this.markerInputs) {
-      this.addMarker(this.markerInputs);
-    }
+    this.subscriptions.add(this.markersSearch$.subscribe(
+      (data: SearchMarker[]) => {
+        console.log('searchMarkers data from OLM', data);
+        if (data.length === 0) { this.clearMarkers(); } else { this.addSearchMarkers(data); }
+      },
+      (err) => console.error(err),
+      () => console.log('complete')
+    ));
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
+    console.log('changes', changes);
     if (this.map) {
       if (changes.mapView) {
         this.updateView(changes.mapView.currentValue);
         setTimeout(() => this.map.updateSize(), 200);
-      }
-      if (changes.markerInputs) {
-        if (changes.markerInputs.currentValue && changes.markerInputs.currentValue.length === 0) {
-          this.clearMarkers();
-        }
-        this.addMarker(changes.markerInputs.currentValue);
       }
     }
   }
@@ -345,6 +344,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     if (this.bridgeSubscription) {
       this.bridgeSubscription.unsubscribe();
     }
+    this.subscriptions.unsubscribe();
   }
 
   updateView(view: { zoom: number; center: [number, number]; }) {
@@ -419,72 +419,104 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  addMarker(markersIn: IMarker[]) {
-    markersIn.forEach(marker => {
-      const lonLat = marker.lonLat;
-      const props = marker.props;
-      let title: string;
-      if (marker.title) { title = marker.title; }
-      // TODO: Create a class that handles each marker type (CurrentLocation, Search, BinSearch etc)
-      // and exposes a VectorLayer, Select, and PopupFeature to add to the map
-      const iconStyle = new Style({
-        image: new Icon({
-          anchor: [0.5, 1],
-          src: marker.src
-        })
-      });
+  addMarkers(markersIn: IMarker[]) {
+    return;
+  }
 
-      const feature = new Feature({
-        type: 'icon',
-        geometry: new Point(fromLonLat(lonLat))
-      });
-      feature.setStyle(iconStyle);
+  addSearchMarkers(markersIn: SearchMarker[]) {
+    console.log('addSearchMarkers', markersIn);
+    markersIn.forEach((searchMarker: SearchMarker) => {
 
-      if (title) {
-        props.title = title;
-      }
-      feature.setProperties(props);
+      searchMarker.initMapMarker();
+      this.map.addInteraction(searchMarker.select);
+      this.map.addOverlay(searchMarker.popup);
+      this.markerVectorLayers.push(searchMarker.vectorLayer);
 
-      const vectorLayer = new VectorLayer({
-        source: new VectorSource({
-          features: [ feature ],
-        })
-      });
-      this.markerVectorLayers.push(vectorLayer);
-      // this.map.addLayer(this.markerVectorLayers);
-      this.markerVectorLayers.forEach(layer => this.map.addLayer(layer));
+      const mapLayers = this.map.getLayers();
 
-      const select = new Select({
-        hitTolerance: 5,
-        multi: true,
-        condition: singleClick,
-        layers: [ vectorLayer ],
-      });
-      const popup = new PopupFeature({
-        popupClass: 'default anim',
-        select,
-        canFix: true,
-        template: {
-          title: (f: Feature) => {
-            if (f.get('title')) {
-              return f.get('title') + ' Marker';
-            } else {
-              return 'Marker';
-            }
-          },
-          attributes: {
-            'Lat/Lon': { title: 'Lat/Lon' },
-            Timestamp: {
-              title: 'Timestamp',
-              format: (time: number) => new Date(time).toLocaleTimeString()
-            }
-          }
+      this.markerVectorLayers.forEach(layer => {
+        console.log(layer);
+        if (!mapLayers.getArray().includes(layer)) {
+          this.map.addLayer(layer);
         }
       });
-      this.map.addInteraction(select);
-      this.map.addOverlay(popup);
+
     });
+
+    // center on last search marker
+    if (markersIn.length > 0) {
+      this.map.getView().setCenter( fromLonLat(markersIn[markersIn.length - 1].lonLat) );
+      this.map.getView().setZoom( 14 );
+    }
+
   }
+
+  // addMarker(markersIn: IMarker[]) {
+  //   markersIn.forEach(marker => {
+  //     const lonLat = marker.lonLat;
+  //     const props = marker.props;
+  //     let title: string;
+  //     if (marker.title) { title = marker.title; }
+  //     // TODO: Create a class that handles each marker type (CurrentLocation, Search, BinSearch etc)
+  //     // and exposes a VectorLayer, Select, and PopupFeature to add to the map
+  //     const iconStyle = new Style({
+  //       image: new Icon({
+  //         anchor: [0.5, 1],
+  //         src: marker.src
+  //       })
+  //     });
+
+  //     const feature = new Feature({
+  //       type: 'icon',
+  //       geometry: new Point(fromLonLat(lonLat))
+  //     });
+  //     feature.setStyle(iconStyle);
+
+  //     if (title) {
+  //       props.title = title;
+  //     }
+  //     feature.setProperties(props);
+
+  //     const vectorLayer = new VectorLayer({
+  //       source: new VectorSource({
+  //         features: [ feature ],
+  //       })
+  //     });
+  //     this.markerVectorLayers.push(vectorLayer);
+  //     // this.map.addLayer(this.markerVectorLayers);
+  //     this.markerVectorLayers.forEach(layer => this.map.addLayer(layer));
+
+  //     const select = new Select({
+  //       hitTolerance: 5,
+  //       multi: true,
+  //       condition: singleClick,
+  //       layers: [ vectorLayer ],
+  //     });
+  //     const popup = new PopupFeature({
+  //       popupClass: 'default anim',
+  //       select,
+  //       canFix: true,
+  //       template: {
+  //         title: (f: Feature) => {
+  //           if (f.get('title')) {
+  //             return f.get('title') + ' Marker';
+  //           } else {
+  //             return 'Marker';
+  //           }
+  //         },
+  //         attributes: {
+  //           'Lat/Lon': { title: 'Lat/Lon' },
+  //           Timestamp: {
+  //             title: 'Timestamp',
+  //             format: (time: number) => new Date(time).toLocaleTimeString()
+  //           }
+  //         }
+  //       }
+  //     });
+  //     this.map.addInteraction(select);
+  //     this.map.addOverlay(popup);
+  //   });
+  // }
 
   clearMarkers() {
     this.markerVectorLayers.forEach(layer => this.map.removeLayer(layer));

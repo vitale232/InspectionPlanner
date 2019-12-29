@@ -14,7 +14,7 @@ export interface IStyleStoreAADT {
 }
 
 export interface IMarker {
-  lonLat: [number, number];
+  lonLat: [ number, number ];
   src: string;
   props: any;
   title?: string;
