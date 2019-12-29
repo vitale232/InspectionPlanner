@@ -66,11 +66,10 @@ export class SearchMarker extends Marker {
   select: Select;
 
   constructor(
-    lonLat: TPoint,
-    apiResponse: INominatimApiResponse,
-    title?: string,
+      lonLat: TPoint,
+      apiResponse: INominatimApiResponse,
+      title?: string,
     ) {
-    console.log('title', title);
     super(
       lonLat,
       'assets/marker-icon-red.png', // Default marker source for search markers
@@ -86,27 +85,15 @@ export class SearchMarker extends Marker {
   }
 
   initMapMarker(): void {
-    this.iconStyle = new Style({
-      image: new Icon({
-        anchor: [ 0.5, 1.0 ],
-        src: this.src
-      })
-    });
+    this.iconStyle = new Style({ image: new Icon({ anchor: [ 0.5, 1.0 ], src: this.src }) });
 
-    this.feature = new Feature({
-      type: 'icon',
-      geometry: new Point( fromLonLat(this.lonLat) ),
-    });
+    this.feature = new Feature({ type: 'icon', geometry: new Point( fromLonLat(this.lonLat) ) });
     this.feature.setStyle(this.iconStyle);
 
     // Set up search marker specific OpenLayers stuff
     this.feature.setProperties(this.props);
 
-    this.vectorLayer = new VectorLayer({
-      source: new VectorSource({
-        features: [ this.feature ],
-      })
-    });
+    this.vectorLayer = new VectorLayer({ source: new VectorSource({ features: [ this.feature ] }) });
 
     this.select = new Select({
       hitTolerance: 5,

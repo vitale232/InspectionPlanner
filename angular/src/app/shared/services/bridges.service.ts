@@ -19,6 +19,7 @@ export class BridgesService {
   getBbox(extent: TExtent): Observable<IBridgesApiResponse> {
     return this.http.get<IBridgesApiResponse>(this.bridgesUri);
   }
+
   getAllBridgesInBbox(extent: TExtent): Observable<IBridgeFeature[]> {
     return this.http.get<IBridgesApiResponse>(this.bridgesUri, { params: { in_bbox: extent.join(',') } }).pipe(
       expand(data => data.next ? this.http.get<IBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),

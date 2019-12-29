@@ -25,7 +25,7 @@ export class DriveTimeQueriesStoreService {
 
   fetchDriveTimeQueries(): void {
     this.driveTimeQueryService.getDriveTimeQueries().subscribe(
-      data => this.driveTimeQueries = data,
+      queries => this.driveTimeQueries = queries,
       err => console.error(err),
       () => console.log('loaded dtqs in store')
     );
