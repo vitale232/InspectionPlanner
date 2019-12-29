@@ -1,3 +1,8 @@
+/*
+ * Developer WARNING: The OpenLayers code is not typed. See src/app/shared/components/open-layers-map.component.ts
+ * for more details
+ */
+
 import { INominatimApiResponse } from './nominatim-api.model';
 
 import Map from 'ol/Map';
@@ -18,6 +23,13 @@ export type TPoint = [ number, number ];
 export interface ISearchMarkerProps extends INominatimApiResponse {
   title?: string;
 }
+
+/*
+ * Set up a base Marker class. Three Marker class types will inherit the base Marker class:
+ * SearchMarker, GeolocationMarker, and DriveTimeMarker. These three classes will have
+ * OpenLayers details regarding the construction of the different marker types and displaying
+ * their attributes
+ */
 
 export class Marker {
 
@@ -41,6 +53,11 @@ export class Marker {
 }
 
 
+/*
+ * The SearchMarker class refers to a Nominatim API georeference search. These are
+ * instantiated from the user input in the app-omni-search-form component, when the
+ * searchText provides a response when used to query Nominatim.
+ */
 export class SearchMarker extends Marker {
 
   props: ISearchMarkerProps;
@@ -50,25 +67,22 @@ export class SearchMarker extends Marker {
 
   constructor(
     lonLat: TPoint,
-    apiResponse: INominatimApiResponse
+    apiResponse: INominatimApiResponse,
+    title?: string,
     ) {
-
+    console.log('title', title);
     super(
       lonLat,
       'assets/marker-icon-red.png', // Default marker source for search markers
       'Search Marker'               // Default title
     );
 
+    if (title) { this.title = title; }
     // Bind the API data to the object
     this.props = apiResponse;
     this.props.title = this.title;
+    this.initMapMarker();
 
-  }
-
-  addToMap(map: Map): Map {
-    map.addInteraction(this.select);
-    map.addOverlay(this.popup);
-    return map;
   }
 
   initMapMarker(): void {
@@ -100,6 +114,7 @@ export class SearchMarker extends Marker {
       condition: singleClick,
       layers: [ this.vectorLayer ],
     });
+
     this.popup = new PopupFeature({
       popupClass: 'default-anim',
       select: this.select,

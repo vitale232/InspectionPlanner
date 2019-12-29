@@ -424,18 +424,16 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   addSearchMarkers(markersIn: SearchMarker[]) {
-    console.log('addSearchMarkers', markersIn);
     markersIn.forEach((searchMarker: SearchMarker) => {
 
-      searchMarker.initMapMarker();
       this.map.addInteraction(searchMarker.select);
       this.map.addOverlay(searchMarker.popup);
       this.markerVectorLayers.push(searchMarker.vectorLayer);
 
       const mapLayers = this.map.getLayers();
 
+      // Only add layers that are not duplicates
       this.markerVectorLayers.forEach(layer => {
-        console.log(layer);
         if (!mapLayers.getArray().includes(layer)) {
           this.map.addLayer(layer);
         }

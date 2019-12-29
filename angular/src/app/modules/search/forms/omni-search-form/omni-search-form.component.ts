@@ -28,12 +28,13 @@ export class OmniSearchFormComponent implements OnInit {
     this.nominatimSearchService.query(this.omniSearchForm.value.searchText).subscribe(
       res => {
         const data = res[0];
-        const searchMarker = new SearchMarker([ parseFloat(data.lon), parseFloat(data.lat) ], data);
-        console.log('searchMarker', searchMarker);
-        console.log('initMapMarker', searchMarker.initMapMarker());
-        const markers = this.searchMarkersStore.searchMarkers;
-        markers.push(searchMarker)
-        this.searchMarkersStore.searchMarkers = markers.slice();
+        const searchMarker = new SearchMarker(
+          [ parseFloat(data.lon), parseFloat(data.lat) ],
+          data,
+          this.omniSearchForm.value.searchText
+        );
+
+        this.searchMarkersStore.searchMarkers = this.searchMarkersStore.searchMarkers.concat(searchMarker);
       },
       err => console.error('nominatim error', err),
       () => console.log('nominatim complete')
