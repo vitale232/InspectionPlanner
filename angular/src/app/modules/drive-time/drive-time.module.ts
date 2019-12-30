@@ -21,9 +21,6 @@ import { SharedModule } from 'src/app/shared/components/shared.module';
 @NgModule({
   declarations: [
     DriveTimeDisplayComponent,
-    // AttributeGridComponent,
-    // TemplateGridComponent,
-    // OpenLayersMapComponent,
   ],
   imports: [
     CommonModule,

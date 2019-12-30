@@ -20,7 +20,6 @@ import { TemplateGridModule } from './grid-components/template-grid/template-gri
 @NgModule({
   declarations: [
     AttributeGridComponent,
-    // TemplateGridComponent,
     OpenLayersMapComponent,
   ],
   imports: [
@@ -40,7 +39,6 @@ import { TemplateGridModule } from './grid-components/template-grid/template-gri
     MaterialModule,
     TemplateGridModule,
     AttributeGridComponent,
-    // TemplateGridComponent,
     OpenLayersMapComponent,
   ]
 })

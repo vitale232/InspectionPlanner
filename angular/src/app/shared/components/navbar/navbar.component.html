@@ -19,7 +19,18 @@
             > <mat-icon>search</mat-icon> </button>
     </ng-template>
 
-    <span fxHide fxShow.gt-xs class="fill-remaining-space">Inspection Planner Application</span>
+    <div *ngIf="longTitle !== 'Inspection Planner Application'">
+      <button mat-button
+              color="accent"
+              matTooltip="Return to browsable map"
+              matTooltipShowDelay="250"
+              routerLink="/"
+              > <mat-icon>cancel</mat-icon> Clear Results </button>
+    </div>
+
+    <span fxHide fxShow.gt-xs class="fill-remaining-space">
+      {{ longTitle }}
+    </span>
     <span fxHide fxShow.lt-sm class="fill-remaining-space"></span>
 
     <div *ngIf="tableOpen$ | async as tableOpen; else tableClosed">
