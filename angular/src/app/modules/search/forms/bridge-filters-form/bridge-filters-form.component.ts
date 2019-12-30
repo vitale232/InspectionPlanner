@@ -8,6 +8,7 @@ import { FormBuilder } from '@angular/forms';
 })
 export class BridgeFiltersFormComponent implements OnInit {
 
+  loading = true;
   bridgeForm = this.fb.group({
     bin: [''],
     carried: [''],
@@ -18,6 +19,10 @@ export class BridgeFiltersFormComponent implements OnInit {
   constructor( private fb: FormBuilder ) { }
 
   ngOnInit() {
+  }
+
+  onSearch() {
+    console.log('TODO', 'implement onSearch');
   }
 
 }

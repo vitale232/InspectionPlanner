@@ -27,4 +27,12 @@ export class SearchDisplayComponent implements OnInit {
     this.searchMarkersStore.searchMarkers  = [];
   }
 
+  onSendMapHome() {
+    console.log('TODO', 'implement onSendMapHome');
+  }
+
+  onSendClientLocation() {
+    console.log('TODO', 'implement onSendClientLocation');
+  }
+
 }

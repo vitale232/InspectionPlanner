@@ -116,6 +116,23 @@ export class DriveTimeDisplayComponent implements OnInit {
     this.updateMapSize();
   }
 
+  splitDragEnd(event: { gutterNum: number, sizes: number[] }) {
+    console.log('drag');
+    this.mapSize = event.sizes[0];
+    this.tableSize = event.sizes[1];
+    if (this.tableSize <= this.minTableSize) {
+      this.navbarService.tableOpen = false;
+    } else {
+      this.navbarService.tableOpen = true;
+    }
+    this.updateMapSize();
+  }
+
+  onResize(event: Event) {
+    this.getSplitterOrientation();
+    this.updateMapSize();
+  }
+
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
       setTimeout(() => this.openLayersMapComponent.map.updateSize(), 50);

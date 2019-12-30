@@ -8,6 +8,7 @@ import { FormBuilder, FormControl, Validators } from '@angular/forms';
 })
 export class OsmFiltersFormComponent implements OnInit {
 
+  loading = true;
   osmFilterForm = this.fb.group({
     streetAddress: new FormControl(''),
     city: new FormControl(''),
@@ -20,4 +21,7 @@ export class OsmFiltersFormComponent implements OnInit {
   ngOnInit() {
   }
 
+  onSearch(){
+    console.log('TODO', 'implement onSearch');
+  }
 }

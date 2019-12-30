@@ -4,7 +4,7 @@
           color="accent"
           matTooltip="Map my current location"
           matTooltipShowDelay="500"
-          (click)="sendClientLocation()"
+          (click)="onSendClientLocation()"
           aria-label="Plot current location on map"
           >
       <mat-icon>location_searching</mat-icon>
@@ -14,7 +14,7 @@
             color="accent"
             matTooltip="Center map on New York State"
             matTooltipShowDelay="500"
-            (click)="sendMapHome()"
+            (click)="onSendMapHome()"
             aria-label="Return map to default position"
             >
       <mat-icon>home</mat-icon>

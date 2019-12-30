@@ -12,7 +12,7 @@ import { Subscription, Observable } from 'rxjs';
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private subscriptions = new Subscription();
-  private sidenavState$: Observable<boolean>;
+  sidenavState$: Observable<boolean>;
 
   @Output() TABLE_CLOSED = new EventEmitter<boolean>();
 

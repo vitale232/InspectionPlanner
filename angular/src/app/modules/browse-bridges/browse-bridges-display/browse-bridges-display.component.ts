@@ -26,7 +26,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
 
   loading$: Observable<boolean>;
   bridges$: Observable<IBridgeFeature[]>;
-  searchMarker$: Observable<SearchMarker[]>;
+  searchMarkers$: Observable<SearchMarker[]>;
 
   subscriptions = new Subscription();
 
@@ -46,7 +46,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   ) {
     this.bridges$ = this.bridgesStore.bridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
-    this.searchMarker$ = this.searchMarkerStore.searchMarker$;
+    this.searchMarkers$ = this.searchMarkerStore.searchMarker$;
 
     this.titleService.setTitle('IPA - Browse Bridges');
   }

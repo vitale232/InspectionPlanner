@@ -3,7 +3,7 @@
     Search the map for an address. All fields are optional.
   </section>
   
-  <form [formGroup]="osmFilterForm" (keydown.enter)="onFilterSearch()">
+  <form [formGroup]="osmFilterForm" (keydown.enter)="onSearch()">
     <mat-form-field class="detailed-form-field" color="accent">
       <input matInput formControlName="streetAddress" placeholder="Street address">
     </mat-form-field>
@@ -21,13 +21,13 @@
     </mat-form-field>
   </form>
   
-  <mat-spinner *ngIf="searchLoading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
+  <mat-spinner *ngIf="loading" class="center-spinner" diameter="50" color="accent"></mat-spinner>
   
   <div class="center-button">
     <button mat-flat-button
             class="search-button"
             color="primary"
-            (click)="onFilterSearch()"
+            (click)="onSearch()"
           > Search </button>
   </div>
 </div>  
