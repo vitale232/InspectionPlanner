@@ -1,0 +1,18 @@
+<div class="splitter-container" (window:resize)="onResize($event)">
+  <as-split [direction]="splitterOrientation" (dragEnd)="splitDragEnd($event)">
+    <as-split-area [size]="mapSize">
+      <app-open-layers-map [mapView]="mapView"
+                           [loading$]="loading$"
+                           [bridges$]="driveTimeBridges$"
+                           [markersSearch$]="searchMarkers$"
+                           (bbox)="onMapMove($event)"
+                          ></app-open-layers-map>
+    </as-split-area>
+
+    <as-split-area [size]="tableSize">
+      <div class="grid">
+        <app-attribute-grid [bridges$]="driveTimeBridges$"></app-attribute-grid>
+      </div>
+    </as-split-area>
+  </as-split>
+</div>

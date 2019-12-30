@@ -1,0 +1,33 @@
+<!-- nGrid template definitions -->
+<div *pblNgridBlockUiDef class="pbl-ngrid-ui-block">
+  <mat-spinner color="accent"></mat-spinner>
+</div>
+
+<div *pblNgridNoDataRef class="pbl-ngrid-no-data"><span>No Results</span></div>
+
+<pbl-ngrid-drag-resize *pblNgridCellResizerRef="let ctx" [context]="ctx" [grabAreaWidth]="8">
+  <span class="pbl-ngrid-column-resizer-handle"></span>
+</pbl-ngrid-drag-resize>
+<span *pblNgridCellDraggerRef="let ctx" [pblNgridColumnDrag]="ctx" cdkDragRootElementClass="cdk-drag column-reorder-handle"></span>
+
+<!-- Data type specific default cell definitions -->
+<div *pblNgridCellDef="'*'; value as value;">{{ value }}</div>
+<div *pblNgridCellTypeDef="'date'; value as value;">{{value | date: 'MMM dd, yyyy'}}</div>
+<div *pblNgridCellTypeDef="'condition_field'; value as value;">{{ value | number: '1.2-2' }}</div>
+<div *pblNgridCellTypeDef="'datetime'; value as value;">{{ value | date: 'yyyy-MM-dd  HH:mm:ss' }}</div>
+
+<!-- Header and footer definitions -->
+<div *pblNgridHeaderCellDef="'*'; col as col;">{{ col.label }}</div>
+<div *pblNgridFooterCellDef="'*'; col as col;">{{ col.label }}</div>
+
+<!-- Drag and drop handler definitions -->
+<div *pblNgridHeaderCellTypeDef="'drag_and_drop_handle'"></div>
+<div *pblNgridCellTypeDef="'drag_and_drop_handle'; let ctx" [pblNgridRowDrag]="ctx" style="cursor: move">
+  <mat-icon pblDragHandle class="pbl-ngrid-row-drag-handle">drag_handle</mat-icon>
+  <div class="pbl-ngrid-row-drag-placeholder" *cdkDragPlaceholder></div>
+</div>
+
+<div *pblNgridHeaderCellTypeDef="'zoom_to_icon'"></div>
+<div *pblNgridCellTypeDef="'zoom_to_icon'; value as value">
+    <mat-icon>gps_fixed</mat-icon>
+</div>

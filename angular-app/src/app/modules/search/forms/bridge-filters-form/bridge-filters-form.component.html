@@ -1,0 +1,31 @@
+<section class="mat-typography space-above space-below">
+  Fill out one, some, or all fields to find a single bridge.
+</section>
+
+<form [formGroup]="bridgeForm" (keydown.enter)="onSearch()">
+  <mat-form-field class="detailed-form-field" color="accent">
+    <input matInput formControlName="bin" placeholder="BIN">
+  </mat-form-field>
+
+  <mat-form-field class="detailed-form-field" color="accent">
+    <input matInput formControlName="carried" placeholder="Carried">
+  </mat-form-field>
+
+  <mat-form-field class="detailed-form-field" color="accent">
+    <input matInput formControlName="county" placeholder="County">
+  </mat-form-field>
+
+  <mat-form-field class="detailed-form-field" color="accent">
+    <input matInput formControlName="commonName" placeholder="Common Name">
+  </mat-form-field>
+</form>
+
+<mat-spinner *ngIf="loading" class="center-spinner" color="accent" diameter="50"></mat-spinner>
+
+<div class="center-button">
+  <button mat-flat-button
+          class="search-button"
+          color="primary"
+          (click)="onSearch()"
+         > Search </button>
+</div>

@@ -1,36 +1,21 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { NotFoundComponent } from './components/not-found/not-found.component';
-import { MapComponent } from './components/map/map.component';
-import { QueryHistoryTableComponent } from './components/query-history-table/query-history-table.component';
-import { BrowseDisplayComponent } from './components/browse/browse-display/browse-display.component';
+import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 
 
 const routes: Routes = [
   {
     path: '',
-    component: MapComponent,
+    loadChildren: () => import('./modules/browse-bridges/browse-bridges.module').then( m => m.BrowseBridgesModule )
   },
   {
     path: 'drive-time/:driveTimeID',
-    loadChildren: () => import('./components/drive-time-display/drive-time-display.module').then(m => m.DriveTimeDisplayModule)
-  },
-  {
-    path: 'table-test',
-    component: QueryHistoryTableComponent
-  },
-  {
-    path: 'openlayers',
-    component: BrowseDisplayComponent,
-  },
-  {
-    path: '404',
-    component: NotFoundComponent
+    loadChildren: () => import('./modules/drive-time/drive-time.module').then( m => m.DriveTimeModule )
   },
   {
     path: '**',
     component: NotFoundComponent
-  },
+  }
 ];
 
 @NgModule({

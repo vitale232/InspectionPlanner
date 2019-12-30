@@ -1,0 +1,47 @@
+<form [formGroup]="driveTimeForm">
+  <mat-form-field class="form-field" 
+                  appearance="outline"
+                  color="accent"
+                >
+    <input matInput
+           [formControl]="searchTextControl"
+           [matAutocomplete]="auto"
+          >
+    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
+      <mat-option *ngFor="let query of filteredOptions$ | async"
+                  [value]="query.properties.display_name"
+                  matTooltip="{{ query.properties.display_name }}"
+                > {{ query.properties.display_name }} </mat-option>
+    </mat-autocomplete>
+    <mat-label>
+      Search address or place name
+    </mat-label>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline"
+                  color="accent"
+                  class="form-field">
+    <mat-label>Max drive time </mat-label>
+    <mat-select formControlName="hours"
+                name="time">
+      <mat-option *ngFor="let time of timeIntervals"
+                  [value]="time.value"
+                 > {{ time.viewValue }} </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <div *ngIf="driveTimeForm.invalid && driveTimeForm.touched">
+    <section class="mat-typography form-validation">
+        *An address or place name is required.
+    </section>
+  </div>
+  <div class="center-button">
+    <button mat-flat-button class="search-button"
+            (click)="onSearch()"
+            color="primary"
+            [disabled]="driveTimeForm.invalid || loading"
+           > Search </button>
+  </div> 
+</form>
+
+<mat-spinner *ngIf="loading" class="center-spinner" color="accent" diameter="50"></mat-spinner>

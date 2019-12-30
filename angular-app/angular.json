@@ -3,9 +3,13 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular-app": {
+    "angular": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -20,22 +24,14 @@
             "tsConfig": "tsconfig.app.json",
             "aot": false,
             "assets": [
-              {
-                "glob": "**/*",
-                "input": "./node_modules/leaflet/dist/images",
-                "output": "leaflet/"
-              },
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "./node_modules/leaflet/dist/leaflet.css",
+              "src/styles.scss",
               "./node_modules/cookieconsent/build/cookieconsent.min.css",
               "./node_modules/ol/ol.css",
-              "./node_modules/ol-layerswitcher/src/ol-layerswitcher.css",
-              "./node_modules/ol-ext/dist/ol-ext.css",
-              "src/styles.css",
-              "src/theme.scss"
+              "./node_modules/ol-ext/dist/ol-ext.css"
             ],
             "scripts": [
               "./node_modules/cookieconsent/build/cookieconsent.min.js"
@@ -63,6 +59,11 @@
                   "type": "initial",
                   "maximumWarning": "2mb",
                   "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
                 }
               ]
             }
@@ -71,18 +72,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "angular-app:build"
+            "browserTarget": "angular:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "angular-app:build:production"
+              "browserTarget": "angular:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular-app:build"
+            "browserTarget": "angular:build"
           }
         },
         "test": {
@@ -97,7 +98,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
           }
@@ -119,15 +120,15 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "angular-app:serve"
+            "devServerTarget": "angular:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "angular-app:serve:production"
+              "devServerTarget": "angular:serve:production"
             }
           }
         }
       }
     }},
-  "defaultProject": "angular-app"
+  "defaultProject": "angular"
 }
