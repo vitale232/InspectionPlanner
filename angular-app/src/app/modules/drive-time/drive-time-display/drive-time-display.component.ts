@@ -56,6 +56,11 @@ export class DriveTimeDisplayComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getSplitterOrientation();
+    this.tableSize = 50;
+    this.mapSize = 50;
+    this.navbarService.tableOpen = true;
+
     this.subscriptions.add(this.activatedRoute.params.subscribe(
       params => {
         this.driveTimeID = parseInt(params.driveTimeID, 10);

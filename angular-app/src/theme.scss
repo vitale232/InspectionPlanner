@@ -1,5 +1,5 @@
 @import '~@angular/material/theming';
-@import '~@pebula/ngrid/theming';
+// @import '~@pebula/ngrid/theming';
 
 @include mat-core();
 
@@ -10,9 +10,9 @@ $my-app-warn:    mat-palette($mat-red);
 $my-app-theme: mat-dark-theme($my-app-primary, $my-app-accent, $my-app-warn);
 
 // Updating the theme to include ngrid definitions
-$my-app-theme: pbl-dark-theme($my-app-theme);
+// $my-app-theme: pbl-dark-theme($my-app-theme);
 
 // rendering the Material theme
 @include angular-material-theme($my-app-theme);
 // rendering the NGrid theme
-@include pbl-ngrid-theme($my-app-theme);
+// @include pbl-ngrid-theme($my-app-theme);

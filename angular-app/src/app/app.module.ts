@@ -1,35 +1,30 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
+import { FlexLayoutModule } from '@angular/flex-layout';
+
+import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
+import { AngularSplitModule } from 'angular-split';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MaterialModule } from './material.module';
-import { LeafletModule } from '@asymmetrik/ngx-leaflet';
-import { NavbarComponent } from './components/navbar/navbar.component';
-import { FlexLayoutModule } from '@angular/flex-layout';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BaseMapComponent } from './components/base-map/base-map.component';
-import { MapComponent } from './components/map/map.component';
-import { SearchComponent } from './components/search/search.component';
-import { SidenavService } from './services/sidenav.service';
+import { NavbarComponent } from './shared/components/navbar/navbar.component';
+import { BrowseBridgesModule } from './modules/browse-bridges/browse-bridges.module';
+import { NotFoundComponent } from './shared/components/not-found/not-found.component';
 import { HttpClientModule } from '@angular/common/http';
-import { UnderConstructionComponent } from './components/under-construction/under-construction.component';
-import { NgcCookieConsentModule, NgcCookieConsentConfig } from 'ngx-cookieconsent';
-import { NotFoundComponent } from './components/not-found/not-found.component';
-import { SimpleNotificationsModule } from 'angular2-notifications';
-import { QueryHistoryTableComponent } from './components/query-history-table/query-history-table.component';
-import { BrowseModule } from './components/browse/browse.module';
+import { TemplateGridComponent } from './shared/components/grid-components/template-grid/template-grid.component';
+import { AttributeGridComponent } from './shared/components/grid-components/attribute-grid/attribute-grid.component';
 import { PblNgridModule } from '@pebula/ngrid';
 import { PblNgridDragModule } from '@pebula/ngrid/drag';
 import { PblNgridTargetEventsModule } from '@pebula/ngrid/target-events';
-import { PblNgridBlockUiModule } from '@pebula/ngrid/block-ui';
 import { PblNgridTransposeModule } from '@pebula/ngrid/transpose';
-import { PblNgridStickyModule } from '@pebula/ngrid/sticky';
+import { PblNgridBlockUiModule } from '@pebula/ngrid/block-ui';
+// import { PblNgridStickyModule } from '@pebula/ngrid/sticky';
 import { PblNgridStatePluginModule } from '@pebula/ngrid/state';
 import { PblNgridMaterialModule } from '@pebula/ngrid-material';
-import { AngularSplitModule } from 'angular-split';
+import { SearchModule } from './modules/search/search.module';
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 
 const cookieConfig: NgcCookieConsentConfig = {
@@ -52,40 +47,27 @@ const cookieConfig: NgcCookieConsentConfig = {
   declarations: [
     AppComponent,
     NavbarComponent,
-    BaseMapComponent,
-    MapComponent,
-    SearchComponent,
-    UnderConstructionComponent,
     NotFoundComponent,
-    QueryHistoryTableComponent,
   ],
   imports: [
     BrowserModule,
-    HttpClientModule,
-    FormsModule,
-    ReactiveFormsModule,
-    BrowserAnimationsModule,
-    FlexLayoutModule,
-    MaterialModule,
-    LeafletModule.forRoot(),
-    NgcCookieConsentModule.forRoot(cookieConfig),
-    SimpleNotificationsModule.forRoot(),
     AppRoutingModule,
-    BrowseModule,
-    AngularSplitModule,
-    PblNgridModule,
-    PblNgridDragModule.withDefaultTemplates(),
-    PblNgridTargetEventsModule,
-    PblNgridBlockUiModule,
-    PblNgridTransposeModule,
-    PblNgridStickyModule,
-    PblNgridStatePluginModule,
-    PblNgridMaterialModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    MaterialModule,
+    FlexLayoutModule,
+    NgcCookieConsentModule.forRoot(cookieConfig),
+    AngularSplitModule.forRoot(),
+    SimpleNotificationsModule.forRoot({
+      timeOut: 20000,
+      showProgressBar: true,
+      pauseOnHover: true,
+      clickToClose: true
+    }),
+
+    SearchModule,
   ],
-  providers: [
-    SidenavService
-  ],
+  providers: [],
   bootstrap: [AppComponent],
-  entryComponents: [UnderConstructionComponent]
 })
 export class AppModule { }
