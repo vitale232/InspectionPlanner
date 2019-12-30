@@ -36,4 +36,8 @@ export class DriveTimeQueriesService {
       take(1)
     );
   }
+
+  getDriveTimeQuery(driveTimeID: number) {
+    return this.http.get<IDriveTimeQueryFeature>(`${this.driveTimeQueryUri}${driveTimeID}/`);
+  }
 }

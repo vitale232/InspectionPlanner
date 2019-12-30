@@ -47,21 +47,8 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
     this.bridges$ = this.bridgesStore.bridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
     this.searchMarker$ = this.searchMarkerStore.searchMarker$;
-    console.log('this.searchMarker$', this.searchMarker$);
+
     this.titleService.setTitle('IPA - Browse Bridges');
-
-    this.subscriptions.add(this.navbarService.tableOpen$.subscribe(
-      (tableOpen: boolean) => {
-        if (tableOpen) { this.openTable(); } else { this.closeTable(); }
-      }
-    ));
-
-    this.subscriptions.add(this.bridges$.subscribe(data => console.log('bridges', data)));
-    this.subscriptions.add(this.sidenavService.sidenavState$.subscribe(
-      () => this.updateMapSize(),
-      err => console.error(err),
-      () => this.updateMapSize()
-    ));
   }
 
   ngOnInit() {
@@ -76,6 +63,18 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
         const zoom = parseInt(params.get('z'), 10);
         this.mapView =  { zoom, center: [ lon, lat ] };
       }
+    ));
+
+    this.subscriptions.add(this.navbarService.tableOpen$.subscribe(
+      (tableOpen: boolean) => {
+        if (tableOpen) { this.openTable(); } else { this.closeTable(); }
+      }
+    ));
+
+    this.subscriptions.add(this.sidenavService.sidenavState$.subscribe(
+      () => this.updateMapSize(),
+      err => console.error(err),
+      () => this.updateMapSize()
     ));
 
   }

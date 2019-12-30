@@ -129,8 +129,10 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     this.driveTimeQueriesService.getDriveTime(driveTimeQueryParams).subscribe(
       data => {
         if ((data as IDriveTimeQueryFeature).id) {
+          console.log('existing drive time', data);
           this.onExistingDriveTimeQuery((data as IDriveTimeQueryFeature), driveTimeQueryParams.drive_time_hours);
         } else if ((data as ISubmittedDriveTimeQuery).msg === 'The request has been added to the queue') {
+          console.log('new drive time', data);
           this.onNewDriveTimeQuery(driveTimeQueryParams);
         }
       },
