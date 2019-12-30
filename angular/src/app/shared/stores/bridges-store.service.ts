@@ -25,6 +25,28 @@ export class BridgesStoreService {
     this._bridges.next(val);
   }
 
+  private readonly _driveTimeBridges = new BehaviorSubject<IBridgeFeature[]>( [ ] );
+  readonly driveTimeBridges$ = this._driveTimeBridges.asObservable();
+
+  get driveTimeBridges(): IBridgeFeature[] {
+    return this._driveTimeBridges.getValue();
+  }
+
+  set driveTimeBridges(val: IBridgeFeature[]) {
+    this._driveTimeBridges.next(val);
+  }
+
+  private readonly _driveTimeID = new BehaviorSubject<number>( 0 );
+  readonly driveTimeID$ = this._driveTimeID.asObservable();
+
+  get driveTimeID(): number {
+    return this._driveTimeID.getValue();
+  }
+
+  set driveTimeID(val: number) {
+    this._driveTimeID.next(val);
+  }
+
   constructor(
     private bridgesService: BridgesService,
     private loadingIndicatorService: LoadingIndicatorService,
@@ -40,6 +62,21 @@ export class BridgesStoreService {
         this.loadingIndicatorService.loading = false;
       },
       () => this.loadingIndicatorService.loading = false
+    );
+  }
+
+  fetchDriveTimeBridges(driveTimeID: number) {
+    this.loadingIndicatorService.loading = true;
+    this.bridgesService.getDriveTimeBridges(driveTimeID).subscribe(
+      bridges => this.driveTimeBridges = bridges,
+      err => {
+        console.error('error in fetchBridges()', err);
+        this.loadingIndicatorService.loading = false;
+      },
+      () => {
+        this.loadingIndicatorService.loading = false;
+        this.driveTimeID = driveTimeID;
+      }
     );
   }
 }

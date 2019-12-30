@@ -9,6 +9,10 @@ const routes: Routes = [
     loadChildren: () => import('./modules/browse-bridges/browse-bridges.module').then( m => m.BrowseBridgesModule )
   },
   {
+    path: 'drive-time/:driveTimeID',
+    loadChildren: () => import('./modules/drive-time/drive-time.module').then( m => m.DriveTimeModule )
+  },
+  {
     path: '**',
     component: NotFoundComponent
   }

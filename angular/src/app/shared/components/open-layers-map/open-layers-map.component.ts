@@ -54,6 +54,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() loading$: Observable<boolean>;
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() markersSearch$: Observable<SearchMarker[]>;
+  @Input() mapElementID = 'open-layers-map-test';
   // @Input() test: string;
 
   // Component outputs
@@ -319,13 +320,16 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.updateUrl();
     } );
 
-    this.subscriptions.add(this.markersSearch$.subscribe(
-      (data: SearchMarker[]) => {
-        console.log('searchMarkers data from OLM', data);
-        if (data.length === 0) { this.clearMarkers(); } else { this.addSearchMarkers(data); }
-      },
-      (err) => console.error('this.markersSearch$ subscribe error', err),
-    ));
+    console.log('this.markersSearch$', this.markersSearch$);
+    if (this.markersSearch$) {
+      this.subscriptions.add(this.markersSearch$.subscribe(
+        (data: SearchMarker[]) => {
+          console.log('searchMarkers data from OLM', data);
+          if (data.length === 0) { this.clearMarkers(); } else { this.addSearchMarkers(data); }
+        },
+        (err) => console.error('this.markersSearch$ subscribe error', err),
+      ));
+    }
 
   }
 

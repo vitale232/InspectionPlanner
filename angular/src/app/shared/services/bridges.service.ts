@@ -13,6 +13,7 @@ import { EMPTY, Observable } from 'rxjs';
 export class BridgesService {
 
   bridgesUri = 'bridges/new-york-bridges/';
+  driveTimeBridgesUri = 'bridges/new-york-bridges/drive-time-query/';
 
   constructor( private http: HttpClient ) { }
 
@@ -22,6 +23,15 @@ export class BridgesService {
 
   getAllBridgesInBbox(extent: TExtent): Observable<IBridgeFeature[]> {
     return this.http.get<IBridgesApiResponse>(this.bridgesUri, { params: { in_bbox: extent.join(',') } }).pipe(
+      expand(data => data.next ? this.http.get<IBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),
+      map(d => d.results.features),
+      reduce((x, acc) => acc.concat(x)),
+      take(1)
+    );
+  }
+
+  getDriveTimeBridges(driveTimeID: number): Observable<IBridgeFeature[]> {
+    return this.http.get<IBridgesApiResponse>(`${this.driveTimeBridgesUri}${driveTimeID}/`).pipe(
       expand(data => data.next ? this.http.get<IBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),
       map(d => d.results.features),
       reduce((x, acc) => acc.concat(x)),

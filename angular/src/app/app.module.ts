@@ -65,15 +65,6 @@ const cookieConfig: NgcCookieConsentConfig = {
       clickToClose: true
     }),
 
-    PblNgridModule.withCommon([ { component: TemplateGridComponent } ]),
-    PblNgridDragModule,
-    PblNgridTargetEventsModule,
-    PblNgridBlockUiModule,
-    PblNgridTransposeModule,
-    PblNgridStatePluginModule,
-    PblNgridMaterialModule,
-
-    BrowseBridgesModule,
     SearchModule,
   ],
   providers: [],
