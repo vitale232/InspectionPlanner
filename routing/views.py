@@ -46,6 +46,18 @@ class DriveTimePolygonDetail(generics.RetrieveAPIView):
     serializer_class = DriveTimePolygonSerializer
 
 
+class DriveTimePolygonByDriveTimeQueryDetail(generics.RetrieveAPIView):
+    queryset = DriveTimePolygon.objects.all()
+    serializer_class = DriveTimePolygonSerializer
+    lookup_field = 'drive_time_query'
+
+    # def get_queryset(self):
+    #     drive_time_id = self.kwargs['pk']
+    #     return DriveTimePolygon.objects.get(
+    #         drive_time_query=drive_time_id
+    #     )
+
+
 class DriveTimeQueryList(generics.ListAPIView):
     serializer_class = DriveTimeQuerySerializer
 
