@@ -24,6 +24,7 @@ import { PblNgridBlockUiModule } from '@pebula/ngrid/block-ui';
 import { PblNgridStatePluginModule } from '@pebula/ngrid/state';
 import { PblNgridMaterialModule } from '@pebula/ngrid-material';
 import { SearchModule } from './modules/search/search.module';
+import { SimpleNotificationsModule } from 'angular2-notifications';
 
 
 const cookieConfig: NgcCookieConsentConfig = {
@@ -57,6 +58,12 @@ const cookieConfig: NgcCookieConsentConfig = {
     FlexLayoutModule,
     NgcCookieConsentModule.forRoot(cookieConfig),
     AngularSplitModule.forRoot(),
+    SimpleNotificationsModule.forRoot({
+      timeOut: 20000,
+      showProgressBar: true,
+      pauseOnHover: true,
+      clickToClose: true
+    }),
 
     PblNgridModule.withCommon([ { component: TemplateGridComponent } ]),
     PblNgridDragModule,

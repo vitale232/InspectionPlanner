@@ -5,6 +5,7 @@
 
 .accordion-container {
     padding: 10px;
+    overflow-x: hidden;
 }
 
 mat-panel-title {
@@ -18,4 +19,12 @@ mat-panel-title {
     padding-left: 3px;
     padding-right: 3px;
     text-align: center;
+}
+
+.tab-group {
+    overflow-x: hidden;
+}
+
+.loading-indicator {
+    padding-left: 20px;
 }

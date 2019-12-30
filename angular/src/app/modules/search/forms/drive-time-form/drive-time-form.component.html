@@ -37,9 +37,11 @@
   </div>
   <div class="center-button">
     <button mat-flat-button class="search-button"
-            (click)="onDriveTimeQuery()"
+            (click)="onSearch()"
             color="primary"
-            [disabled]="driveTimeForm.invalid"
+            [disabled]="driveTimeForm.invalid || loading"
            > Search </button>
   </div> 
 </form>
+
+<mat-spinner *ngIf="loading" class="center-spinner" color="accent" diameter="50"></mat-spinner>

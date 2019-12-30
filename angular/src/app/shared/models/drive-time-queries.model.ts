@@ -1,3 +1,9 @@
+export interface INewDriveTimeParms {
+  q: string;
+  drive_time_hours: string;
+  return_bridges: boolean;
+}
+
 export interface IDriveTimeQueryApiResponse {
   count: number;
   next: string|null;

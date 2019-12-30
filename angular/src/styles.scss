@@ -52,6 +52,16 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     text-align: center;
 }
 
+.space-above {
+  padding-top: 10px;
+}
+
+.detailed-form-field {
+  width: 280px;
+  margin: 0 auto;
+  display: block;
+}
+
 .typography-container {
     padding-top: 2px;
     padding-bottom: 2px;
@@ -80,6 +90,13 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   padding-left: 10px;
 }
 
+.center-spinner {
+  margin: 0 auto;
+  display: block;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
 
 // ol-ext styles
 .ol-control.ol-bar .ol-control button i {
@@ -93,6 +110,7 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     font-family: sans-serif;
     color: black;
     background-color: white;
+    user-select: text !important;
 }
 
 .ol-control {

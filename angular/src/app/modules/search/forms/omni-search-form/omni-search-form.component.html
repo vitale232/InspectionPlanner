@@ -1,9 +1,10 @@
+
 <form [formGroup]="omniSearchForm">
   <mat-form-field class="form-field"
                   appearance="outline"
                   color="accent">
     <input matInput
-           formControlName="searchText"
+          formControlName="searchText"
           >
     <mat-label>
       Search address, BIN, or place name
@@ -12,12 +13,14 @@
             mat-icon-button
             (click)="onSearch()"
             aria-label="Execute search"
-            [disabled]="this.omniSearchForm.invalid"
-           >
+            [disabled]="this.omniSearchForm.invalid || loading"
+          >
       <mat-icon>search</mat-icon>
     </button>
   </mat-form-field>
 </form>
+
+<mat-spinner *ngIf="loading" class="center-spinner" color="accent" diameter="50"></mat-spinner>
 
 <div *ngIf="omniSearchForm.invalid && omniSearchForm.touched">
   <section class="mat-typography form-validation">

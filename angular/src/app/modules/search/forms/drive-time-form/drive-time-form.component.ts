@@ -1,8 +1,12 @@
 import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
-import { IDriveTimeQueryFeature } from 'src/app/shared/models/drive-time-queries.model';
+import { IDriveTimeQueryFeature, INewDriveTimeParms, ISubmittedDriveTimeQuery } from 'src/app/shared/models/drive-time-queries.model';
 import { startWith, map } from 'rxjs/operators';
+import { DriveTimeQueriesService } from 'src/app/shared/services/drive-time-queries.service';
+import { Router } from '@angular/router';
+import { SidenavService } from 'src/app/shared/services/sidenav.service';
+import { NotificationsService } from 'angular2-notifications';
 
 @Component({
   selector: 'app-drive-time-form',
@@ -10,6 +14,8 @@ import { startWith, map } from 'rxjs/operators';
   styleUrls: ['./drive-time-form.component.scss']
 })
 export class DriveTimeFormComponent implements OnInit, OnDestroy {
+
+  loading: boolean;
 
   // Component inputs
   @Input() driveTimeQueries$: Observable<IDriveTimeQueryFeature[]>;
@@ -36,14 +42,20 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
   filteredOptions$: Observable<IDriveTimeQueryFeature[]>;
   driveTimeQueries: IDriveTimeQueryFeature[];
 
-  constructor( private fb: FormBuilder ) { }
+  constructor(
+    private driveTimeQueriesService: DriveTimeQueriesService,
+    private fb: FormBuilder,
+    private notifications: NotificationsService,
+    private router: Router,
+    private sidenav: SidenavService,
+    ) { }
 
   ngOnInit() {
     this.subscriptions.add(this.driveTimeQueries$.subscribe(
       data => {
         this.driveTimeQueries = data;
         // Wait until there is data before applying the first filter to the mat-autocomplete
-        // If we don't wait until there's data to trigger _filter, there will be an empty list 
+        // If we don't wait until there's data to trigger _filter, there will be an empty list
         // in the autocomplete until the user starts to type
         this.filteredOptions$ = this.searchTextControl.valueChanges.pipe(
           startWith(''),
@@ -91,6 +103,102 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
         break;
     }
     return outputDriveTimeHours;
+  }
+
+  onSearch() {
+    this.loading = true;
+
+    // Nominatim API doesn't like the display_name sometimes. If the search is cached, use the .search_text
+    // otherwise, use the form value
+    const selectedQuery = this.driveTimeQueries
+      .filter(q => q.properties.display_name === this.driveTimeForm.value.searchText)
+      .filter(q => q.properties.drive_time_hours === this.timeIntervalToNumber( this.driveTimeForm.value.hours ));
+
+    let querySearchText;
+    if (selectedQuery.length === 1) {
+      querySearchText = selectedQuery[0].properties.search_text;
+    } else {
+      querySearchText = this.driveTimeForm.value.searchText;
+    }
+
+    const driveTimeQueryParams: INewDriveTimeParms = {
+      q: querySearchText,
+      drive_time_hours: this.timeIntervalToNumber( this.driveTimeForm.value.hours).toString(),
+      return_bridges: false
+    };
+    this.driveTimeQueriesService.getDriveTime(driveTimeQueryParams).subscribe(
+      data => {
+        if ((data as IDriveTimeQueryFeature).id) {
+          this.onExistingDriveTimeQuery((data as IDriveTimeQueryFeature), driveTimeQueryParams.drive_time_hours);
+        } else if ((data as ISubmittedDriveTimeQuery).msg === 'The request has been added to the queue') {
+          this.onNewDriveTimeQuery(driveTimeQueryParams);
+        }
+      },
+      err => {
+        console.error(err);
+        if (err.status === 400) {
+          this.notifications.error(
+            'Search error',
+            'The search location is not within the extent of the routable network. ' +
+            'Search for a place that lies within the blue box on the map.'
+            );
+          } else if (err.status === 404) {
+            this.notifications.error(
+              'Search error',
+              `No results found for query: ${this.driveTimeForm.value.searchText}`
+              );
+          } else {
+            this.notifications.error(
+              'Unhandled error',
+              `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`
+              );
+          }
+        this.loading = false;
+      }
+    );
+  }
+
+  onExistingDriveTimeQuery(driveTimeQuery: IDriveTimeQueryFeature, driveTimeHours: string): void {
+    let zoom = 18;
+    const hours = parseFloat(driveTimeHours);
+    if (hours <= 1.0) {
+      zoom = 8;
+    } else if (hours > 1.0) {
+      zoom = 7;
+    }
+
+    const routerQueryParams = {
+      lon: driveTimeQuery.geometry[0],
+      lat: driveTimeQuery.geometry[1],
+      z: zoom
+    };
+
+    this.loading = false;
+    this.sidenav.close();
+    this.router.navigate([`drive-time/${driveTimeQuery.id}`], { queryParams: routerQueryParams });
+  }
+
+  onNewDriveTimeQuery(driveTimeQueryParams: INewDriveTimeParms): void {
+    this.sidenav.close();
+    this.notifications.info(
+      'Hold Up!',
+      `This is a new drive time request, which takes a while to process. ` +
+      `Check the "Search History" for your results in a bit. Note: ` +
+      `The longer the drive time, the longer the wait!`
+    );
+    this.loading = false;
+    this.driveTimeQueriesService.pollDriveTimeQuery(driveTimeQueryParams).subscribe(
+      data => console.log('poll data!'),
+      err => {
+        this.notifications.error(
+          'Unhandled Error!',
+          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`
+        );
+        this.loading = false;
+        console.error('pollDriveTimeQuery error', err);
+      },
+      () => console.log('Polling complete!')
+    );
   }
 
 }

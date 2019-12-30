@@ -1,5 +1,4 @@
 <div class="search-panel">
-
   <div class="tools">
     <button mat-stroked-button
           color="accent"
@@ -7,7 +6,7 @@
           matTooltipShowDelay="500"
           (click)="sendClientLocation()"
           aria-label="Plot current location on map"
-         >
+          >
       <mat-icon>location_searching</mat-icon>
     </button>
 
@@ -17,7 +16,7 @@
             matTooltipShowDelay="500"
             (click)="sendMapHome()"
             aria-label="Return map to default position"
-           >
+            >
       <mat-icon>home</mat-icon>
     </button>
 
@@ -26,7 +25,7 @@
             matTooltip="Clear search markers"
             (click)="onClearMarkers()"
             aria-label="Remove search result markers from map"
-           >
+            >
       <mat-icon>layers_clear</mat-icon>
     </button>
   </div>
@@ -36,23 +35,34 @@
   
       <mat-expansion-panel expanded="true">
         <mat-expansion-panel-header>
-          <mat-panel-title> Search the Map </mat-panel-title>
+          <mat-panel-title>
+            Search the Map
+          </mat-panel-title>
         </mat-expansion-panel-header>
         <app-omni-search-form></app-omni-search-form>
       </mat-expansion-panel>
 
       <mat-expansion-panel>
         <mat-expansion-panel-header>
-          <mat-panel-title> Drive Time Search </mat-panel-title>
+          <mat-panel-title>
+            Drive Time Search
+          </mat-panel-title>
         </mat-expansion-panel-header>
         <app-drive-time-form [driveTimeQueries$]="driveTimeQueries$"></app-drive-time-form>
       </mat-expansion-panel>
   
       <mat-expansion-panel>
         <mat-expansion-panel-header>
-          <mat-panel-title> Search Filters </mat-panel-title>
+          <mat-panel-title>
+            Search Filters
+          </mat-panel-title>
         </mat-expansion-panel-header>
-        <app-osm-filters-form></app-osm-filters-form>
+        <div class="tab-group">
+          <mat-tab-group color="accent" class="space-above">
+            <mat-tab label="Map"> <app-osm-filters-form></app-osm-filters-form> </mat-tab>
+            <mat-tab label="Bridges"> <app-bridge-filters-form></app-bridge-filters-form> </mat-tab>
+          </mat-tab-group>
+        </div>
       </mat-expansion-panel>
   
     </mat-accordion>

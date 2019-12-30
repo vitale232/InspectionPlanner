@@ -11,6 +11,7 @@ import { SearchMarkersStoreService } from 'src/app/shared/stores/search-markers-
 })
 export class SearchDisplayComponent implements OnInit {
 
+  loading: boolean;
   driveTimeQueries$: Observable<IDriveTimeQueryFeature[]>;
 
   constructor(

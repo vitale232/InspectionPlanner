@@ -9,7 +9,7 @@ export const COLUMNS = columnFactory()
     { prop: 'properties.county_name', id: 'countyName', sort: true, width: '105px', label: 'County', },
     { prop: 'properties.political_field', id: 'politicalField', sort: true, width: '105px', label: 'Municipality' },
     { prop: 'properties.primary_owner', id: 'primaryOwner', sort: true, label: 'Owner', },
-    { prop: 'properties.common_name', id: 'commonName', sort: true, width: '150px', label: 'Common Name', },
+    { prop: 'properties.common_name', id: 'commonName', sort: true, width: '112px', label: 'Common Name', },
     { prop: 'properties.gtms_structure', id: 'structure', width: '175px', sort: true, label: 'Span Structure', },
     { prop: 'properties.gtms_mater', id: 'materials', width: '175px', sort: true, label: 'Span Materials' },
     { prop: 'properties.carried', id: 'carried', width: '175px', sort: true, label: 'Carried Roadway', },
