@@ -63,9 +63,10 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
         const zoom = parseInt(params.get('z'), 10);
         if (lon && lat && zoom) {
           this.mapView =  { zoom, center: [ lon, lat ] };
+          this.titleService.setTitle(`IPA - Browse Bridges @${lon},${lat},${zoom}z`);
         } else {
           // this.mapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
-          console.log('ELSE!!!!');
+          console.log('BROWSE BRIDGES PARAMS ELSE!!!!');
         }
       }
     ));
@@ -135,8 +136,11 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
 
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
+      console.log('updateMapSize start', this.mapView);
       this.openLayersMapComponent.updateUrl();
       setTimeout(() => this.openLayersMapComponent.map.updateSize(), 200);
+      setTimeout(() => console.log('updateMapSize end', this.mapView), 200);
+
     }
   }
 

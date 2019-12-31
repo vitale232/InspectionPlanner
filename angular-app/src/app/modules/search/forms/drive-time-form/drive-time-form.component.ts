@@ -180,7 +180,7 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     this.sidenav.close();
     setTimeout( () => {
       this.router.navigate([`drive-time/${driveTimeQuery.id}`], { queryParams: routerQueryParams });
-    }, 2000);
+    }, 1000);
   }
 
   onNewDriveTimeQuery(driveTimeQueryParams: INewDriveTimeParms): void {

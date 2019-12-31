@@ -82,8 +82,11 @@ export class DriveTimeDisplayComponent implements OnInit {
 
         if (lon && lat && zoom) {
           this.mapView =  { zoom, center: [ lon, lat ] };
+          this.titleService.setTitle(`IPA - Drive Time ${this.driveTimeID} @${lon},${lat},${zoom}z`);
+
         } else {
-          this.mapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
+          // this.mapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
+          console.log('DRIVE TIME PARAMS ELSE!');
         }
         console.log('init mapView', this.mapView);
       }
@@ -144,8 +147,11 @@ export class DriveTimeDisplayComponent implements OnInit {
 
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
+      console.log('updateMapSize start', this.mapView);
       this.openLayersMapComponent.updateUrl();
       setTimeout(() => this.openLayersMapComponent.map.updateSize(), 200);
+      setTimeout(() => console.log('updateMapSize end', this.mapView), 200);
+
     }
   }
 
