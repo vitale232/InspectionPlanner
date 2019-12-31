@@ -3,6 +3,7 @@ import { DriveTimeQueriesStoreService } from 'src/app/shared/stores/drive-time-q
 import { Observable } from 'rxjs';
 import { IDriveTimeQueryFeature } from 'src/app/shared/models/drive-time-queries.model';
 import { SearchMarkersStoreService } from 'src/app/shared/stores/search-markers-store.service';
+import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store.service';
 
 @Component({
   selector: 'app-search-display',
@@ -17,10 +18,16 @@ export class SearchDisplayComponent implements OnInit {
   constructor(
     private driveTimeQueriesStore: DriveTimeQueriesStoreService,
     private searchMarkersStore: SearchMarkersStoreService,
+    private geolocationStore: GeolocationStoreService,
   ) { }
 
   ngOnInit() {
     this.driveTimeQueries$ = this.driveTimeQueriesStore.driveTimeQueries$;
+    this.geolocationStore.position$.subscribe(
+      data => console.log('geolocation object', data),
+      err => console.error('geolocation error', err),
+      () => console.log('geolocation complete')
+    );
   }
 
   onClearMarkers() {
@@ -33,6 +40,7 @@ export class SearchDisplayComponent implements OnInit {
 
   onSendClientLocation() {
     console.log('TODO', 'implement onSendClientLocation');
+    console.log('onSendClientLocation() position', this.geolocationStore.position);
   }
 
 }
