@@ -368,7 +368,11 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       z: zoom.toString()
     };
 
-    this.router.navigate(['.'], { relativeTo: this.activatedRoute, queryParams});
+    if (Object.values(queryParams).some((x: string) => Number.isNaN(parseFloat(x)))) {
+      return; // Return without updating URL if there are any NaNs
+    } else {
+      this.router.navigate(['.'], { relativeTo: this.activatedRoute, queryParams});
+    }
   }
 
   extentFromLonLat(extent: TExtent): TExtent {
