@@ -61,7 +61,11 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
         const lon = parseFloat(params.get('lon'));
         const lat = parseFloat(params.get('lat'));
         const zoom = parseInt(params.get('z'), 10);
-        this.mapView =  { zoom, center: [ lon, lat ] };
+        if (lon && lat && zoom) {
+          this.mapView =  { zoom, center: [ lon, lat ] };
+        } else {
+          this.mapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
+        }
       }
     ));
 
