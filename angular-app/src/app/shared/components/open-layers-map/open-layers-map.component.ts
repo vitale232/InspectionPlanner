@@ -38,6 +38,7 @@ import Polygon from 'ol/geom/Polygon';
 
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
+import LayerSwitcher from 'ol-ext/control/LayerSwitcher';
 
 
 @Component({
@@ -259,6 +260,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   // Add the layer switcher from ol-layerswitcher 3rd party package to the map
     // const layerSwitcher = new LayerSwitcher({});
     // this.map.addControl(layerSwitcher);
+    const layerSwitcher = new LayerSwitcher();
+    this.map.addControl(layerSwitcher);
 
     const select = new Select({
       hitTolerance: 5,
