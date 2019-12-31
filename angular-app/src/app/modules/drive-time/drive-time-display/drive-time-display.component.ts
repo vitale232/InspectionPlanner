@@ -144,7 +144,8 @@ export class DriveTimeDisplayComponent implements OnInit {
 
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
-      setTimeout(() => this.openLayersMapComponent.map.updateSize(), 50);
+      this.openLayersMapComponent.updateUrl();
+      setTimeout(() => this.openLayersMapComponent.map.updateSize(), 200);
     }
   }
 

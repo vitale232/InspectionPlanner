@@ -338,6 +338,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     console.log('changes', changes);
     if (this.map) {
       if (changes.mapView) {
+        console.log('changes update view', changes);
         this.updateView(changes.mapView.currentValue);
         setTimeout(() => this.map.updateSize(), 100);
       }

@@ -61,7 +61,7 @@ export class OmniSearchFormComponent implements OnInit {
       },
       () => {
         this.loading = false;
-        setTimeout( () => this.sidenav.close(), 210 );
+        setTimeout( () => this.sidenav.close(), 500 );
       }
     );
   }

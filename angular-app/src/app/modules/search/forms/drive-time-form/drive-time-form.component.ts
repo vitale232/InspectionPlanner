@@ -168,21 +168,23 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     } else if (hours > 1.0) {
       zoom = 7;
     }
-
+    console.log('driveTimeQuery', driveTimeQuery);
     const routerQueryParams = {
-      lon: driveTimeQuery.geometry[0],
-      lat: driveTimeQuery.geometry[1],
+      lon: driveTimeQuery.geometry.coordinates[0],
+      lat: driveTimeQuery.geometry.coordinates[1],
       z: zoom
     };
 
     this.loading = false;
     console.log('Navigate to: ', routerQueryParams);
-    this.router.navigate([`drive-time/${driveTimeQuery.id}`], { queryParams: routerQueryParams });
-    setTimeout( () => this.sidenav.close(), 210 );
+    this.sidenav.close();
+    setTimeout( () => {
+      this.router.navigate([`drive-time/${driveTimeQuery.id}`], { queryParams: routerQueryParams });
+    }, 2000);
   }
 
   onNewDriveTimeQuery(driveTimeQueryParams: INewDriveTimeParms): void {
-    setTimeout( () => this.sidenav.close(), 210 );
+    setTimeout( () => this.sidenav.close(), 500 );
     this.notifications.info(
       'Hold Up!',
       `This is a new drive time request, which takes a while to process. ` +

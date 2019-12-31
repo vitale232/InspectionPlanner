@@ -64,7 +64,8 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
         if (lon && lat && zoom) {
           this.mapView =  { zoom, center: [ lon, lat ] };
         } else {
-          this.mapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
+          // this.mapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
+          console.log('ELSE!!!!');
         }
       }
     ));
@@ -134,7 +135,8 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
 
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
-      setTimeout(() => this.openLayersMapComponent.map.updateSize(), 50);
+      this.openLayersMapComponent.updateUrl();
+      setTimeout(() => this.openLayersMapComponent.map.updateSize(), 200);
     }
   }
 
