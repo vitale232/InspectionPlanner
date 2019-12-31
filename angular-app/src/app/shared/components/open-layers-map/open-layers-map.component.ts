@@ -13,7 +13,8 @@
 import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IMapView, IStyleStoreAADT, IMarker, TExtent } from 'src/app/shared/models/open-layers-map.model';
-
+import { IBridgeFeature } from '../../models/bridges.model';
+import { SearchMarker } from '../../models/markers.model';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -34,12 +35,9 @@ import { singleClick } from 'ol/events/condition';
 import OSM from 'ol/source/OSM';
 import Feature from 'ol/Feature';
 import Polygon from 'ol/geom/Polygon';
-import Point from 'ol/geom/Point';
 
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
-import { IBridgeFeature } from '../../models/bridges.model';
-import { SearchMarker, TPoint } from '../../models/markers.model';
 
 
 @Component({
