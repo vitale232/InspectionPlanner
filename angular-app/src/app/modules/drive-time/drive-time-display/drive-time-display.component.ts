@@ -134,7 +134,6 @@ export class DriveTimeDisplayComponent implements OnInit {
   }
 
   splitDragEnd(event: { gutterNum: number, sizes: number[] }) {
-    console.log('drag');
     this.mapSize = event.sizes[0];
     this.tableSize = event.sizes[1];
     if (this.tableSize <= this.minTableSize) {
@@ -152,16 +151,15 @@ export class DriveTimeDisplayComponent implements OnInit {
 
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
-      console.log('updateMapSize start', this.mapView);
       this.openLayersMapComponent.updateUrl();
       setTimeout(() => this.openLayersMapComponent.map.updateSize(), 200);
-      setTimeout(() => console.log('updateMapSize end', this.mapView), 200);
+      // setTimeout(() => console.log('updateMapSize end', this.mapView), 200);
 
     }
   }
 
   onMapMove(event) {
-    console.log('dt onMapMove event', event);
+    // console.log('dt onMapMove event', event);
   }
 
   checkAndFetchDriveTime() {
