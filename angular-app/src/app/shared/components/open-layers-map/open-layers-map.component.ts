@@ -12,14 +12,14 @@
 
 import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IMapView, IStyleStoreAADT, IMarker, TExtent } from 'src/app/shared/models/open-layers-map.model';
+import { IMapView, IStyleStoreAADT, IMarker, TExtent, DriveTimePolygon } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
 import { SearchMarker, GeolocationMarker } from '../../models/markers.model';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { fromLonLat, toLonLat } from 'ol/proj';
-import { Fill, Stroke, Circle, Icon, Style } from 'ol/style';
+import { Fill, Stroke, Circle, Style } from 'ol/style';
 import { get as getProjection } from 'ol/proj';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
@@ -72,6 +72,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
   // Custom behaviors
   private styleGroups: IStyleStoreAADT;
+  private overlayGroup: Group;
   private bridgeSubscription: Subscription;
   private subscriptions = new Subscription();
 
@@ -81,9 +82,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // console.log('this.test', this.test);
-    // console.log('this.mapView', this.mapView);
-    // console.log('this.searchMarker$', this.searchMarkers$);
     // this.updateUrl gets called during init, so if no mapView was passed in, the URL params
     // will include NaN values, which breaks the map until they're deleted from the URL. Let's
     // test for NaNs, and force the map to Albany if there are any
@@ -191,7 +189,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       })
     });
 
-    const overlayGroup = new Group({
+    this.overlayGroup = new Group({
         title: 'Overlays',
         layers: [ studyAreaVectorLayer, this.vectorLayer ]
     });
@@ -251,7 +249,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     });
     this.map = new Map({
       target: 'open-layers-map',
-      layers: [ basemapGroup, overlayGroup, ],
+      layers: [ basemapGroup, this.overlayGroup, ],
       view: this.view,
       controls: defaultControls( { attribution: false } ).extend([
           new ZoomToExtent({
@@ -261,8 +259,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   });
 
   // Add the layer switcher from ol-layerswitcher 3rd party package to the map
-    // const layerSwitcher = new LayerSwitcher({});
-    // this.map.addControl(layerSwitcher);
     const layerSwitcher = new LayerSwitcher();
     this.map.addControl(layerSwitcher);
 
@@ -324,7 +320,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.updateUrl();
     } );
 
-    console.log('this.markersSearch$', this.markersSearch$);
     if (this.markersSearch$) {
       this.subscriptions.add(this.markersSearch$.subscribe(
         (data: SearchMarker[]) => {
@@ -338,7 +333,11 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     // TODO: Draw the polygon on the map
     if (this.driveTimePolygons$) {
       this.subscriptions.add(this.driveTimePolygons$.subscribe(
-        data => console.log('driveTimePolygons', data),
+        driveTimeFeature => {
+          if (driveTimeFeature) {
+            this.addDriveTimePolygon(driveTimeFeature);
+          }
+        },
         err => console.error(err),
       ));
     }
@@ -346,10 +345,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('changes', changes);
     if (this.map) {
       if (changes.mapView) {
-        console.log('changes update view', changes);
         this.updateView(changes.mapView.currentValue);
         setTimeout(() => this.map.updateSize(), 100);
       }
@@ -451,6 +448,21 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.map.getView().setCenter( fromLonLat(markersIn[markersIn.length - 1].lonLat) );
       this.map.getView().setZoom( 14 );
     }
+
+  }
+
+  addDriveTimePolygon(driveTimeFeature: IDriveTimePolygonFeature): void {
+    const mapLayers = this.map.getLayers();
+
+    mapLayers.getArray().forEach((layer: VectorLayer) => {
+      if (layer.get('title') === 'Drive Time Polygon') {
+        this.map.removeLayer(layer);
+      }
+    });
+
+    const polygon = new DriveTimePolygon(driveTimeFeature);
+
+    if (!mapLayers.getArray().includes(polygon.layer)) { this.map.addLayer(polygon.layer); }
 
   }
 

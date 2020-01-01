@@ -1,4 +1,16 @@
-import Style from 'ol/style';
+/*
+ * Developer WARNING: The OpenLayers code is not typed. See src/app/shared/components/open-layers-map.component.ts
+ * for more details
+ */
+
+import VectorSource from 'ol/source/Vector';
+import VectorLayer from 'ol/layer/Vector';
+import GeoJSON from 'ol/format/GeoJSON';
+import { get as getProjection } from 'ol/proj';
+import { Fill, Stroke, Style } from 'ol/style';
+
+import { IDriveTimePolygonFeature } from './drive-time-polygons.model';
+
 
 export interface IMapView {
   zoom: number;
@@ -30,4 +42,34 @@ export interface IExtent {
   1: number;
   2: number;
   3: number;
+}
+
+export class DriveTimePolygon {
+
+  source: VectorSource;
+  layer: VectorLayer;
+
+  constructor(driveTimePolygon: IDriveTimePolygonFeature) {
+
+    this.source = new VectorSource({
+      features: new GeoJSON({
+        featureProjection: getProjection('EPSG:3857'),
+      }).readFeatures(driveTimePolygon)
+    });
+
+    this.layer = new VectorLayer({
+      source: this.source,
+      title: 'Drive Time Polygon',
+      style: new Style({
+        fill: new Fill({
+          color: [ 192, 22, 0, 0 ], // Last zero means transparent
+        }),
+        stroke: new Stroke({
+          color: [ 192, 22, 0, 1 ], // Dark red
+          width: 1.5
+        })
+      })
+    });
+
+  }
 }
