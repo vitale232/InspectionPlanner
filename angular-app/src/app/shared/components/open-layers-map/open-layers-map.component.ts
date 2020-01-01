@@ -35,6 +35,7 @@ import { singleClick } from 'ol/events/condition';
 import OSM from 'ol/source/OSM';
 import Feature from 'ol/Feature';
 import Polygon from 'ol/geom/Polygon';
+import { buffer } from 'ol/extent';
 
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
@@ -253,7 +254,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       view: this.view,
       controls: defaultControls( { attribution: false } ).extend([
           new ZoomToExtent({
-              extent: this.extentFromLonLat([ -78.4, 41.5679, -72.65, 44.2841 ])
+              extent: buffer( this.extentFromLonLat([ -78.4, 41.5679, -72.65, 44.2841 ]), 100000 )
           })
       ]).extend([attribution])
   });

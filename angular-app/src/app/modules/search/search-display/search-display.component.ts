@@ -4,8 +4,8 @@ import { Observable } from 'rxjs';
 import { IDriveTimeQueryFeature } from 'src/app/shared/models/drive-time-queries.model';
 import { SearchMarkersStoreService } from 'src/app/shared/stores/search-markers-store.service';
 import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store.service';
-import { GeolocationMarker } from 'src/app/shared/models/markers.model';
-import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
+
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-search-display',
@@ -18,6 +18,8 @@ export class SearchDisplayComponent implements OnInit {
   driveTimeQueries$: Observable<IDriveTimeQueryFeature[]>;
 
   constructor(
+    private router: Router,
+    private activatedRoute: ActivatedRoute,
     private driveTimeQueriesStore: DriveTimeQueriesStoreService,
     private searchMarkersStore: SearchMarkersStoreService,
     private geolocationStore: GeolocationStoreService,
@@ -25,24 +27,6 @@ export class SearchDisplayComponent implements OnInit {
 
   ngOnInit() {
     this.driveTimeQueries$ = this.driveTimeQueriesStore.driveTimeQueries$;
-    // this.geolocationStore.position$.subscribe(
-    //   (position: IGeoPosition) => {
-    //     console.log('geolocation object', position);
-    //     if (position) {
-    //       const geoLocation = new GeolocationMarker(
-    //         [
-    //           position.lon,
-    //           position.lat
-    //         ],
-    //         position,
-    //         'Test Geolocation Marker'
-    //       );
-    //       console.log('geolocationMarker', geoLocation);
-    //     }
-    //   },
-    //   err => console.error('geolocation error', err),
-    //   () => console.log('geolocation complete')
-    // );
   }
 
   onClearMarkers() {
@@ -50,12 +34,19 @@ export class SearchDisplayComponent implements OnInit {
   }
 
   onSendMapHome() {
-    console.log('TODO', 'implement onSendMapHome');
+    this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParamsHandling: 'merge',
+      queryParams: {
+        lon: -75.8095,
+        lat: 42.7757,
+        z: 6
+      }
+    });
   }
 
   onSendClientLocation() {
-    console.log('TODO', 'implement onSendClientLocation');
-    console.log('onSendClientLocation() position', this.geolocationStore.position);
+    this.geolocationStore.fetchPosition();
   }
 
 }

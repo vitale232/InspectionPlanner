@@ -22,7 +22,7 @@ export class GeolocationStoreService {
 
   constructor() { }
 
-  private fetchPosition(): void {
+  public fetchPosition(): void {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         this.position = {
