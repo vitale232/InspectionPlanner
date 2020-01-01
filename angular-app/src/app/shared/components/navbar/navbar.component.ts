@@ -35,7 +35,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         (navEnd: NavigationEnd) => {
           const urlParts = navEnd.url.split(/[?,&,/]/).map(x => x.replace('/', ''));
           if (urlParts.includes('drive-time')) {
-            const driveTimeID = urlParts.find((x: string) => new RegExp(/^\d{3}$/).test(x));
+            const driveTimeID = urlParts.find((x: string) => new RegExp(/^\d{2,3}$/).test(x));
             this.longTitle = `Drive Time Search ${driveTimeID}`;
           } else {
             this.longTitle = 'Inspection Planner Application';
