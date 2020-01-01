@@ -64,7 +64,10 @@ export class Marker {
     // Set up search marker specific OpenLayers stuff
     this.feature.setProperties(this.props);
 
-    this.vectorLayer = new VectorLayer({ source: new VectorSource({ features: [ this.feature ] }) });
+    this.vectorLayer = new VectorLayer({
+      source: new VectorSource({ features: [ this.feature ] }),
+      title: this.title
+    });
 
     this.select = new Select({
       hitTolerance: 5,
@@ -133,12 +136,8 @@ export class SearchMarker extends Marker {
       // Bind the API data to the object
       this.props = apiResponse;
       if (title) { this.title = title; this.props.title = title; }
-      this.initMapMarker();
 
-  }
-
-  initMapMarker() {
-    super.initMapMarker();
+      super.initMapMarker();
   }
 
 }
