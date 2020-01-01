@@ -48,7 +48,7 @@ def get_nodes_and_make_polygon(drive_time_query_id):
         f'Processing {len(drive_time_nodes)} nodes'
     )
     points = [loads(str(dtn.the_geom), hex=True) for dtn in drive_time_nodes]
-    polygon = to_polygon(points)
+    polygon = to_polygon(points, alpha=30)
 
     # Commit the results to the database
     new_drive_time_polygon = DriveTimePolygon(
