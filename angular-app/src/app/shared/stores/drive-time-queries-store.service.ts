@@ -8,6 +8,7 @@ import { BridgesStoreService } from './bridges-store.service';
   providedIn: 'root'
 })
 export class DriveTimeQueriesStoreService {
+  // This class is dependent on the bridge store. It subscribes to the bridgeStore.DriveTimeID
 
   private readonly _driveTimeQueries = new BehaviorSubject<IDriveTimeQueryFeature[]>([]);
   readonly driveTimeQueries$ = this._driveTimeQueries.asObservable();
@@ -47,15 +48,14 @@ export class DriveTimeQueriesStoreService {
     this.driveTimeQueryService.getDriveTimeQueries().subscribe(
       queries => this.driveTimeQueries = queries,
       err => console.error(err),
-      () => console.log('loaded dtqs in store')
     );
   }
 
   fetchDriveTimeQuery() {
+    if (!this.bridgesStore.driveTimeID) { return; } // Don't fetch when not a number
     this.driveTimeQueryService.getDriveTimeQuery(this.bridgesStore.driveTimeID).subscribe(
       query => this.selectedDriveTimeQuery = query,
       err => console.error(err),
-      () => console.log('complete selected', this.selectedDriveTimeQuery)
     );
   }
 

@@ -193,7 +193,7 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     );
     this.loading = false;
     this.driveTimeQueriesService.pollDriveTimeQuery(driveTimeQueryParams).subscribe(
-      data => console.log('poll data!'),
+      data => console.log('poll data!', data),
       err => {
         this.notifications.error(
           'Unhandled Error!',

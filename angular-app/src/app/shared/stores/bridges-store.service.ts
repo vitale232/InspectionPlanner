@@ -36,7 +36,7 @@ export class BridgesStoreService {
     this._driveTimeBridges.next(val);
   }
 
-  private readonly _driveTimeID = new BehaviorSubject<number>( 0 );
+  private readonly _driveTimeID = new BehaviorSubject<number>( null );
   readonly driveTimeID$ = this._driveTimeID.asObservable();
 
   get driveTimeID(): number {

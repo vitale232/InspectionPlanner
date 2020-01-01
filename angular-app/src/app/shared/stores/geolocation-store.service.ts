@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IGeoPosition } from '../models/geolocation.model';
 
+
 @Injectable({
   providedIn: 'root'
 })

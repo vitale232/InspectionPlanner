@@ -39,6 +39,7 @@ import Polygon from 'ol/geom/Polygon';
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
 import LayerSwitcher from 'ol-ext/control/LayerSwitcher';
+import { IDriveTimePolygonFeature } from '../../models/drive-time-polygons.model';
 
 
 @Component({
@@ -49,14 +50,15 @@ import LayerSwitcher from 'ol-ext/control/LayerSwitcher';
 export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
   // Component inputs
+  // driveTimePolygon$ is optional. If there is data, it will draw the polygon
   @Input() mapView: IMapView;
   @Input() loading$: Observable<boolean>;
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() markersSearch$: Observable<SearchMarker[]>;
-  @Input() mapElementID = 'open-layers-map-test';
+  @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>; // Optional
   // @Input() test: string;
 
-  // Component outputs
+  // Component events
   @Output() bbox = new EventEmitter<TExtent>();
 
   // OpenLayers objects
@@ -250,7 +252,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       target: 'open-layers-map',
       layers: [ basemapGroup, overlayGroup, ],
       view: this.view,
-      controls: defaultControls({attribution: false}).extend([
+      controls: defaultControls( { attribution: false } ).extend([
           new ZoomToExtent({
               extent: this.extentFromLonLat([ -78.4, 41.5679, -72.65, 44.2841 ])
           })
@@ -329,6 +331,14 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
           if (data.length === 0) { this.clearMarkers(); } else { this.addSearchMarkers(data); }
         },
         (err) => console.error('this.markersSearch$ subscribe error', err),
+      ));
+    }
+
+    // TODO: Draw the polygon on the map
+    if (this.driveTimePolygons$) {
+      this.subscriptions.add(this.driveTimePolygons$.subscribe(
+        data => console.log('driveTimePolygons', data),
+        err => console.error(err),
       ));
     }
 

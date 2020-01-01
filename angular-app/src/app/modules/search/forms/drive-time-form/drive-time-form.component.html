@@ -1,4 +1,16 @@
 <form [formGroup]="driveTimeForm">
+  <mat-form-field appearance="outline"
+                  color="accent"
+                  class="form-field">
+    <mat-label>Max drive time </mat-label>
+    <mat-select formControlName="hours"
+                name="time">
+      <mat-option *ngFor="let time of timeIntervals"
+                  [value]="time.value"
+                 > {{ time.viewValue }} </mat-option>
+    </mat-select>
+  </mat-form-field>
+
   <mat-form-field class="form-field" 
                   appearance="outline"
                   color="accent"
@@ -16,18 +28,6 @@
     <mat-label>
       Search address or place name
     </mat-label>
-  </mat-form-field>
-
-  <mat-form-field appearance="outline"
-                  color="accent"
-                  class="form-field">
-    <mat-label>Max drive time </mat-label>
-    <mat-select formControlName="hours"
-                name="time">
-      <mat-option *ngFor="let time of timeIntervals"
-                  [value]="time.value"
-                 > {{ time.viewValue }} </mat-option>
-    </mat-select>
   </mat-form-field>
 
   <div *ngIf="driveTimeForm.invalid && driveTimeForm.touched">

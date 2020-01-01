@@ -13,6 +13,8 @@ import { NavbarService } from 'src/app/shared/services/navbar.service';
 import { SidenavService } from 'src/app/shared/services/sidenav.service';
 import { IDriveTimeQueryFeature } from 'src/app/shared/models/drive-time-queries.model';
 import { DriveTimeQueriesStoreService } from 'src/app/shared/stores/drive-time-queries-store.service';
+import { DriveTimePolygonStoreService } from 'src/app/shared/stores/drive-time-polygon-store.service';
+import { IDriveTimePolygonFeature } from 'src/app/shared/models/drive-time-polygons.model';
 
 @Component({
   selector: 'app-drive-time-display',
@@ -30,6 +32,7 @@ export class DriveTimeDisplayComponent implements OnInit {
   driveTimeBridges$: Observable<IBridgeFeature[]>;
   searchMarkers$: Observable<SearchMarker[]>;
   selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>;
+  driveTimePolygon$: Observable<IDriveTimePolygonFeature>;
 
   subscriptions = new Subscription();
 
@@ -48,11 +51,13 @@ export class DriveTimeDisplayComponent implements OnInit {
     private navbarService: NavbarService,
     private sidenavService: SidenavService,
     private driveTimeQueriesStore: DriveTimeQueriesStoreService,
+    private driveTimePolygonStore: DriveTimePolygonStoreService,
   ) {
     this.driveTimeBridges$ = this.bridgesStore.driveTimeBridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
     this.searchMarkers$ = this.searchMarkerStore.searchMarker$;
     this.selectedDriveTimeQuery$ = this.driveTimeQueriesStore.selectedDriveTimeQuery$;
+    this.driveTimePolygon$ = this.driveTimePolygonStore.driveTimePolygon$;
   }
 
   ngOnInit() {
@@ -68,7 +73,7 @@ export class DriveTimeDisplayComponent implements OnInit {
         this.titleService.setTitle(`IPA - Drive Time ${this.driveTimeID}`);
         this.checkAndFetchDriveTime();
         console.log('params data', params);
-        this.bridgesStore.driveTimeID = this.driveTimeID;
+        // this.bridgesStore.driveTimeID = this.driveTimeID;
       },
       err => console.error(err),
       () => console.log('activatedRouter sub complete!')
@@ -104,11 +109,11 @@ export class DriveTimeDisplayComponent implements OnInit {
       () => this.updateMapSize()
     ));
 
-    this.subscriptions.add(this.selectedDriveTimeQuery$.subscribe(
-      data => console.log('selected from dtd comp', data),
-      err => console.error('from drive-time-display', err),
-      () => console.log('selectedDriveTimeQuery$ complete.')
-    ));
+    // this.subscriptions.add(this.selectedDriveTimeQuery$.subscribe(
+    //   data => console.log('selected from dtd comp', data),
+    //   err => console.error('from drive-time-display', err),
+    //   () => console.log('selectedDriveTimeQuery$ complete.')
+    // ));
 
   }
 
