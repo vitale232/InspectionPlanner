@@ -11,3 +11,10 @@ export interface INominatimApiResponse {
   place_id: string|number;
   type: string;
 }
+
+export interface IFilterSearch {
+  streetAddress: string;
+  city: string;
+  state: string;
+  country: string;
+}
