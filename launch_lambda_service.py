@@ -42,8 +42,8 @@ try:
     with open(env_filepath, 'r') as env_file:
         lines = env_file.readlines()
 
-    keys_values = [line.split('=') for line in lines]
-    env = {key_value[0]: key_value[1].strip('\n') for key_value in keys_values}
+    key_value_pairs = [line.split('=') for line in lines]
+    env = {key_value[0]: key_value[1].strip('\n') for key_value in key_value_pairs}
 
 except Exception as exc:
     print(f'\nERROR: Does the env file exist? : {env_filepath}\n\n')
