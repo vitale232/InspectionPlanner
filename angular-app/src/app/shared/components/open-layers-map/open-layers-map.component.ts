@@ -14,7 +14,7 @@ import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, 
 import { Router, ActivatedRoute } from '@angular/router';
 import { IMapView, IStyleStoreAADT, IMarker, TExtent } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
-import { SearchMarker } from '../../models/markers.model';
+import { SearchMarker, GeolocationMarker } from '../../models/markers.model';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -55,6 +55,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() loading$: Observable<boolean>;
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() markersSearch$: Observable<SearchMarker[]>;
+  @Input() geolocationMarker$: Observable<GeolocationMarker>;
   @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>; // Optional
   // @Input() test: string;
 

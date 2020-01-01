@@ -16,12 +16,13 @@ import { singleClick } from 'ol/events/condition';
 import Point from 'ol/geom/Point';
 
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
+import { IGeoPosition } from './geolocation.model';
 
 
 export type TPoint = [ number, number ];
 
 export interface ISearchMarkerProps extends INominatimApiResponse {
-  title?: string;
+  title ?: string;
 }
 
 /*
@@ -38,6 +39,10 @@ export class Marker {
   title: string;
   iconStyle: Icon;
   feature: Feature;
+  props: ISearchMarkerProps | IGeoPosition;
+  vectorLayer: VectorLayer;
+  popup: PopupFeature;
+  select: Select;
 
   constructor(
     lonLat: TPoint,
@@ -47,40 +52,6 @@ export class Marker {
     this.lonLat = lonLat;
     this.src = src;
     this.title = title;
-
-  }
-
-}
-
-
-/*
- * The SearchMarker class refers to a Nominatim API georeference search. These are
- * instantiated from the user input in the app-omni-search-form component, when the
- * searchText provides a response when used to query Nominatim.
- */
-export class SearchMarker extends Marker {
-
-  props: ISearchMarkerProps;
-  vectorLayer: VectorLayer;
-  popup: PopupFeature;
-  select: Select;
-
-  constructor(
-      lonLat: TPoint,
-      apiResponse: INominatimApiResponse,
-      title?: string,
-    ) {
-    super(
-      lonLat,
-      'assets/marker-icon-red.png', // Default marker source for search markers
-      'Search Marker'               // Default title
-    );
-
-    if (title) { this.title = title; }
-    // Bind the API data to the object
-    this.props = apiResponse;
-    this.props.title = this.title;
-    this.initMapMarker();
 
   }
 
@@ -133,4 +104,66 @@ export class SearchMarker extends Marker {
 
   }
 
+}
+
+
+/*
+ * The SearchMarker class refers to a Nominatim API georeference search. These are
+ * instantiated from the user input in the app-omni-search-form component, when the
+ * searchText provides a response when used to query Nominatim.
+ */
+export class SearchMarker extends Marker {
+
+  props: ISearchMarkerProps;
+  vectorLayer: VectorLayer;
+  popup: PopupFeature;
+  select: Select;
+
+  constructor(
+      lonLat: TPoint,
+      apiResponse: INominatimApiResponse,
+      title ?: string,
+    ) {
+      super(
+        lonLat,
+        'assets/marker-icon-red.png', // Default marker source for search markers
+        'Search Marker'               // Default title
+      );
+
+      // Bind the API data to the object
+      this.props = apiResponse;
+      if (title) { this.title = title; this.props.title = title; }
+      this.initMapMarker();
+
+  }
+
+  initMapMarker() {
+    super.initMapMarker();
+  }
+
+}
+
+export class GeolocationMarker extends Marker {
+
+  props: IGeoPosition;
+  vectorLayer: VectorLayer;
+  popup: PopupFeature;
+  select: Select;
+
+  constructor(
+    lonLat: TPoint,
+    geolocation: IGeoPosition,
+    title ?: string
+  ) {
+    super(
+      lonLat,
+      'assets/marker-icon-black.png',
+      'Geolocation Marker'
+    );
+
+    this.props = geolocation;
+    if (title) { this.title = title; this.props.title = title; }
+
+    super.initMapMarker();
+  }
 }

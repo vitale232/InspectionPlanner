@@ -7,4 +7,5 @@ export interface IGeoPosition {
     accuracy ?: number;
     heading ?: any;
     speed ?: any;
+    title ?: string;
 }

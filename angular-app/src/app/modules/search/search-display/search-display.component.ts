@@ -4,6 +4,8 @@ import { Observable } from 'rxjs';
 import { IDriveTimeQueryFeature } from 'src/app/shared/models/drive-time-queries.model';
 import { SearchMarkersStoreService } from 'src/app/shared/stores/search-markers-store.service';
 import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store.service';
+import { GeolocationMarker } from 'src/app/shared/models/markers.model';
+import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 
 @Component({
   selector: 'app-search-display',
@@ -24,7 +26,20 @@ export class SearchDisplayComponent implements OnInit {
   ngOnInit() {
     this.driveTimeQueries$ = this.driveTimeQueriesStore.driveTimeQueries$;
     this.geolocationStore.position$.subscribe(
-      data => console.log('geolocation object', data),
+      (position: IGeoPosition) => {
+        console.log('geolocation object', position);
+        if (position) {
+          const geoLocation = new GeolocationMarker(
+            [
+              position.lon,
+              position.lat
+            ],
+            position,
+            'Test Geolocation Marker'
+          );
+          console.log('geolocationMarker', geoLocation);
+        }
+      },
       err => console.error('geolocation error', err),
       () => console.log('geolocation complete')
     );
