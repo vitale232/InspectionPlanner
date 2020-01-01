@@ -10,7 +10,7 @@
 * */
 
 
-import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IMapView, IStyleStoreAADT, TExtent, DriveTimePolygon } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
@@ -47,7 +47,8 @@ import { IGeoPosition } from '../../models/geolocation.model';
 @Component({
   selector: 'app-open-layers-map',
   templateUrl: './open-layers-map.component.html',
-  styleUrls: ['./open-layers-map.component.scss']
+  styleUrls: ['./open-layers-map.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
