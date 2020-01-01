@@ -5,7 +5,6 @@
 
 import { INominatimApiResponse } from './nominatim-api.model';
 
-import Map from 'ol/Map';
 import { Icon, Style } from 'ol/style';
 import Feature from 'ol/Feature';
 import { fromLonLat, toLonLat } from 'ol/proj';
@@ -40,7 +39,7 @@ export class Marker {
   iconStyle: Icon;
   feature: Feature;
   props: ISearchMarkerProps | IGeoPosition;
-  vectorLayer: VectorLayer;
+  layer: VectorLayer;
   popup: PopupFeature;
   select: Select;
 
@@ -64,7 +63,7 @@ export class Marker {
     // Set up search marker specific OpenLayers stuff
     this.feature.setProperties(this.props);
 
-    this.vectorLayer = new VectorLayer({
+    this.layer = new VectorLayer({
       source: new VectorSource({ features: [ this.feature ] }),
       title: this.title
     });
@@ -73,13 +72,14 @@ export class Marker {
       hitTolerance: 5,
       multi: true,
       condition: singleClick,
-      layers: [ this.vectorLayer ],
+      layers: [ this.layer ],
     });
 
     this.popup = new PopupFeature({
       popupClass: 'default-anim',
       select: this.select,
       canFix: true,
+      // TODO: Get popup feature attributes sorted out
       template: {
         title: (f: Feature) => {
           if (f.get('title')) {
@@ -88,20 +88,6 @@ export class Marker {
             return 'Marker';
           }
         },
-      //   attributes: {
-      //     display_name: { title: 'Address' },
-      //     lonLat: {
-      //       title: 'Lat/Lon',
-      //       format: (xyPoint: TPoint) => `${xyPoint[0].toFixed(4)}, ${xyPoint[1].toFixed(4)}`
-      //     }
-      //   }
-      // },
-      // attributes: {
-      //   display_name: { title: 'Address' },
-      //    lonLat: {
-      //      title: 'Lat/Lon',
-      //      format: (xyPoint: TPoint) => `${xyPoint[0].toFixed(4)}, ${xyPoint[1].toFixed(4)}`
-      //    }
       }
     });
 

@@ -12,7 +12,7 @@
 
 import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { IMapView, IStyleStoreAADT, IMarker, TExtent, DriveTimePolygon } from 'src/app/shared/models/open-layers-map.model';
+import { IMapView, IStyleStoreAADT, TExtent, DriveTimePolygon } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
 import { SearchMarker, GeolocationMarker } from '../../models/markers.model';
 
@@ -55,7 +55,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() mapView: IMapView;
   @Input() loading$: Observable<boolean>;
   @Input() bridges$: Observable<IBridgeFeature[]>;
-  @Input() markersSearch$: Observable<SearchMarker[]>;
+  @Input() searchMarkers$: Observable<SearchMarker[]>;
   @Input() position$: Observable<IGeoPosition>;
   @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>; // Optional
 
@@ -320,13 +320,13 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.updateUrl();
     } );
 
-    if (this.markersSearch$) {
-      this.subscriptions.add(this.markersSearch$.subscribe(
+    if (this.searchMarkers$) {
+      this.subscriptions.add(this.searchMarkers$.subscribe(
         (data: SearchMarker[]) => {
           console.log('searchMarkers data from OLM', data);
           if (data.length === 0) { this.clearMarkers(); } else { this.addMarkers(data); }
         },
-        (err) => console.error('this.markersSearch$ subscribe error', err),
+        (err) => console.error('this.searchMarkers$ subscribe error', err),
       ));
     }
 
@@ -433,11 +433,11 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   addMarkers(markersIn: SearchMarker[]|GeolocationMarker[]) {
-    markersIn.forEach((searchMarker: SearchMarker|GeolocationMarker) => {
+    markersIn.forEach((marker: SearchMarker|GeolocationMarker) => {
 
-      this.map.addInteraction(searchMarker.select);
-      this.map.addOverlay(searchMarker.popup);
-      this.markerVectorLayers.push(searchMarker.vectorLayer);
+      this.map.addInteraction(marker.select);
+      this.map.addOverlay(marker.popup);
+      this.markerVectorLayers.push(marker.layer);
 
       const mapLayers = this.map.getLayers();
 
