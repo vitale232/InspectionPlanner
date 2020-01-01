@@ -15,6 +15,8 @@ import { IDriveTimeQueryFeature } from 'src/app/shared/models/drive-time-queries
 import { DriveTimeQueriesStoreService } from 'src/app/shared/stores/drive-time-queries-store.service';
 import { DriveTimePolygonStoreService } from 'src/app/shared/stores/drive-time-polygon-store.service';
 import { IDriveTimePolygonFeature } from 'src/app/shared/models/drive-time-polygons.model';
+import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
+import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store.service';
 
 @Component({
   selector: 'app-drive-time-display',
@@ -33,6 +35,7 @@ export class DriveTimeDisplayComponent implements OnInit {
   searchMarkers$: Observable<SearchMarker[]>;
   selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>;
   driveTimePolygon$: Observable<IDriveTimePolygonFeature>;
+  position$: Observable<IGeoPosition>;
 
   subscriptions = new Subscription();
 
@@ -52,12 +55,14 @@ export class DriveTimeDisplayComponent implements OnInit {
     private sidenavService: SidenavService,
     private driveTimeQueriesStore: DriveTimeQueriesStoreService,
     private driveTimePolygonStore: DriveTimePolygonStoreService,
+    private geolocationStore: GeolocationStoreService,
   ) {
     this.driveTimeBridges$ = this.bridgesStore.driveTimeBridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
     this.searchMarkers$ = this.searchMarkerStore.searchMarker$;
     this.selectedDriveTimeQuery$ = this.driveTimeQueriesStore.selectedDriveTimeQuery$;
     this.driveTimePolygon$ = this.driveTimePolygonStore.driveTimePolygon$;
+    this.position$ = this.geolocationStore.position$;
   }
 
   ngOnInit() {

@@ -40,6 +40,7 @@ import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import Legend from 'ol-ext/control/Legend';
 import LayerSwitcher from 'ol-ext/control/LayerSwitcher';
 import { IDriveTimePolygonFeature } from '../../models/drive-time-polygons.model';
+import { IGeoPosition } from '../../models/geolocation.model';
 
 
 @Component({
@@ -55,9 +56,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() loading$: Observable<boolean>;
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() markersSearch$: Observable<SearchMarker[]>;
-  @Input() geolocationMarker$: Observable<GeolocationMarker>;
+  @Input() position$: Observable<IGeoPosition>;
   @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>; // Optional
-  // @Input() test: string;
 
   // Component events
   @Output() bbox = new EventEmitter<TExtent>();
@@ -324,9 +324,20 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.subscriptions.add(this.markersSearch$.subscribe(
         (data: SearchMarker[]) => {
           console.log('searchMarkers data from OLM', data);
-          if (data.length === 0) { this.clearMarkers(); } else { this.addSearchMarkers(data); }
+          if (data.length === 0) { this.clearMarkers(); } else { this.addMarkers(data); }
         },
         (err) => console.error('this.markersSearch$ subscribe error', err),
+      ));
+    }
+
+    if (this.position$) {
+      this.subscriptions.add(this.position$.subscribe(
+        (geoPosition: IGeoPosition) => {
+
+          if (geoPosition) {
+            this.addGeolocationMarker(geoPosition);
+          }
+        }
       ));
     }
 
@@ -421,12 +432,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  addMarkers(markersIn: IMarker[]) {
-    return;
-  }
-
-  addSearchMarkers(markersIn: SearchMarker[]) {
-    markersIn.forEach((searchMarker: SearchMarker) => {
+  addMarkers(markersIn: SearchMarker[]|GeolocationMarker[]) {
+    markersIn.forEach((searchMarker: SearchMarker|GeolocationMarker) => {
 
       this.map.addInteraction(searchMarker.select);
       this.map.addOverlay(searchMarker.popup);
@@ -449,6 +456,27 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.map.getView().setZoom( 14 );
     }
 
+  }
+
+  addGeolocationMarker(geoPosition: IGeoPosition): void {
+    this.addMarkers([
+      new GeolocationMarker(
+        [ geoPosition.lon, geoPosition.lat ],
+        geoPosition,
+        'Current Location Marker',
+      )
+    ]);
+    // const mapLayers = this.map.getLayers();
+
+    // // Only add layers that are not duplicates
+    // if (!mapLayers.getArray().includes(geoMarker.vectorLayer)) {
+    //   this.map.addInteraction(geoMarker.select);
+    //   this.map.addOverlay(geoMarker.popup);
+    //   this.map.addLayer(geoMarker.vectorLayer);
+    // }
+
+    // this.map.getView().setCenter( fromLonLat( [ geoPosition.lon, geoPosition.lat ] ) );
+    // this.map.getView().setZoom( 14 );
   }
 
   addDriveTimePolygon(driveTimeFeature: IDriveTimePolygonFeature): void {

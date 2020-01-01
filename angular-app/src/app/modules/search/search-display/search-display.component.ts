@@ -25,24 +25,24 @@ export class SearchDisplayComponent implements OnInit {
 
   ngOnInit() {
     this.driveTimeQueries$ = this.driveTimeQueriesStore.driveTimeQueries$;
-    this.geolocationStore.position$.subscribe(
-      (position: IGeoPosition) => {
-        console.log('geolocation object', position);
-        if (position) {
-          const geoLocation = new GeolocationMarker(
-            [
-              position.lon,
-              position.lat
-            ],
-            position,
-            'Test Geolocation Marker'
-          );
-          console.log('geolocationMarker', geoLocation);
-        }
-      },
-      err => console.error('geolocation error', err),
-      () => console.log('geolocation complete')
-    );
+    // this.geolocationStore.position$.subscribe(
+    //   (position: IGeoPosition) => {
+    //     console.log('geolocation object', position);
+    //     if (position) {
+    //       const geoLocation = new GeolocationMarker(
+    //         [
+    //           position.lon,
+    //           position.lat
+    //         ],
+    //         position,
+    //         'Test Geolocation Marker'
+    //       );
+    //       console.log('geolocationMarker', geoLocation);
+    //     }
+    //   },
+    //   err => console.error('geolocation error', err),
+    //   () => console.log('geolocation complete')
+    // );
   }
 
   onClearMarkers() {

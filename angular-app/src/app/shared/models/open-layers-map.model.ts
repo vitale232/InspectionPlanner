@@ -65,7 +65,9 @@ export class DriveTimePolygon {
           color: [ 192, 22, 0, 0 ], // Last zero means transparent
         }),
         stroke: new Stroke({
-          color: [ 192, 22, 0, 1 ], // Dark red
+          // color: [ 192, 22, 0, 1 ], // Dark red
+          // color: [ 0, 136, 203, 1], // Light blue
+          color: [ 237, 28, 36, 1 ], // Malta Ridge Red
           width: 1.5
         })
       })
