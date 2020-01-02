@@ -206,4 +206,8 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     );
   }
 
+  onClear(): void {
+    this.searchTextControl.setValue('');
+  }
+
 }
