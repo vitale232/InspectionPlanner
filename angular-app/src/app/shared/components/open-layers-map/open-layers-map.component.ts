@@ -71,7 +71,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() searchMarkers$: Observable<SearchMarker[]>;
   @Input() position$: Observable<IGeoPosition>;
   @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>;    // Optional
-  @Input() selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>; // Optional 
+  @Input() selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>; // Optional
 
   // Component events
   @Output() bbox = new EventEmitter<TExtent>();
@@ -530,6 +530,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   clearMarkers() {
     this.markerVectorLayers.forEach(layer => this.map.removeLayer(layer));
     this.markerVectorLayers = [];
+    if (this.driveTimeQueryLayer) { this.driveTimeQueryLayer.setVisible(false); }
   }
 
   onButton() {
