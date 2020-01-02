@@ -176,15 +176,15 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     };
 
     this.loading = false;
-    console.log('Navigate to: ', routerQueryParams);
-    this.sidenav.close();
-    setTimeout( () => {
-      this.router.navigate([`drive-time/${driveTimeQuery.id}`], { queryParams: routerQueryParams });
-    }, 1200);
+    this.router.navigate([`drive-time/${driveTimeQuery.id}`], { queryParams: routerQueryParams });
+    // this.sidenav.close();
+    // setTimeout( () => {
+    //   this.router.navigate([`drive-time/${driveTimeQuery.id}`], { queryParams: routerQueryParams });
+    // }, 1200);
   }
 
   onNewDriveTimeQuery(driveTimeQueryParams: INewDriveTimeParms): void {
-    setTimeout( () => this.sidenav.close(), 500 );
+    // setTimeout( () => this.sidenav.close(), 500 );
     this.notifications.info(
       'Hold Up!',
       `This is a new drive time request, which takes a while to process. ` +

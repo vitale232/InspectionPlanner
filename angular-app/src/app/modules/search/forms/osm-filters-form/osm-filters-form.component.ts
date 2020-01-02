@@ -69,7 +69,7 @@ export class OsmFiltersFormComponent implements OnInit {
       },
       () => {
         this.loading = false;
-        setTimeout( () => this.sidenav.close(), 500 );
+        // setTimeout( () => this.sidenav.close(), 500 );
       }
     );
   }
