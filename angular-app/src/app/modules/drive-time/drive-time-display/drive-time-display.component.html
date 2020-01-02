@@ -5,8 +5,9 @@
                            [loading$]="loading$"
                            [bridges$]="driveTimeBridges$"
                            [searchMarkers$]="searchMarkers$"
-                           [driveTimePolygons$]="driveTimePolygon$"
                            [position$]="position$"
+                           [driveTimePolygons$]="driveTimePolygon$"
+                           [selectedDriveTimeQuery$]="selectedDriveTimeQuery$"
                            (bbox)="onMapMove($event)"
                           ></app-open-layers-map>
     </as-split-area>

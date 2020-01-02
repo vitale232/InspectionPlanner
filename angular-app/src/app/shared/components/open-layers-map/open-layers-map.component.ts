@@ -10,11 +10,21 @@
 * */
 
 
-import { Component, OnInit, Input, OnChanges, SimpleChanges, OnDestroy, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  OnDestroy,
+  Output,
+  EventEmitter,
+  ChangeDetectionStrategy
+} from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { IMapView, IStyleStoreAADT, TExtent, DriveTimePolygon } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
-import { SearchMarker, GeolocationMarker } from '../../models/markers.model';
+import { SearchMarker, GeolocationMarker, DriveTimeQueryMarker } from '../../models/markers.model';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
@@ -42,6 +52,7 @@ import Legend from 'ol-ext/control/Legend';
 import LayerSwitcher from 'ol-ext/control/LayerSwitcher';
 import { IDriveTimePolygonFeature } from '../../models/drive-time-polygons.model';
 import { IGeoPosition } from '../../models/geolocation.model';
+import { IDriveTimeQueryFeature } from '../../models/drive-time-queries.model';
 
 
 @Component({
@@ -59,7 +70,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() searchMarkers$: Observable<SearchMarker[]>;
   @Input() position$: Observable<IGeoPosition>;
-  @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>; // Optional
+  @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>;    // Optional
+  @Input() selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>; // Optional 
 
   // Component events
   @Output() bbox = new EventEmitter<TExtent>();
@@ -75,6 +87,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   // Custom behaviors
   private styleGroups: IStyleStoreAADT;
   private overlayGroup: Group;
+  private driveTimeQueryLayer: VectorLayer;
   private bridgeSubscription: Subscription;
   private subscriptions = new Subscription();
 
@@ -343,7 +356,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       ));
     }
 
-    // TODO: Draw the polygon on the map
+    // Optional subscriptions to draw drive time data
     if (this.driveTimePolygons$) {
       this.subscriptions.add(this.driveTimePolygons$.subscribe(
         driveTimeFeature => {
@@ -352,6 +365,18 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
           }
         },
         err => console.error(err),
+      ));
+    }
+
+    if (this.selectedDriveTimeQuery$) {
+      this.subscriptions.add(this.selectedDriveTimeQuery$.subscribe(
+        (query: IDriveTimeQueryFeature) => {
+          if (query) {
+            console.log('NEW VALUE!!!!!', query);
+            this.addDriveTimeMarker(query);
+          }
+        },
+        err => console.error(err)
       ));
     }
 
@@ -434,8 +459,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     };
   }
 
-  addMarkers(markersIn: SearchMarker[]|GeolocationMarker[]) {
-    markersIn.forEach((marker: SearchMarker|GeolocationMarker) => {
+  addMarkers(markersIn: SearchMarker[]|GeolocationMarker[]|DriveTimeQueryMarker[], zoomTo = true) {
+    markersIn.forEach((marker: SearchMarker|GeolocationMarker|DriveTimeQueryMarker) => {
 
       this.map.addInteraction(marker.select);
       this.map.addOverlay(marker.popup);
@@ -453,11 +478,27 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     });
 
     // Center on the last search marker in the input array
-    if (markersIn.length > 0) {
+    if (zoomTo && markersIn.length > 0) {
       this.map.getView().setCenter( fromLonLat(markersIn[markersIn.length - 1].lonLat) );
       this.map.getView().setZoom( 14 );
     }
 
+  }
+
+  addDriveTimeMarker(query: IDriveTimeQueryFeature): void {
+    if (this.driveTimeQueryLayer) { this.map.removeLayer(this.driveTimeQueryLayer); }
+
+    const driveTimeMarker = new DriveTimeQueryMarker(
+      [ query.properties.lon, query.properties.lat ],
+      query.properties,
+      'Drive Time Marker'
+    );
+
+    this.driveTimeQueryLayer = driveTimeMarker.layer;
+
+    this.map.addInteraction(driveTimeMarker.select);
+    this.map.addOverlay(driveTimeMarker.popup);
+    this.map.addLayer(this.driveTimeQueryLayer);
   }
 
   addGeolocationMarker(geoPosition: IGeoPosition): void {
@@ -468,17 +509,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         'Current Location Marker',
       )
     ]);
-    // const mapLayers = this.map.getLayers();
-
-    // // Only add layers that are not duplicates
-    // if (!mapLayers.getArray().includes(geoMarker.vectorLayer)) {
-    //   this.map.addInteraction(geoMarker.select);
-    //   this.map.addOverlay(geoMarker.popup);
-    //   this.map.addLayer(geoMarker.vectorLayer);
-    // }
-
-    // this.map.getView().setCenter( fromLonLat( [ geoPosition.lon, geoPosition.lat ] ) );
-    // this.map.getView().setZoom( 14 );
   }
 
   addDriveTimePolygon(driveTimeFeature: IDriveTimePolygonFeature): void {
@@ -486,6 +516,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
     mapLayers.getArray().forEach((layer: VectorLayer) => {
       if (layer.get('title') === 'Drive Time Polygon') {
+        console.log('layer to remove!', layer);
         this.map.removeLayer(layer);
       }
     });

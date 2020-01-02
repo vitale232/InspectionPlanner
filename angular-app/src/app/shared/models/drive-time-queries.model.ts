@@ -37,6 +37,7 @@ export interface IDriveTimeQueryFeature {
     edited_time: Date;
     drive_time_hours: number;
     polygon_pending: boolean;
+    title ?: string; // Add this to the type for DriveTimeMarker initialization
   };
 }
 

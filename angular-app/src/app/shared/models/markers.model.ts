@@ -16,6 +16,7 @@ import Point from 'ol/geom/Point';
 
 import PopupFeature from 'ol-ext/overlay/PopupFeature';
 import { IGeoPosition } from './geolocation.model';
+import { IDriveTimeQueryFeature } from './drive-time-queries.model';
 
 
 export type TPoint = [ number, number ];
@@ -38,7 +39,7 @@ export class Marker {
   title: string;
   iconStyle: Icon;
   feature: Feature;
-  props: ISearchMarkerProps | IGeoPosition;
+  props: ISearchMarkerProps | IGeoPosition | IDriveTimeQueryFeature['properties'];
   layer: VectorLayer;
   popup: PopupFeature;
   select: Select;
@@ -104,7 +105,6 @@ export class Marker {
 export class SearchMarker extends Marker {
 
   props: ISearchMarkerProps;
-  vectorLayer: VectorLayer;
   popup: PopupFeature;
   select: Select;
 
@@ -131,9 +131,6 @@ export class SearchMarker extends Marker {
 export class GeolocationMarker extends Marker {
 
   props: IGeoPosition;
-  vectorLayer: VectorLayer;
-  popup: PopupFeature;
-  select: Select;
 
   constructor(
     lonLat: TPoint,
@@ -151,4 +148,27 @@ export class GeolocationMarker extends Marker {
 
     super.initMapMarker();
   }
+}
+
+export class DriveTimeQueryMarker extends Marker {
+
+  props: IDriveTimeQueryFeature['properties'];
+
+  constructor(
+    lonLat: TPoint,
+    driveTimeQueryProps: IDriveTimeQueryFeature['properties'],
+    title ?: string
+  ) {
+    super(
+      lonLat,
+      'assets/marker-icon-violet.png',
+      'Drive Time Start Point Marker'
+    );
+
+    this.props = driveTimeQueryProps;
+    if (title) { this.title = title; this.props.title = title; }
+
+    super.initMapMarker();
+  }
+
 }
