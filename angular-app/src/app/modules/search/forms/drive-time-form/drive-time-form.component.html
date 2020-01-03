@@ -18,7 +18,6 @@
     <input matInput
            [formControl]="searchTextControl"
            [matAutocomplete]="auto"
-           (keydown.enter)="onEnter($event)"
           >
     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
       <mat-option *ngFor="let query of filteredOptions$ | async"
@@ -31,6 +30,7 @@
     </mat-label>
     <button matSuffix
             mat-icon-button
+            type="button"
             (click)="onClear()"
            >
       <mat-icon>close</mat-icon>
@@ -44,6 +44,7 @@
   </div>
   <div class="center-button">
     <button mat-flat-button class="search-button"
+            type="submit"
             (click)="onSearch()"
             color="primary"
             [disabled]="driveTimeForm.invalid || loading"
