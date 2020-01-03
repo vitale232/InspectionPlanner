@@ -22,7 +22,7 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.driveTimeQueriesSubscription = this.driveTimeQueries$.subscribe(
-      queryFeatures => this.dataSource = new MatTableDataSource(queryFeatures.sort(
+      queryFeatures => this.dataSource = new MatTableDataSource(queryFeatures.slice().sort(
         (a, b) => (a.properties.created_time < b.properties.created_time) ? 1 : -1)
       ),
       err => console.log(err),
