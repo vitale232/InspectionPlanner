@@ -14,12 +14,14 @@ import {
   MatTooltipModule,
   MatSelectModule,
   MatTabsModule,
-  MatProgressBarModule
+  MatProgressBarModule,
+  MatTableModule
 } from '@angular/material';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { OsmFiltersFormComponent } from './forms/osm-filters-form/osm-filters-form.component';
 import { DriveTimeFormComponent } from './forms/drive-time-form/drive-time-form.component';
 import { BridgeFiltersFormComponent } from './forms/bridge-filters-form/bridge-filters-form.component';
+import { SearchHistoryComponent } from './search-history/search-history.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,8 @@ import { BridgeFiltersFormComponent } from './forms/bridge-filters-form/bridge-f
     OmniSearchFormComponent,
     OsmFiltersFormComponent,
     DriveTimeFormComponent,
-    BridgeFiltersFormComponent
+    BridgeFiltersFormComponent,
+    SearchHistoryComponent
   ],
   imports: [
     CommonModule,
@@ -45,9 +48,11 @@ import { BridgeFiltersFormComponent } from './forms/bridge-filters-form/bridge-f
     MatTooltipModule,
     MatSelectModule,
     MatTabsModule,
+    MatTableModule,
   ],
   exports: [
     SearchDisplayComponent,
+    SearchHistoryComponent,
   ]
 })
 export class SearchModule { }
