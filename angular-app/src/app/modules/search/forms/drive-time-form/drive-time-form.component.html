@@ -18,6 +18,7 @@
     <input matInput
            [formControl]="searchTextControl"
            [matAutocomplete]="auto"
+           (keydown.enter)="onEnter($event)"
           >
     <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
       <mat-option *ngFor="let query of filteredOptions$ | async"

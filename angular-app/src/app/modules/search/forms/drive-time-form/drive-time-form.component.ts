@@ -210,4 +210,9 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     this.searchTextControl.setValue('');
   }
 
+  onEnter(event: Event) {
+    event.preventDefault();
+    this.onSearch();
+  }
+
 }
