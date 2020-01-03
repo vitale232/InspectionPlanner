@@ -170,8 +170,8 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     }
     console.log('driveTimeQuery', driveTimeQuery);
     const routerQueryParams = {
-      lon: driveTimeQuery.geometry.coordinates[0],
-      lat: driveTimeQuery.geometry.coordinates[1],
+      lon: driveTimeQuery.geometry.coordinates[0].toFixed(4),
+      lat: driveTimeQuery.geometry.coordinates[1].toFixed(4),
       z: zoom
     };
 

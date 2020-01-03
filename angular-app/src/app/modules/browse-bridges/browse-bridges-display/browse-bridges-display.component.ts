@@ -29,7 +29,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   loading$: Observable<boolean>;
   bridges$: Observable<IBridgeFeature[]>;
   searchMarkers$: Observable<SearchMarker[]>;
-  position$: Observable<IGeoPosition>
+  position$: Observable<IGeoPosition>;
 
   subscriptions = new Subscription();
 
@@ -142,6 +142,11 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
       // console.log('updateMapSize start', this.mapView);
+      this.openLayersMapComponent.map.getView().setCenter(
+        this.openLayersMapComponent.map.getView().getCenter()
+      );
+      // this.openLayersMapComponent.map.setZoom
+
       this.openLayersMapComponent.updateUrl();
       setTimeout(() => this.openLayersMapComponent.map.updateSize(), 200);
       // setTimeout(() => console.log('updateMapSize end', this.mapView), 200);

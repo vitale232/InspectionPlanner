@@ -21,7 +21,7 @@ import {
   EventEmitter,
   ChangeDetectionStrategy
 } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 import { IMapView, IStyleStoreAADT, TExtent, DriveTimePolygon } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
 import { SearchMarker, GeolocationMarker, DriveTimeQueryMarker } from '../../models/markers.model';
@@ -417,9 +417,16 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     };
 
     if (Object.values(queryParams).some((x: string) => Number.isNaN(parseFloat(x)))) {
+      console.log('Found a NaN when making URL Params!', queryParams);
       return; // Return without updating URL if there are any NaNs
     } else {
-      this.router.navigate(['.'], { relativeTo: this.activatedRoute, queryParams});
+      // this.router.navigate(['.'], { relativeTo: this.activatedRoute, queryParams});
+      const params: Params = {
+        relativeTo: this.activatedRoute,
+        queryParamsHandling: 'merge',
+        queryParams
+      };
+      this.router.navigate([], params);
     }
   }
 

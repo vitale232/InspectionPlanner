@@ -98,7 +98,6 @@ export class DriveTimeDisplayComponent implements OnInit {
           // this.mapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
           console.log('DRIVE TIME PARAMS ELSE!');
         }
-        console.log('init mapView', this.mapView);
       }
     ));
 
@@ -111,7 +110,6 @@ export class DriveTimeDisplayComponent implements OnInit {
     this.subscriptions.add(this.sidenavService.sidenavState$.subscribe(
       () => this.updateMapSize(),
       err => console.error(err),
-      () => this.updateMapSize()
     ));
 
     // this.subscriptions.add(this.selectedDriveTimeQuery$.subscribe(
@@ -156,6 +154,10 @@ export class DriveTimeDisplayComponent implements OnInit {
 
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
+      console.log('update map size');
+      this.openLayersMapComponent.map.getView().setCenter(
+        this.openLayersMapComponent.map.getView().getCenter()
+      );
       this.openLayersMapComponent.updateUrl();
       setTimeout(() => this.openLayersMapComponent.map.updateSize(), 200);
       // setTimeout(() => console.log('updateMapSize end', this.mapView), 200);
