@@ -220,5 +220,6 @@ class DriveTimePolygon(models.Model):
 
     drive_time_query = models.ForeignKey('DriveTimeQuery', models.CASCADE)
     created_time = models.DateTimeField(auto_now_add=True)
+    edited_time = models.DateTimeField(auto_now=True)
 
     the_geom = gis_models.GeometryField()

@@ -41,7 +41,16 @@
         </mat-expansion-panel-header>
         <app-omni-search-form></app-omni-search-form>
       </mat-expansion-panel>
-  
+
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Drive Time Search
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <app-drive-time-form [driveTimeQueries$]="driveTimeQueries$"></app-drive-time-form>
+      </mat-expansion-panel>
+
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -54,15 +63,6 @@
             <mat-tab label="Bridges"> <app-bridge-filters-form></app-bridge-filters-form> </mat-tab>
           </mat-tab-group>
         </div>
-      </mat-expansion-panel>
-
-      <mat-expansion-panel>
-        <mat-expansion-panel-header>
-          <mat-panel-title>
-            Drive Time Search
-          </mat-panel-title>
-        </mat-expansion-panel-header>
-        <app-drive-time-form [driveTimeQueries$]="driveTimeQueries$"></app-drive-time-form>
       </mat-expansion-panel>
 
       <mat-expansion-panel>
