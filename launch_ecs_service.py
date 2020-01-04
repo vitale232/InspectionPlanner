@@ -30,7 +30,7 @@ print(f'Working directory : {BASE_DIR}')
 print(f'Begin script at   : {start_time}')
 
 try:
-    # Read secrets from an env file formatted VAR=VALUE
+    # Read secrets from an env file formatted KEY=VALUE
     env_filepath = os.path.join(
         BASE_DIR,
         '.envs/prod/launch_script'
