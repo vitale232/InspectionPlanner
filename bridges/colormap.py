@@ -39,6 +39,7 @@ def get_rgbs(bins, field, colormap='viridis', mode='equalcount'):
             'bins': bins,
             'colormap': colormap,
             'field': field,
+            'mode': mode,
         },
         'stats': {
             'min': np.min(vals),
