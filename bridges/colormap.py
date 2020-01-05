@@ -11,9 +11,6 @@ def get_rgbs(bins, field, colormap='viridis', mode='equalcount'):
     # https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html
     vals = [getattr(bridge, field) for bridge in NewYorkBridge.objects.all()]
 
-    cmap = plt.cm.get_cmap(colormap, bins)
-    cmap_colors = cmap.colors.tolist()
-
     if mode == 'equalinterval':
         cuts = pd.cut(vals, bins, duplicates='drop')
     else:
@@ -21,9 +18,11 @@ def get_rgbs(bins, field, colormap='viridis', mode='equalcount'):
         cuts = pd.qcut(vals, bins, duplicates='drop')
 
     cuts_out = [list(cut) for cut in cuts.categories.to_tuples()]
-
     cuts_out[0][0] = np.min(vals)
     cuts_out[-1][1] = np.max(vals)
+
+    cmap = plt.cm.get_cmap(colormap, bins)
+    cmap_colors = cmap.colors.tolist()
 
     colors_out = []
     for color in cmap_colors:
@@ -42,15 +41,15 @@ def get_rgbs(bins, field, colormap='viridis', mode='equalcount'):
             'mode': mode,
         },
         'stats': {
-            'min': np.min(vals),
-            'max': np.max(vals),
+            'count': len(vals),
             'mean': round(np.mean(vals), 3),
             'median': np.median(vals),
-            'count': len(vals),
             'std': round(np.std(vals), 3),
+            'min': np.min(vals),
             'q25': quartiles[0],
             'q50': quartiles[1],
             'q75': quartiles[2],
+            'max': np.max(vals),
         },
         'cuts': {
             'intervals': cuts_out,
