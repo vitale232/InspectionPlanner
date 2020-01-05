@@ -1,14 +1,12 @@
 from django.urls import path
 
-from routing.views import WaysList
-from bridges.views import (
-    NewYorkBridgeDetail, NewYorkBridgeList, NewYorkBridgeRandom, NewYorkBridgeDriveTime
-)
+import bridges.views as views
 
 
 urlpatterns = [
-    path('new-york-bridges/', NewYorkBridgeList.as_view(), name='new-york-bridge-list'),
-    path('new-york-bridges/feeling-lucky/', NewYorkBridgeRandom.as_view(), name='new-york-bridge-feeling-lucky-list'),
-    path('new-york-bridges/<int:pk>/', NewYorkBridgeDetail.as_view(), name='new-york-bridge-detail'),
-    path('new-york-bridges/drive-time-query/<int:id_>/', NewYorkBridgeDriveTime.as_view(), name='new-york-bridge-drive-time'),
+    path('new-york-bridges/', views.NewYorkBridgeList.as_view(), name='new-york-bridge-list'),
+    path('new-york-bridges/feeling-lucky/', views.NewYorkBridgeRandom.as_view(), name='new-york-bridge-feeling-lucky-list'),
+    path('new-york-bridges/<int:pk>/', views.NewYorkBridgeDetail.as_view(), name='new-york-bridge-detail'),
+    path('new-york-bridges/drive-time-query/<int:id_>/', views.NewYorkBridgeDriveTime.as_view(), name='new-york-bridge-drive-time'),
+    path('new-york-bridges/colormap/', views.NewYorkBridgeColorMap.as_view(), name='new-york-bridge-colormap-generator'),
 ]
