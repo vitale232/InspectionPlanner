@@ -19,6 +19,23 @@
             > <mat-icon>search</mat-icon> </button>
     </ng-template>
 
+    <div *ngIf="settingsOpen$ | async as settingsVisible; else settingsClosed">
+      <button mat-icon-button
+              matTooltip="Go back to the browse bridges page"
+              matTooltipShowDelay="250"
+              routerLink="/"
+              queryParamsHandling="merge"
+             > <mat-icon> home </mat-icon> </button>
+    </div>
+    <ng-template #settingsClosed>
+      <button mat-icon-button
+              matTooltip="Open map settings to change map symbology"
+              matTooltipShowDelay="250"
+              routerLink="/map-settings"
+              queryParamsHandling="merge"
+             > <mat-icon> color_lens </mat-icon> </button>
+    </ng-template>
+
     <div *ngIf="longTitle !== 'Inspection Planner Application'">
       <button mat-button
               color="accent"

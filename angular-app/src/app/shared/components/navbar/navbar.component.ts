@@ -13,6 +13,7 @@ import { filter } from 'rxjs/operators';
 export class NavbarComponent implements OnInit, OnDestroy {
 
   tableOpen$: Observable<boolean>;
+  settingsOpen$: Observable<boolean>;
 
   @Input() sidenavState$: Observable<boolean>;
   @Output() sidenavAction = new EventEmitter< 'open' | 'close' >();
@@ -25,6 +26,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private navbarService: NavbarService,
   ) {
     this.tableOpen$ = this.navbarService.tableOpen$;
+    this.settingsOpen$ = this.navbarService.settingsOpen$;
     if (!this.longTitle) { this.longTitle = 'Inspection Planner Application'; }
   }
 
@@ -40,8 +42,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
           } else {
             this.longTitle = 'Inspection Planner Application';
           }
+          console.log('urlParts', urlParts)
+          if (urlParts.includes('map-settings')) {
+            this.navbarService.settingsOpen = true;
+            console.log('map settings true');
+          } else {
+            this.navbarService.settingsOpen = false;
+            console.log('map  settings false');
+          }
         }
       )
+    );
+    this.navbarService.settingsOpen$.subscribe(
+      data => console.log('settings open from sub', data)
     );
   }
 

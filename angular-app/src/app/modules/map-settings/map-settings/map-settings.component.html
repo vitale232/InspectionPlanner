@@ -1,0 +1,36 @@
+<section class="mat-typography settings-container">
+  <mat-card class="example-card mat-elevation-z8">
+    <mat-card-header>
+      <!-- <div mat-card-avatar class="example-header-image"></div> -->
+      <!-- <mat-icon mat-card-avatar>color_lens</mat-icon> -->
+      <img mat-card-avatar src="assets/color_lens.png" alt="color lens">
+      <mat-card-title> Map Style Settings </mat-card-title>
+      <mat-card-subtitle> Symbology Options </mat-card-subtitle>
+    </mat-card-header>
+
+    <div mat-card-image style="height: 200px;">
+      <app-open-layers-map [mapView]="mapView"
+                           [loading$]="loading$"
+                           [bridges$]="bridges$"
+                           [searchMarkers$]="searchMarkers$"
+                           [position$]="position$"
+                           (bbox)="onMapMove($event)"
+                          ></app-open-layers-map>
+    </div>
+
+    <mat-card-content>
+      <p>
+        This is where all of the form fields will be to change
+        the way everything looks. You must subscribe to everything to make
+        make this work. Will this be part of the drive-time/browse modules? Or
+        could the map just always point to browse?
+      </p>
+      <br>
+    </mat-card-content>
+    <mat-card-actions>
+      <span class="fill-remaining-space"></span>
+      <button mat-button>Cancel</button>
+      <button mat-button color="accent">Save</button>
+    </mat-card-actions>
+  </mat-card>  
+</section>
