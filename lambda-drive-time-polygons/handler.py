@@ -54,7 +54,8 @@ def get_nodes_and_make_polygon(drive_time_query_id):
     new_drive_time_polygon = DriveTimePolygon(
         the_geom='SRID=4326;'+polygon.buffer(0.005).wkt,
         drive_time_query_id=drive_time_query_id,
-        created_time=datetime.now()
+        created_time=datetime.now(),
+        edited_time=datetime.now(),
     )
     session.add(new_drive_time_polygon)
 
