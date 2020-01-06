@@ -10,6 +10,8 @@ import { SearchMarker } from 'src/app/shared/models/markers.model';
 import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 import { IMapView, TExtent } from 'src/app/shared/models/open-layers-map.model';
 import { ActivatedRoute } from '@angular/router';
+import { NavbarService } from 'src/app/shared/services/navbar.service';
+
 
 @Component({
   selector: 'app-map-settings',
@@ -34,6 +36,7 @@ export class MapSettingsComponent implements OnInit, OnDestroy {
     private titleService: Title,
     private searchMarkerStore: SearchMarkersStoreService,
     private geolocationStore: GeolocationStoreService,
+    private navbarService: NavbarService,
   ) {
     this.bridges$ = this.bridgesStore.bridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
@@ -42,6 +45,8 @@ export class MapSettingsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.navbarService.settingsOpen = true;
+
     this.subscriptions.add(this.activatedRoute.queryParamMap.subscribe(
       (params) => {
         const lon = parseFloat(params.get('lon'));

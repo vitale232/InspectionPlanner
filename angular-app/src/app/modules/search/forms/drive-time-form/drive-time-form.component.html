@@ -35,13 +35,11 @@
            >
       <mat-icon>close</mat-icon>
     </button>
+    <mat-error *ngIf="searchTextControl?.invalid">
+      *An address or place name is required.
+    </mat-error>
   </mat-form-field>
 
-  <div *ngIf="driveTimeForm.invalid && driveTimeForm.touched">
-    <section class="mat-typography form-validation">
-        *An address or place name is required.
-    </section>
-  </div>
   <div class="center-button">
     <button mat-flat-button class="search-button"
             type="submit"
