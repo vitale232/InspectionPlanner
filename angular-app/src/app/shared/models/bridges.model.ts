@@ -63,3 +63,8 @@ export interface IBridgeProperties {
     created_time: Date;
     edited_time: Date;
 }
+
+export interface ISelectOption {
+  value: string;
+  viewOption: string;
+}

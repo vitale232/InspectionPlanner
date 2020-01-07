@@ -1,0 +1,72 @@
+<div fxLayout="column" style="width: 100%;">
+  <!-- <mat-card class="mat-elevation-z8">
+  <mat-card-content> -->
+    <form [formGroup]="colormapForm" class="form-container">
+
+      <mat-form-field color="accent">
+        <mat-label> Bridge Attribute for Symbology</mat-label>
+        <mat-select formControlName="field">
+          <mat-option *ngFor="let field of fieldOptions"
+                      [value]="field.value"
+                     > {{ field.viewOption }} </mat-option>
+        </mat-select>
+        <mat-error *ngIf="colormapForm.get('field')?.invalid">
+          A field is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field color="accent">
+        <mat-label> Data Classification Method </mat-label>
+        <mat-select formControlName="mode">
+          <mat-option *ngFor="let mode of modeOptions"
+                      [value]="mode.value"> {{ mode.viewOption }} </mat-option>
+        </mat-select>
+        <mat-error *ngIf="colormapForm.get('mode')?.invalid">
+          A statistical method is required
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field color="accent">
+        <input matInput
+               type="number"
+               placeholder="Number of Colors"
+               formControlName="bins"
+               min="1"
+              >
+        <mat-error *ngIf="colormapForm.get('bins')?.invalid">
+          A number is required and must be > 0
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field color="accent">
+        <mat-label> Colormap Selection </mat-label>
+        <mat-select formControlName="colormap">
+          <mat-option *ngFor="let colormap of colorMapOptions"
+                      [value]="colormap.value"> {{ colormap.viewOption }} </mat-option>
+        </mat-select>
+        <mat-error *ngIf="colormapForm.get('colormap')?.invalid">
+          A colormap is required
+        </mat-error>
+      </mat-form-field>
+
+
+      <div *ngIf="!loading; else loadingBlock" class="button-container">
+        <button mat-button
+                type="button"
+                color="accent"
+              > Cancel </button>
+        <button mat-flat-button
+                type="submit"
+                (click)="onSubmit()"
+                color="accent"
+                [disabled]="colormapForm.invalid"
+               > Apply </button>
+      </div> 
+      <ng-template #loadingBlock>
+        <div class="loading-padding" ><mat-spinner color="accent" diameter="50"></mat-spinner></div>
+      </ng-template>
+    </form>
+
+  <!-- </mat-card-content>
+</mat-card> -->
+</div>

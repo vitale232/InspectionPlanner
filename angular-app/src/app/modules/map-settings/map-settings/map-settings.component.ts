@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { BridgesStoreService } from 'src/app/shared/stores/bridges-store.service';
 import { LoadingIndicatorService } from 'src/app/shared/services/loading-indicator.service';
 import { Title } from '@angular/platform-browser';
@@ -11,6 +11,7 @@ import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 import { IMapView, TExtent } from 'src/app/shared/models/open-layers-map.model';
 import { ActivatedRoute } from '@angular/router';
 import { NavbarService } from 'src/app/shared/services/navbar.service';
+import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
 
 
 @Component({
@@ -19,6 +20,8 @@ import { NavbarService } from 'src/app/shared/services/navbar.service';
   styleUrls: ['./map-settings.component.scss']
 })
 export class MapSettingsComponent implements OnInit, OnDestroy {
+
+  @ViewChild(OpenLayersMapComponent, { static: false }) openLayersMapComponent: OpenLayersMapComponent;
 
   mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
 
@@ -69,6 +72,10 @@ export class MapSettingsComponent implements OnInit, OnDestroy {
 
   onMapMove(bbox: TExtent) {
     this.bridgesStore.fetchBridges(bbox);
+  }
+
+  onResize(event: Event) {
+    setTimeout(() => this.openLayersMapComponent.updateMapSize(), 200);
   }
 
 }
