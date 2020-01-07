@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { ISelectOption } from 'src/app/shared/models/bridges.model';
 import { ColormapService } from 'src/app/shared/services/colormap.service';
+import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
 
 @Component({
   selector: 'app-symbology-form',
@@ -49,6 +50,7 @@ export class SymbologyFormComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private colormapService: ColormapService,
+    private colormapStore: ColormapStoreService,
   ) { }
 
   ngOnInit() {
@@ -58,7 +60,7 @@ export class SymbologyFormComponent implements OnInit {
     this.loading = true;
     console.log('colormapForm.value', this.colormapForm.value);
     this.colormapService.getColormap(this.colormapForm.value).subscribe(
-      colormapData => console.log('colormapData', colormapData),
+      colormapData => this.colormapStore.colormap = colormapData,
       err => {
         console.error('getColormap error', err);
         this.loading = false;

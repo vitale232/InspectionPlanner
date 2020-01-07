@@ -27,8 +27,8 @@
         <div fxFlex="50" class="content-column" style="min-width: 200px;">
           <app-symbology-form></app-symbology-form>
         </div>
-        <div fxFlex="50" style="min-width: 200px; height: 400px; background-color: black;">
-          <p>hi</p>
+        <div fxFlex="50" style="min-width: 200px;">
+          <app-symbology-preview [colormap$]="colormap$"></app-symbology-preview>
         </div>
       </div>
     </mat-card-content>

@@ -84,6 +84,11 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
     color: #FFC23D;
 }
 
+.align-right {
+  text-align: right !important;
+  justify-content: flex-end;
+}
+
 .form-validation {
   color: #F4443E;
   padding-bottom: 10px;

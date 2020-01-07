@@ -21,7 +21,7 @@ def get_rgbs(bins, field, colormap='viridis', mode='equalcount'):
     cuts_out[0][0] = np.min(vals)
     cuts_out[-1][1] = np.max(vals)
 
-    cmap = plt.cm.get_cmap(colormap, bins)
+    cmap = plt.cm.get_cmap(colormap, len(cuts_out))
     cmap_colors = cmap.colors.tolist()
 
     colors_out = []

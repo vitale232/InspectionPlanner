@@ -12,6 +12,8 @@ import { IMapView, TExtent } from 'src/app/shared/models/open-layers-map.model';
 import { ActivatedRoute } from '@angular/router';
 import { NavbarService } from 'src/app/shared/services/navbar.service';
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
+import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
+import { IColormap } from 'src/app/shared/models/map-settings.model';
 
 
 @Component({
@@ -29,6 +31,7 @@ export class MapSettingsComponent implements OnInit, OnDestroy {
   loading$: Observable<boolean>;
   searchMarkers$: Observable<SearchMarker[]>;
   position$: Observable<IGeoPosition>;
+  colormap$: Observable<IColormap>;
 
   subscriptions = new Subscription();
 
@@ -40,11 +43,13 @@ export class MapSettingsComponent implements OnInit, OnDestroy {
     private searchMarkerStore: SearchMarkersStoreService,
     private geolocationStore: GeolocationStoreService,
     private navbarService: NavbarService,
+    private colormapStore: ColormapStoreService,
   ) {
     this.bridges$ = this.bridgesStore.bridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
     this.searchMarkers$ = this.searchMarkerStore.searchMarker$;
     this.position$ = this.geolocationStore.position$;
+    this.colormap$ = this.colormapStore.colormap$;
   }
 
   ngOnInit() {
@@ -61,9 +66,6 @@ export class MapSettingsComponent implements OnInit, OnDestroy {
         }
       }
     ));
-    this.bridges$.subscribe(
-      data => console.log('bridge data!', data)
-    );
   }
 
   ngOnDestroy(): void {

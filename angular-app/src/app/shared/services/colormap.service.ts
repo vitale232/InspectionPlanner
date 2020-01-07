@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { IColormapQueryParams, IColormapApiResponse } from '../models/map-settings.model';
+import { IColormapQueryParams, IColormap } from '../models/map-settings.model';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +16,6 @@ export class ColormapService {
       .set('colormap', queryParams.colormap)
       .set('field', queryParams.field)
       .set('mode', queryParams.mode);
-    return this.http.get<IColormapApiResponse>(this.colormapUrl, { params });
+    return this.http.get<IColormap>(this.colormapUrl, { params });
   }
 }
