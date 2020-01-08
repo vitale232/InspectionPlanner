@@ -20,6 +20,7 @@ export class SymbologyPreviewComponent implements OnInit {
   binCountCorrect = true;
   binCount: number;
   desiredBinCount: number;
+  field: string;
   subscriptions = new Subscription();
 
   constructor( private colormapStore: ColormapStoreService ) { }
@@ -27,10 +28,8 @@ export class SymbologyPreviewComponent implements OnInit {
   ngOnInit() {
     this.subscriptions.add(this.colormapStore.colormap$.subscribe(
       data => {
-        console.log('subscribed in ts', data);
         if (data && data.cuts) {
           this.tableData = data.cuts.rgb_colors.map((element, i) => {
-            console.log(`i ${i}`);
             return {
               minValue: data.cuts.intervals[i][0],
               maxValue: data.cuts.intervals[i][1],
@@ -38,11 +37,11 @@ export class SymbologyPreviewComponent implements OnInit {
             };
           });
           // Check if pandas.qcut returned the desired number of bins
-          this.binCount = data.input_params.bins;
-          this.desiredBinCount = data.cuts.intervals.length;
+          this.binCount = data.cuts.intervals.length;
+          this.desiredBinCount = data.input_params.bins;
           this.binCountCorrect = this.desiredBinCount === this.binCount;
+          this.field = data.input_params.field;
         }
-        console.log('tableData', this.tableData);
         this.tableDataSource = new MatTableDataSource(this.tableData);
       },
       err => console.error(err)

@@ -49,6 +49,8 @@
         </mat-error>
       </mat-form-field>
 
+      <mat-slide-toggle [formControl]="invertColormap" class="toggle">Invert Colormap</mat-slide-toggle>
+
 
       <div *ngIf="!loading; else loadingBlock" class="button-container">
         <button mat-button
@@ -63,7 +65,9 @@
                > Preview </button>
       </div> 
       <ng-template #loadingBlock>
-        <div class="loading-padding" ><mat-spinner color="accent" diameter="50"></mat-spinner></div>
+        <div class="loading-padding" >
+          <mat-spinner class="center-spinner" color="accent" diameter="50"></mat-spinner>
+        </div>
       </ng-template>
     </form>
 
