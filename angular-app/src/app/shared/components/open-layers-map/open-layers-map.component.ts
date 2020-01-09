@@ -94,6 +94,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   private bridgeSubscription: Subscription;
   private subscriptions = new Subscription();
   private styleFactory: StyleFactory;
+  private legend: Legend;
 
   constructor(
     private router: Router,
@@ -318,21 +319,21 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     this.map.addInteraction(select);
     this.map.addOverlay(popup);
 
-    const legend = new Legend({
+    this.legend = new Legend({
       title: 'Bridge Marker Legend',
       style: selectAADTStyle,
       collapsible: true,
       margin: 5,
       size: [40, 10]
     });
-    this.map.addControl(legend);
+    this.map.addControl(this.legend);
 
-    legend.addRow();
-    legend.addRow({ title: 'AADT < 235', properties: { aadt: 100 }, typeGeom: 'Point' });
-    legend.addRow({ title: '235 < AADT <= 1005', properties: { aadt: 500 }, typeGeom: 'Point' });
-    legend.addRow({ title: '1005 < AADT <= 3735', properties: { aadt: 2000 }, typeGeom: 'Point' });
-    legend.addRow({ title: '3735 < AADT <= 11350', properties: { aadt: 5000 }, typeGeom: 'Point' });
-    legend.addRow({ title: 'AADT > 11350', properties: { aadt: 12000 }, typeGeom: 'Point' });
+    this.legend.addRow();
+    this.legend.addRow({ title: 'AADT < 235', properties: { aadt: 100 }, typeGeom: 'Point' });
+    this.legend.addRow({ title: '235 < AADT <= 1005', properties: { aadt: 500 }, typeGeom: 'Point' });
+    this.legend.addRow({ title: '1005 < AADT <= 3735', properties: { aadt: 2000 }, typeGeom: 'Point' });
+    this.legend.addRow({ title: '3735 < AADT <= 11350', properties: { aadt: 5000 }, typeGeom: 'Point' });
+    this.legend.addRow({ title: 'AADT > 11350', properties: { aadt: 12000 }, typeGeom: 'Point' });
 
     setTimeout(() => this.map.updateSize(), 200);
 
@@ -424,7 +425,40 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.styleFactory = new StyleFactory(colormap);
       const styleFactoryFunction = this.getStyleFactoryFunction();
       this.vectorLayer.setStyle(styleFactoryFunction);
+      this.updateLegend(colormap);
     }
+  }
+
+  updateLegend(colormap: IColormap) {
+    // Remove each item from the legend by index, starting at the end and working to 0
+    const indices = [ ...Array(this.legend.getLength()).keys() ].reverse();
+    indices.forEach(i => this.legend.removeRow(i));
+
+    const field = colormap.input_params.field;
+    const smallestInterval = colormap.cuts.intervals[0];
+
+    // Add the first two legend rows separately. This is done outside of the loop since the title prop is different
+    const properties = {};
+    properties[field] = (smallestInterval[0] + smallestInterval[1]) / 2;
+
+    this.legend.addRow();
+    this.legend.addRow({
+      title: `${field} < ${smallestInterval[1]}`,
+      properties,
+      typeGeom: 'Point',
+    });
+
+    // Loop through intervals [1:] and update the legend
+    colormap.cuts.intervals.slice(1).forEach(interval => {
+      const props = {};
+      props[field] = (interval[0] + interval[1]) / 2;
+
+      this.legend.addRow({
+        title: `${interval[0]} < ${field} <= ${interval[1]}`,
+        properties: props,
+        typeGeom: 'Point',
+      });
+    });
   }
 
   updateView(view: { zoom: number; center: [number, number]; }) {
