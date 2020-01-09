@@ -17,13 +17,10 @@
           >
       <mat-icon>search</mat-icon>
     </button>
+    <mat-error *ngIf="omniSearchForm.get('searchText')?.invalid">
+      *An address, BIN, or place name is required.
+    </mat-error>
   </mat-form-field>
 </form>
 
 <mat-spinner *ngIf="loading" class="center-spinner" color="accent" diameter="50"></mat-spinner>
-
-<div *ngIf="omniSearchForm.invalid && omniSearchForm.touched">
-  <section class="mat-typography form-validation">
-      *An address, BIN, or place name is required.
-  </section>
-</div>

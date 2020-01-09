@@ -1,0 +1,34 @@
+.splitter-container {
+    height: 100%;
+}
+
+.grid {
+    height: 100%;
+    width: 100%;
+}
+
+::ng-deep .as-split-gutter {
+    background-color: #212121 !important;
+    align-items: flex-end !important;
+}
+
+.example-card {
+    min-width: 250px;
+    max-width: 800px;
+    margin: auto;
+}
+
+.settings-container {
+    padding-top: 15px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom: 15px;
+}
+
+.content {
+    min-width: 250px;
+}
+
+.content-column {
+    min-width: 200px;
+}

@@ -1,0 +1,50 @@
+<div *ngIf="!binCountCorrect" class="warning-container">
+  <section class="mat-typography warning-content">
+    <h2 class="warning">Warning</h2>
+    <p>
+      The desired number of color bins could not be achieved. Try using fewer colors, or switch the data classification method to equal interval.
+    </p>
+    <code>
+      Desired bin count&nbsp;: {{desiredBinCount}} <br>
+      Actual bin count&nbsp;&nbsp;: {{binCount}}
+    </code>
+  </section>
+</div>
+
+<table mat-table
+       *ngIf="tableData"
+       [dataSource]="tableDataSource"
+       style="width: 100%;"
+      >
+  <ng-container matColumnDef="rgb">
+    <th mat-header-cell *matHeaderCellDef> colormap </th>
+    <td mat-cell
+        *matCellDef="let row"
+        [style.background-color]="row.rgb"
+        > </td>
+  </ng-container>
+
+  <ng-container matColumnDef="minValue">
+    <th mat-header-cell *matHeaderCellDef class="align-right"> {{field}} > </th>
+    <td mat-cell *matCellDef="let row" class="align-right"> {{row.minValue | number: '1.1-1'}} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="maxValue">
+    <th mat-header-cell *matHeaderCellDef class="align-right"> {{field}} <= </th>
+    <td mat-cell *matCellDef="let row" class="align-right"> {{row.maxValue | number: '1.1-1'}} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row
+      *matRowDef="let row; columns: displayedColumns"
+     ></tr>
+</table>
+
+<!-- Add height to the no preview container when on larger screens, so that flexbox will
+     center vertically. On mobile, don't give the container height -->
+<div fxShow fxHide.xs *ngIf="!tableData" fxLayoutAlign="center center" class="center-text">
+  No preview available.
+</div>
+<div fxHide fxShow.xs *ngIf="!tableData" fxLayoutAlign="center center">
+  No preview available.
+</div>

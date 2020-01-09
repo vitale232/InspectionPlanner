@@ -49,4 +49,8 @@ export class SearchDisplayComponent implements OnInit {
     this.geolocationStore.fetchPosition();
   }
 
+  onMapSettings() {
+    this.router.navigate(['/map-settings'], { queryParamsHandling: 'merge' });
+  }
+
 }
