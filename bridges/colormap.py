@@ -18,7 +18,7 @@ def get_rgbs(bins, field, colormap='viridis', mode='equalcount'):
         cuts = pd.qcut(vals, bins, duplicates='drop')
 
     cuts_out = [list(cut) for cut in cuts.categories.to_tuples()]
-    cuts_out[0][0] = np.min(vals) - 0.1
+    cuts_out[0][0] = np.min(vals) - 0.001
     cuts_out[-1][1] = np.max(vals)
 
     cmap = plt.cm.get_cmap(colormap, len(cuts_out))

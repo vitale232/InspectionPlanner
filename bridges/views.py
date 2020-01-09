@@ -73,6 +73,7 @@ class NewYorkBridgeDistinct(APIView):
             return Response({
                 'message': f'The input field "{field_name}"is not a character field.'
             }, status=status.HTTP_400_BAD_REQUEST)
+
         queryset = NewYorkBridge.objects.order_by().values_list(
             field_name, flat=True
         ).distinct()
