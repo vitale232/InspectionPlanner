@@ -8,7 +8,7 @@
       <mat-card-subtitle> Symbology Options </mat-card-subtitle>
     </mat-card-header>
 
-    <div mat-card-image style="height: 200px;">
+    <div mat-card-image class="map-preview-container">
       <app-open-layers-map [mapView]="mapView"
                            [loading$]="loading$"
                            [bridges$]="bridges$"
@@ -29,10 +29,10 @@
               fxLayoutGap="25px"
               style="padding: 15px;"
               >
-            <div fxFlex="50" class="content-column" style="min-width: 200px;">
+            <div fxFlex="50" class="content-column">
               <app-symbology-form></app-symbology-form>
             </div>
-            <div fxFlex="50" style="min-width: 200px;">
+            <div fxFlex="50" class="content-column">
               <app-symbology-preview [colormap$]="colormap$"></app-symbology-preview>
             </div>
           </div>
@@ -44,20 +44,15 @@
               fxLayout.xs="column"
               fxLayoutGap="25px"
               >
-            <div fxFlex="50" class="content-column" style="min-width: 200px;">
+            <div fxFlex="50" class="content-column">
               <app-symbology-form></app-symbology-form>
             </div>
-            <div fxFlex="50" style="min-width: 200px;">
+            <div fxFlex="50" class="content-column">
               Does this actually require a new preview component?
             </div>
           </div>
         </mat-tab>
       </mat-tab-group>
     </mat-card-content>
-    <!-- <mat-card-actions>
-      <span class="fill-remaining-space"></span>
-      <button mat-button>Cancel</button>
-      <button mat-button color="accent">Save</button>
-    </mat-card-actions> -->
   </mat-card>  
 </section>
