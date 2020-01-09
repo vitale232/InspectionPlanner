@@ -44,7 +44,9 @@ class NewYorkBridgeDriveTime(generics.ListAPIView):
 
     def get_queryset(self):
         id_ = int(self.kwargs['id_'])
-        return NewYorkBridge.objects.filter(drive_time_queries__contains=[id_]).order_by('bin')
+        return NewYorkBridge.objects.filter(
+            drive_time_queries__contains=[id_]
+        ).order_by('bin')
 
 
 class NewYorkBridgeColorMap(APIView):
@@ -60,5 +62,24 @@ class NewYorkBridgeColorMap(APIView):
             colormap=colormap,
             mode=mode
         )
+
+        return Response(payload, status=status.HTTP_200_OK)
+
+
+class NewYorkBridgeDistinct(APIView):
+    def get(self, request, field_name):
+        field_type = NewYorkBridge._meta.get_field(field_name).get_internal_type()
+        if field_type != 'CharField':
+            return Response({
+                'message': f'The input field "{field_name}"is not a character field.'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        queryset = NewYorkBridge.objects.order_by().values_list(
+            field_name, flat=True
+        ).distinct()
+
+        payload = {
+            'field': field_name,
+            'distinct': list(queryset)
+        }
 
         return Response(payload, status=status.HTTP_200_OK)
