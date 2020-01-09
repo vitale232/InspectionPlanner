@@ -444,18 +444,18 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     this.legend.addRow();
     this.legend.addRow({
       title: `${field} < ${smallestInterval[1]}`,
-      properties,
+      style: this.styleFactory.styles[0],
       typeGeom: 'Point',
     });
 
     // Loop through intervals [1:] and update the legend
-    colormap.cuts.intervals.slice(1).forEach(interval => {
+    colormap.cuts.intervals.slice(1).forEach((interval, i) => {
       const props = {};
       props[field] = (interval[0] + interval[1]) / 2;
 
       this.legend.addRow({
         title: `${interval[0]} < ${field} <= ${interval[1]}`,
-        properties: props,
+        style: this.styleFactory.styles[i + 1],
         typeGeom: 'Point',
       });
     });
