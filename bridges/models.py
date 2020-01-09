@@ -28,7 +28,7 @@ class NewYorkBridge(models.Model):
     deck_area_field = models.FloatField()
     aadt = models.FloatField()
     year_of_aadt = models.IntegerField()
-    gtms_mater = models.CharField(blank=True, max_length=100)
+    gtms_material = models.CharField(blank=True, max_length=100)
     gtms_structure = models.CharField(blank=True, max_length=100)
     year_built = models.IntegerField()
     posted_load = models.FloatField()
