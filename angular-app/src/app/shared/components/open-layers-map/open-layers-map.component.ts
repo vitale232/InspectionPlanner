@@ -22,14 +22,14 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { IMapView, IStyleStoreAADT, TExtent, DriveTimePolygon, StyleFactory } from 'src/app/shared/models/open-layers-map.model';
+import { IMapView, TExtent, DriveTimePolygon, StyleFactory } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
 import { SearchMarker, GeolocationMarker, DriveTimeQueryMarker } from '../../models/markers.model';
 
 import Map from 'ol/Map';
 import View from 'ol/View';
 import { fromLonLat, toLonLat } from 'ol/proj';
-import { Fill, Stroke, Circle, Style } from 'ol/style';
+import { Fill, Stroke, Style } from 'ol/style';
 import { get as getProjection } from 'ol/proj';
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
@@ -88,7 +88,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   private zoom: number;
 
   // Custom behaviors
-  private styleGroups: IStyleStoreAADT;
   private overlayGroup: Group;
   private driveTimeQueryLayer: VectorLayer;
   private bridgeSubscription: Subscription;
@@ -153,24 +152,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       },
     });
 
-    const selectAADTStyle = (f) => {
-      const aadt = f.get('aadt');
-      if (aadt <= 235) {
-        return this.styleGroups.group0;
-      } else if (aadt > 235 && aadt <= 1005) {
-        return this.styleGroups.group1;
-      } else if (aadt > 1005 && aadt <= 3735) {
-        return this.styleGroups.group2;
-      } else if (aadt > 3735 && aadt <= 11350) {
-        return this.styleGroups.group3;
-      } else if (aadt > 11350) {
-        return this.styleGroups.group4;
-      } else {
-        return this.styleGroups.group0; // Fallback to group0 if aadt selection fails
-      }
-    };
-    this.generateAADTStyles();
-
     this.styleFactory = new StyleFactory(defaultColormap);
     const styleFactoryFunction = this.getStyleFactoryFunction();
     this.vectorLayer = new VectorLayer({
@@ -178,10 +159,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       title: 'New York Bridges',
       type: 'overlay',
       visible: true,
-      // style: selectAADTStyle
-      // style: new StyleFactory(defaultColormap).styleFeature
       style: styleFactoryFunction
-      // style: this.getStyleFactory(defaultColormap)
     });
 
     const studyAreaVectorSource = new VectorSource({
@@ -321,7 +299,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.legend = new Legend({
       title: 'Bridge Marker Legend',
-      style: selectAADTStyle,
       collapsible: true,
       margin: 5,
       size: [40, 10]
@@ -505,28 +482,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     const upperRight = extent.slice(2, 4);
     const returnArray = [ ...toLonLat(lowerLeft), ...toLonLat(upperRight) ];
     return [ returnArray[0], returnArray[1], returnArray[2], returnArray[3] ];
-  }
-
-  generateAADTStyles(): void {
-    const rgbaValues = [
-      [70, 40, 84],   // group0 colors
-      [57, 86, 140],  // group1 colors
-      [42, 150, 139], // group2 colors
-      [115, 208, 85], // group3 colors
-      [253, 231, 58]  // group4 colors
-    ];
-    const styles = rgbaValues.map((rgba) => {
-      const fill = new Fill({ color: `rgba(${rgba[0]}, ${rgba[1]}, ${rgba[2]}, 0.75)` });
-      const stroke = new Stroke({ color: 'rgba(0, 0, 0, 1)', width: 1.25 });
-      return [ new Style({ image: new Circle({ fill, stroke, radius: 4 }), fill, stroke }) ];
-    });
-    this.styleGroups = {
-      group0: styles[0],
-      group1: styles[1],
-      group2: styles[2],
-      group3: styles[3],
-      group4: styles[4],
-    };
   }
 
   addMarkers(markersIn: SearchMarker[]|GeolocationMarker[]|DriveTimeQueryMarker[], zoomTo = true) {
