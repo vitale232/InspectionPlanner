@@ -6,7 +6,6 @@ services:
     command:
       "gunicorn --bind 0.0.0.0:8000 \
       --worker-class=gevent --workers=3 --threads=6 \
-      --timeout=600 --graceful-timeout=600 \
       --log-level=DEBUG \
       inspection_planner.wsgi:application"
     ports:
