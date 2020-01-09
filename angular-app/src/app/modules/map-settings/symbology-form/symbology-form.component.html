@@ -1,4 +1,4 @@
-<div fxLayout="column" style="width: 100%;">
+<div fxLayout="column" style="width: 100%; padding-top: 8px;">
   <!-- <mat-card class="mat-elevation-z8">
   <mat-card-content> -->
     <form [formGroup]="colormapForm" class="form-container">
@@ -51,8 +51,7 @@
 
       <mat-slide-toggle [formControl]="invertColormap" class="toggle">Invert Colormap</mat-slide-toggle>
 
-
-      <div *ngIf="!loading; else loadingBlock" class="button-container">
+      <div fxLayout="row" fxLayoutGap="10px" class="button-container">
         <button mat-button
                 type="button"
                 color="accent"
@@ -62,13 +61,10 @@
                 (click)="onSubmit()"
                 color="accent"
                 [disabled]="colormapForm.invalid"
-               > Preview </button>
-      </div> 
-      <ng-template #loadingBlock>
-        <div class="loading-padding" >
-          <mat-spinner class="center-spinner" color="accent" diameter="50"></mat-spinner>
-        </div>
-      </ng-template>
+                > Preview </button>
+        <mat-spinner *ngIf="loading" color="accent" diameter="30"></mat-spinner>
+      </div>
+
     </form>
 
   <!-- </mat-card-content>

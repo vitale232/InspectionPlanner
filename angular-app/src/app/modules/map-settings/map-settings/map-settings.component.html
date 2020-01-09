@@ -14,23 +14,45 @@
                            [bridges$]="bridges$"
                            [searchMarkers$]="searchMarkers$"
                            [position$]="position$"
+                           [colormap$]="colormap$"
                            (bbox)="onMapMove($event)"
                           ></app-open-layers-map>
     </div>
 
     <mat-card-content>
-      <div class="content"
-           fxLayout="row"
-           fxLayout.xs="column"
-           fxLayoutGap="25px"
-          >
-        <div fxFlex="50" class="content-column" style="min-width: 200px;">
-          <app-symbology-form></app-symbology-form>
-        </div>
-        <div fxFlex="50" style="min-width: 200px;">
-          <app-symbology-preview [colormap$]="colormap$"></app-symbology-preview>
-        </div>
-      </div>
+      <mat-tab-group color="accent">
+
+        <mat-tab label="Numeric Fields">
+          <div class="content"
+              fxLayout="row"
+              fxLayout.xs="column"
+              fxLayoutGap="25px"
+              style="padding: 15px;"
+              >
+            <div fxFlex="50" class="content-column" style="min-width: 200px;">
+              <app-symbology-form></app-symbology-form>
+            </div>
+            <div fxFlex="50" style="min-width: 200px;">
+              <app-symbology-preview [colormap$]="colormap$"></app-symbology-preview>
+            </div>
+          </div>
+        </mat-tab>
+
+        <mat-tab label="Categorical Fields">
+          <div class="content"
+              fxLayout="row"
+              fxLayout.xs="column"
+              fxLayoutGap="25px"
+              >
+            <div fxFlex="50" class="content-column" style="min-width: 200px;">
+              <app-symbology-form></app-symbology-form>
+            </div>
+            <div fxFlex="50" style="min-width: 200px;">
+              Does this actually require a new preview component?
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
     </mat-card-content>
     <!-- <mat-card-actions>
       <span class="fill-remaining-space"></span>

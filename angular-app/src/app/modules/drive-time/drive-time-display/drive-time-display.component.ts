@@ -17,6 +17,8 @@ import { DriveTimePolygonStoreService } from 'src/app/shared/stores/drive-time-p
 import { IDriveTimePolygonFeature } from 'src/app/shared/models/drive-time-polygons.model';
 import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store.service';
+import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
+import { IColormap } from 'src/app/shared/models/map-settings.model';
 
 @Component({
   selector: 'app-drive-time-display',
@@ -36,6 +38,7 @@ export class DriveTimeDisplayComponent implements OnInit {
   selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>;
   driveTimePolygon$: Observable<IDriveTimePolygonFeature>;
   position$: Observable<IGeoPosition>;
+  colormap$: Observable<IColormap>;
 
   subscriptions = new Subscription();
 
@@ -48,7 +51,6 @@ export class DriveTimeDisplayComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private bridgesStore: BridgesStoreService,
     private loadingIndicatorService: LoadingIndicatorService,
-    private router: Router,
     private searchMarkerStore: SearchMarkersStoreService,
     private titleService: Title,
     private navbarService: NavbarService,
@@ -56,6 +58,7 @@ export class DriveTimeDisplayComponent implements OnInit {
     private driveTimeQueriesStore: DriveTimeQueriesStoreService,
     private driveTimePolygonStore: DriveTimePolygonStoreService,
     private geolocationStore: GeolocationStoreService,
+    private colormapStore: ColormapStoreService,
   ) {
     this.driveTimeBridges$ = this.bridgesStore.driveTimeBridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
@@ -63,6 +66,7 @@ export class DriveTimeDisplayComponent implements OnInit {
     this.selectedDriveTimeQuery$ = this.driveTimeQueriesStore.selectedDriveTimeQuery$;
     this.driveTimePolygon$ = this.driveTimePolygonStore.driveTimePolygon$;
     this.position$ = this.geolocationStore.position$;
+    this.colormap$ = this.colormapStore.colormap$;
   }
 
   ngOnInit() {

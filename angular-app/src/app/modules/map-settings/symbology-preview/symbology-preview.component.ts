@@ -29,11 +29,11 @@ export class SymbologyPreviewComponent implements OnInit {
     this.subscriptions.add(this.colormapStore.colormap$.subscribe(
       data => {
         if (data && data.cuts) {
-          this.tableData = data.cuts.rgb_colors.map((element, i) => {
+          this.tableData = data.cuts.rgb_colors.map((rgbColors, i) => {
             return {
               minValue: data.cuts.intervals[i][0],
               maxValue: data.cuts.intervals[i][1],
-              rgb: `rgba(${element[0]}, ${element[1]}, ${element[2]}, 0.75)`
+              rgb: `rgba(${rgbColors[0]}, ${rgbColors[1]}, ${rgbColors[2]}, 0.75)`
             };
           });
           // Check if pandas.qcut returned the desired number of bins

@@ -12,6 +12,7 @@ import {
   MatProgressSpinnerModule,
   MatTableModule,
   MatSlideToggleModule,
+  MatTabsModule,
 } from '@angular/material';
 import { SymbologyFormComponent } from './symbology-form/symbology-form.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -36,6 +37,7 @@ import { SymbologyPreviewComponent } from './symbology-preview/symbology-preview
     MatProgressSpinnerModule,
     MatTableModule,
     MatSlideToggleModule,
+    MatTabsModule,
   ],
   exports: [ MapSettingsComponent ],
 })

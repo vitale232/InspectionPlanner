@@ -22,7 +22,7 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { IMapView, IStyleStoreAADT, TExtent, DriveTimePolygon } from 'src/app/shared/models/open-layers-map.model';
+import { IMapView, IStyleStoreAADT, TExtent, DriveTimePolygon, StyleFactory } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
 import { SearchMarker, GeolocationMarker, DriveTimeQueryMarker } from '../../models/markers.model';
 
@@ -53,6 +53,8 @@ import LayerSwitcher from 'ol-ext/control/LayerSwitcher';
 import { IDriveTimePolygonFeature } from '../../models/drive-time-polygons.model';
 import { IGeoPosition } from '../../models/geolocation.model';
 import { IDriveTimeQueryFeature } from '../../models/drive-time-queries.model';
+import { IColormap } from '../../models/map-settings.model';
+import { defaultColormap } from './default-colormap';
 
 
 @Component({
@@ -70,6 +72,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() searchMarkers$: Observable<SearchMarker[]>;
   @Input() position$: Observable<IGeoPosition>;
+  @Input() colormap$: Observable<IColormap>;
   @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>;    // Optional
   @Input() selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>; // Optional
 
@@ -164,14 +167,18 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         return this.styleGroups.group0; // Fallback to group0 if aadt selection fails
       }
     };
-
     this.generateAADTStyles();
+
+    const styleFactory = this.getStyleFactory(defaultColormap);
     this.vectorLayer = new VectorLayer({
       source: vectorSource,
       title: 'New York Bridges',
       type: 'overlay',
       visible: true,
-      style: selectAADTStyle
+      // style: selectAADTStyle
+      // style: new StyleFactory(defaultColormap).styleFeature
+      style: styleFactory
+      // style: this.getStyleFactory(defaultColormap)
     });
 
     const studyAreaVectorSource = new VectorSource({
@@ -338,7 +345,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     if (this.searchMarkers$) {
       this.subscriptions.add(this.searchMarkers$.subscribe(
         (data: SearchMarker[]) => {
-          console.log('searchMarkers data from OLM', data);
           if (data.length === 0) { this.clearMarkers(); } else { this.addMarkers(data); }
         },
         (err) => console.error('this.searchMarkers$ subscribe error', err),
@@ -372,10 +378,16 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.subscriptions.add(this.selectedDriveTimeQuery$.subscribe(
         (query: IDriveTimeQueryFeature) => {
           if (query) {
-            console.log('NEW VALUE!!!!!', query);
             this.addDriveTimeMarker(query);
           }
         },
+        err => console.error(err)
+      ));
+    }
+
+    if (this.colormap$) {
+      this.subscriptions.add(this.colormap$.subscribe(
+        (colormap: IColormap) => this.updateStyle(colormap),
         err => console.error(err)
       ));
     }
@@ -396,6 +408,21 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.bridgeSubscription.unsubscribe();
     }
     this.subscriptions.unsubscribe();
+  }
+
+  getStyleFactory(colormap: IColormap) {
+    const styleFactoryFunction = (f) => {
+      const factory = new StyleFactory(colormap);
+      return factory.styleFeature(f);
+    };
+    return styleFactoryFunction;
+  }
+
+  updateStyle(colormap: IColormap) {
+    if (this.map) {
+      const styleFactory = this.getStyleFactory(colormap);
+      this.vectorLayer.setStyle(styleFactory);
+    }
   }
 
   updateView(view: { zoom: number; center: [number, number]; }) {
@@ -523,7 +550,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
     mapLayers.getArray().forEach((layer: VectorLayer) => {
       if (layer.get('title') === 'Drive Time Polygon') {
-        console.log('layer to remove!', layer);
         this.map.removeLayer(layer);
       }
     });
