@@ -13,6 +13,10 @@ const routes: Routes = [
     loadChildren: () => import('./modules/drive-time/drive-time.module').then( m => m.DriveTimeModule )
   },
   {
+    path: 'map-settings',
+    loadChildren: () => import('./modules/map-settings/map-settings.module').then( m => m.MapSettingsModule )
+  },
+  {
     path: '**',
     component: NotFoundComponent
   }

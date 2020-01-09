@@ -22,7 +22,7 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { IMapView, IStyleStoreAADT, TExtent, DriveTimePolygon } from 'src/app/shared/models/open-layers-map.model';
+import { IMapView, IStyleStoreAADT, TExtent, DriveTimePolygon, StyleFactory } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
 import { SearchMarker, GeolocationMarker, DriveTimeQueryMarker } from '../../models/markers.model';
 
@@ -53,6 +53,8 @@ import LayerSwitcher from 'ol-ext/control/LayerSwitcher';
 import { IDriveTimePolygonFeature } from '../../models/drive-time-polygons.model';
 import { IGeoPosition } from '../../models/geolocation.model';
 import { IDriveTimeQueryFeature } from '../../models/drive-time-queries.model';
+import { IColormap } from '../../models/map-settings.model';
+import { defaultColormap } from './default-colormap';
 
 
 @Component({
@@ -70,6 +72,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() searchMarkers$: Observable<SearchMarker[]>;
   @Input() position$: Observable<IGeoPosition>;
+  @Input() colormap$: Observable<IColormap>;
   @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>;    // Optional
   @Input() selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>; // Optional
 
@@ -90,6 +93,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   private driveTimeQueryLayer: VectorLayer;
   private bridgeSubscription: Subscription;
   private subscriptions = new Subscription();
+  private styleFactory: StyleFactory;
+  private legend: Legend;
 
   constructor(
     private router: Router,
@@ -164,14 +169,19 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         return this.styleGroups.group0; // Fallback to group0 if aadt selection fails
       }
     };
-
     this.generateAADTStyles();
+
+    this.styleFactory = new StyleFactory(defaultColormap);
+    const styleFactoryFunction = this.getStyleFactoryFunction();
     this.vectorLayer = new VectorLayer({
       source: vectorSource,
       title: 'New York Bridges',
       type: 'overlay',
       visible: true,
-      style: selectAADTStyle
+      // style: selectAADTStyle
+      // style: new StyleFactory(defaultColormap).styleFeature
+      style: styleFactoryFunction
+      // style: this.getStyleFactory(defaultColormap)
     });
 
     const studyAreaVectorSource = new VectorSource({
@@ -309,21 +319,21 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     this.map.addInteraction(select);
     this.map.addOverlay(popup);
 
-    const legend = new Legend({
+    this.legend = new Legend({
       title: 'Bridge Marker Legend',
       style: selectAADTStyle,
       collapsible: true,
       margin: 5,
       size: [40, 10]
     });
-    this.map.addControl(legend);
+    this.map.addControl(this.legend);
 
-    legend.addRow();
-    legend.addRow({ title: 'AADT < 235', properties: { aadt: 100 }, typeGeom: 'Point' });
-    legend.addRow({ title: '235 < AADT <= 1005', properties: { aadt: 500 }, typeGeom: 'Point' });
-    legend.addRow({ title: '1005 < AADT <= 3735', properties: { aadt: 2000 }, typeGeom: 'Point' });
-    legend.addRow({ title: '3735 < AADT <= 11350', properties: { aadt: 5000 }, typeGeom: 'Point' });
-    legend.addRow({ title: 'AADT > 11350', properties: { aadt: 12000 }, typeGeom: 'Point' });
+    this.legend.addRow();
+    this.legend.addRow({ title: 'AADT < 235', properties: { aadt: 100 }, typeGeom: 'Point' });
+    this.legend.addRow({ title: '235 < AADT <= 1005', properties: { aadt: 500 }, typeGeom: 'Point' });
+    this.legend.addRow({ title: '1005 < AADT <= 3735', properties: { aadt: 2000 }, typeGeom: 'Point' });
+    this.legend.addRow({ title: '3735 < AADT <= 11350', properties: { aadt: 5000 }, typeGeom: 'Point' });
+    this.legend.addRow({ title: 'AADT > 11350', properties: { aadt: 12000 }, typeGeom: 'Point' });
 
     setTimeout(() => this.map.updateSize(), 200);
 
@@ -338,7 +348,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     if (this.searchMarkers$) {
       this.subscriptions.add(this.searchMarkers$.subscribe(
         (data: SearchMarker[]) => {
-          console.log('searchMarkers data from OLM', data);
           if (data.length === 0) { this.clearMarkers(); } else { this.addMarkers(data); }
         },
         (err) => console.error('this.searchMarkers$ subscribe error', err),
@@ -372,10 +381,16 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.subscriptions.add(this.selectedDriveTimeQuery$.subscribe(
         (query: IDriveTimeQueryFeature) => {
           if (query) {
-            console.log('NEW VALUE!!!!!', query);
             this.addDriveTimeMarker(query);
           }
         },
+        err => console.error(err)
+      ));
+    }
+
+    if (this.colormap$) {
+      this.subscriptions.add(this.colormap$.subscribe(
+        (colormap: IColormap) => this.updateStyle(colormap),
         err => console.error(err)
       ));
     }
@@ -396,6 +411,54 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       this.bridgeSubscription.unsubscribe();
     }
     this.subscriptions.unsubscribe();
+  }
+
+  getStyleFactoryFunction() {
+    const styleFactoryFunction = (f) => {
+      return this.styleFactory.styleFeature(f);
+    };
+    return styleFactoryFunction;
+  }
+
+  updateStyle(colormap: IColormap) {
+    if (this.map) {
+      this.styleFactory = new StyleFactory(colormap);
+      const styleFactoryFunction = this.getStyleFactoryFunction();
+      this.vectorLayer.setStyle(styleFactoryFunction);
+      this.updateLegend(colormap);
+    }
+  }
+
+  updateLegend(colormap: IColormap) {
+    // Remove each item from the legend by index, starting at the end and working to 0
+    const indices = [ ...Array(this.legend.getLength()).keys() ].reverse();
+    indices.forEach(i => this.legend.removeRow(i));
+
+    const field = colormap.input_params.field;
+    const smallestInterval = colormap.cuts.intervals[0];
+
+    // Add the first two legend rows separately. This is done outside of the loop since the title prop is different
+    const properties = {};
+    properties[field] = (smallestInterval[0] + smallestInterval[1]) / 2;
+
+    this.legend.addRow();
+    this.legend.addRow({
+      title: `${field} < ${smallestInterval[1]}`,
+      style: this.styleFactory.styles[0],
+      typeGeom: 'Point',
+    });
+
+    // Loop through intervals [1:] and update the legend
+    colormap.cuts.intervals.slice(1).forEach((interval, i) => {
+      const props = {};
+      props[field] = (interval[0] + interval[1]) / 2;
+
+      this.legend.addRow({
+        title: `${interval[0]} < ${field} <= ${interval[1]}`,
+        style: this.styleFactory.styles[i + 1],
+        typeGeom: 'Point',
+      });
+    });
   }
 
   updateView(view: { zoom: number; center: [number, number]; }) {
@@ -523,7 +586,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
     mapLayers.getArray().forEach((layer: VectorLayer) => {
       if (layer.get('title') === 'Drive Time Polygon') {
-        console.log('layer to remove!', layer);
         this.map.removeLayer(layer);
       }
     });

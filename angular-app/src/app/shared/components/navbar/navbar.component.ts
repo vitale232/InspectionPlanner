@@ -13,6 +13,7 @@ import { filter } from 'rxjs/operators';
 export class NavbarComponent implements OnInit, OnDestroy {
 
   tableOpen$: Observable<boolean>;
+  settingsOpen$: Observable<boolean>;
 
   @Input() sidenavState$: Observable<boolean>;
   @Output() sidenavAction = new EventEmitter< 'open' | 'close' >();
@@ -25,6 +26,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     private navbarService: NavbarService,
   ) {
     this.tableOpen$ = this.navbarService.tableOpen$;
+    this.settingsOpen$ = this.navbarService.settingsOpen$;
     if (!this.longTitle) { this.longTitle = 'Inspection Planner Application'; }
   }
 
@@ -39,6 +41,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
             this.longTitle = `Drive Time Search ${driveTimeID}`;
           } else {
             this.longTitle = 'Inspection Planner Application';
+          }
+          if (urlParts.includes('map-settings')) {
+            this.navbarService.settingsOpen = true;
+          } else {
+            this.navbarService.settingsOpen = false;
           }
         }
       )

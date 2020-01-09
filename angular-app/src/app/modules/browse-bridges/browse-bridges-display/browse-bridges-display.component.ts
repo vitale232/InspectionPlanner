@@ -13,6 +13,8 @@ import { SearchMarker } from 'src/app/shared/models/markers.model';
 import { SearchMarkersStoreService } from 'src/app/shared/stores/search-markers-store.service';
 import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store.service';
+import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
+import { IColormap } from 'src/app/shared/models/map-settings.model';
 
 
 @Component({
@@ -30,6 +32,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   bridges$: Observable<IBridgeFeature[]>;
   searchMarkers$: Observable<SearchMarker[]>;
   position$: Observable<IGeoPosition>;
+  colormap$: Observable<IColormap>;
 
   subscriptions = new Subscription();
 
@@ -47,11 +50,13 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
     private sidenavService: SidenavService,
     private searchMarkerStore: SearchMarkersStoreService,
     private geolocationStore: GeolocationStoreService,
+    private colormapStore: ColormapStoreService,
   ) {
     this.bridges$ = this.bridgesStore.bridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
     this.searchMarkers$ = this.searchMarkerStore.searchMarker$;
     this.position$ = this.geolocationStore.position$;
+    this.colormap$ = this.colormapStore.colormap$;
 
     this.titleService.setTitle('IPA - Browse Bridges');
   }
