@@ -33,7 +33,7 @@ export class SymbologyPreviewComponent implements OnInit {
             return {
               minValue: data.cuts.intervals[i][0],
               maxValue: data.cuts.intervals[i][1],
-              rgb: `rgba(${rgbColors[0]}, ${rgbColors[1]}, ${rgbColors[2]}, 0.75)`
+              rgb: `rgba(${rgbColors[0]}, ${rgbColors[1]}, ${rgbColors[2]}, 1)`
             };
           });
           // Check if pandas.qcut returned the desired number of bins
