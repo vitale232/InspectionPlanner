@@ -93,6 +93,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   private driveTimeQueryLayer: VectorLayer;
   private bridgeSubscription: Subscription;
   private subscriptions = new Subscription();
+  private styleFactory: StyleFactory;
 
   constructor(
     private router: Router,
@@ -169,7 +170,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     };
     this.generateAADTStyles();
 
-    const styleFactory = this.getStyleFactory(defaultColormap);
+    this.styleFactory = new StyleFactory(defaultColormap);
+    const styleFactoryFunction = this.getStyleFactoryFunction();
     this.vectorLayer = new VectorLayer({
       source: vectorSource,
       title: 'New York Bridges',
@@ -177,7 +179,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       visible: true,
       // style: selectAADTStyle
       // style: new StyleFactory(defaultColormap).styleFeature
-      style: styleFactory
+      style: styleFactoryFunction
       // style: this.getStyleFactory(defaultColormap)
     });
 
@@ -410,18 +412,18 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  getStyleFactory(colormap: IColormap) {
+  getStyleFactoryFunction() {
     const styleFactoryFunction = (f) => {
-      const factory = new StyleFactory(colormap);
-      return factory.styleFeature(f);
+      return this.styleFactory.styleFeature(f);
     };
     return styleFactoryFunction;
   }
 
   updateStyle(colormap: IColormap) {
     if (this.map) {
-      const styleFactory = this.getStyleFactory(colormap);
-      this.vectorLayer.setStyle(styleFactory);
+      this.styleFactory = new StyleFactory(colormap);
+      const styleFactoryFunction = this.getStyleFactoryFunction();
+      this.vectorLayer.setStyle(styleFactoryFunction);
     }
   }
 

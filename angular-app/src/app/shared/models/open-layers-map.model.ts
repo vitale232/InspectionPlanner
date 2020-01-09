@@ -81,35 +81,45 @@ export class StyleFactory {
   public stats: IColormapStats;
   public cuts: IColormapCuts;
   public alpha: number;
-  public rgba: string;
+  public rgbas: string[];
+  public styles: Style[];
+  public noDataStyle: Style;
 
   constructor(colormap: IColormap, alpha: number = 0.9) {
     this.inputParams = colormap.input_params;
     this.stats = colormap.stats;
     this.cuts = colormap.cuts;
     this.alpha = alpha;
+
+    this.rgbas = this.cuts.rgb_colors.map(rgb => `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${this.alpha})`);
+    this.styles = [];
+    this.rgbas.forEach(rgba => {
+      const fill = new Fill({ color: rgba });
+      const stroke = new Stroke({ color: 'rgba(0, 0, 0, 1)', width: 1.25 });
+      this.styles.push(
+        new Style({ image: new Circle({ fill, stroke, radius: 4}), fill, stroke })
+      );
+    });
+
+    const noDataFill = new Fill({ color: 'rgba(0, 0, 0, 1)' });
+    const noDataStroke = new Stroke({ color: 'rgba(0, 0, 0, 1)', width: 1.25 });
+    this.noDataStyle = new Style(
+      { image: new Circle({ noDataFill, noDataStroke, radius: 4 }),
+      noDataFill, noDataStroke
+    });
   }
 
   public styleFeature(feature) {
     const dataValue = feature.get(this.inputParams.field);
     if (!dataValue) {
-      const noDataFill = new Fill({ color: 'rgba(0, 0, 0, 1)'});
-      const noDataStroke = new Stroke({ color: 'rgba(0, 0, 0, 1)', width: 1.25 });
-      return new Style({ image: new Circle({ noDataFill, noDataStroke, radius: 4}), noDataFill, noDataStroke });
+      return this.noDataStyle;
     }
-    // const dataValue = feature;
+
     const index = this.cuts.closed === 'right'
                 ? this.cuts.intervals.findIndex((cuts) => dataValue > cuts[0] && dataValue <= cuts[1])
                 : this.cuts.intervals.findIndex((cuts) => dataValue >= cuts[0] && dataValue < cuts[1]);
 
-    const colors = this.cuts.rgb_colors[index];
-    this.rgba = `rgba(${colors[0]}, ${colors[1]}, ${colors[2]}, ${this.alpha})`;
-
-    // return this.rgba;
-    const fill = new Fill({ color: this.rgba });
-    const stroke = new Stroke({ color: 'rgba(0, 0, 0, 1)', width: 1.25 });
-
-    return new Style({ image: new Circle({ fill, stroke, radius: 4}), fill, stroke });
+    return this.styles[index];
   }
 
 }
