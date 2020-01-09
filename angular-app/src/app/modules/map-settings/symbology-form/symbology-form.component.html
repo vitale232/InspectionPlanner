@@ -60,6 +60,13 @@
                 routerLink="/"
                 queryParamsHandling="merge"
               > Cancel </button>
+        <button mat-button
+                type="button"
+                color="accent"
+                matTooltip="Restore default colormap"
+                matTooltipShowDelay="250"
+                (click)="onRestoreDefault()"
+              > Restore Default </button>
         <button mat-flat-button
                 type="submit"
                 (click)="onSubmit()"

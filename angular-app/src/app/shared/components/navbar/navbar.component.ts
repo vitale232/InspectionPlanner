@@ -42,19 +42,13 @@ export class NavbarComponent implements OnInit, OnDestroy {
           } else {
             this.longTitle = 'Inspection Planner Application';
           }
-          console.log('urlParts', urlParts)
           if (urlParts.includes('map-settings')) {
             this.navbarService.settingsOpen = true;
-            console.log('map settings true');
           } else {
             this.navbarService.settingsOpen = false;
-            console.log('map  settings false');
           }
         }
       )
-    );
-    this.navbarService.settingsOpen$.subscribe(
-      data => console.log('settings open from sub', data)
     );
   }
 

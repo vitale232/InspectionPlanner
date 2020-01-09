@@ -5,6 +5,7 @@ import { ColormapService } from 'src/app/shared/services/colormap.service';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
 import { IColormapQueryParams } from 'src/app/shared/models/map-settings.model';
 import { StyleFactory } from 'src/app/shared/models/open-layers-map.model';
+import { defaultColormap } from 'src/app/shared/components/open-layers-map/default-colormap';
 
 @Component({
   selector: 'app-symbology-form',
@@ -76,6 +77,10 @@ export class SymbologyFormComponent implements OnInit {
       () => this.loading = false
     );
 
+  }
+
+  onRestoreDefault() {
+    this.colormapStore.colormap = defaultColormap;
   }
 
 }
