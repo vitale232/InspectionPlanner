@@ -88,7 +88,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   private zoom: number;
 
   // Custom behaviors
-  private overlayGroup: Group;
   private driveTimeQueryLayer: VectorLayer;
   private bridgeSubscription: Subscription;
   private subscriptions = new Subscription();
@@ -192,11 +191,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       })
     });
 
-    this.overlayGroup = new Group({
-        title: 'Overlays',
-        layers: [ studyAreaVectorLayer, this.vectorLayer ]
-    });
-
     const basemapGroup = new Group({
         title: 'Basemaps',
         layers: [
@@ -252,7 +246,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     });
     this.map = new Map({
       target: 'open-layers-map',
-      layers: [ basemapGroup, this.overlayGroup, ],
+      layers: [ basemapGroup, studyAreaVectorLayer, this.vectorLayer, ],
       view: this.view,
       controls: defaultControls( { attribution: false } ).extend([
           new ZoomToExtent({
@@ -304,13 +298,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       size: [40, 10]
     });
     this.map.addControl(this.legend);
-
-    this.legend.addRow();
-    this.legend.addRow({ title: 'AADT < 235', properties: { aadt: 100 }, typeGeom: 'Point' });
-    this.legend.addRow({ title: '235 < AADT <= 1005', properties: { aadt: 500 }, typeGeom: 'Point' });
-    this.legend.addRow({ title: '1005 < AADT <= 3735', properties: { aadt: 2000 }, typeGeom: 'Point' });
-    this.legend.addRow({ title: '3735 < AADT <= 11350', properties: { aadt: 5000 }, typeGeom: 'Point' });
-    this.legend.addRow({ title: 'AADT > 11350', properties: { aadt: 12000 }, typeGeom: 'Point' });
 
     setTimeout(() => this.map.updateSize(), 200);
 
