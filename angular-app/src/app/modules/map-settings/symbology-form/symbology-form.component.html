@@ -53,10 +53,9 @@
         <button mat-button
                 type="button"
                 color="accent"
-                matTooltip="Return to browsable map"
+                matTooltip="Return to last map"
                 matTooltipShowDelay="250"
-                routerLink="/"
-                queryParamsHandling="merge"
+                (click)="onClose()"
               > Close </button>
         <button mat-button
                 type="button"

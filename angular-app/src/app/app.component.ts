@@ -3,6 +3,7 @@ import { MatSidenav } from '@angular/material';
 import { SidenavService } from './shared/services/sidenav.service';
 import { NgcCookieConsentService } from 'ngx-cookieconsent';
 import { Subscription, Observable } from 'rxjs';
+import { BrowserHistoryService } from './shared/services/browser-history.service';
 
 @Component({
   selector: 'app-root',
@@ -21,8 +22,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
   constructor(
     private ccService: NgcCookieConsentService,
     private sidenavService: SidenavService,
+    private browserHistory: BrowserHistoryService,
   ) {
     this.sidenavState$ = this.sidenavService.sidenavState$;
+    // Call the BrowserHistoryService so that it starts creating a route history
+    let browserHistoryInit = this.browserHistory.currentUrl;
+    browserHistoryInit = 'thanks!';
   }
 
   ngOnInit() {
