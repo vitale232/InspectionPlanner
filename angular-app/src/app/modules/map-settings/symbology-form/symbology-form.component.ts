@@ -4,8 +4,9 @@ import { ISelectOption } from 'src/app/shared/models/bridges.model';
 import { ColormapService } from 'src/app/shared/services/colormap.service';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
 import { IColormapQueryParams } from 'src/app/shared/models/map-settings.model';
-import { StyleFactory } from 'src/app/shared/models/open-layers-map.model';
 import { defaultColormap } from 'src/app/shared/components/open-layers-map/default-colormap';
+import { BrowserHistoryService } from 'src/app/shared/services/browser-history.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-symbology-form',
@@ -15,6 +16,7 @@ import { defaultColormap } from 'src/app/shared/components/open-layers-map/defau
 export class SymbologyFormComponent implements OnInit {
 
   loading = false;
+  previousUrl: string;
 
   colorMapOptions: ISelectOption[] = [
     { value: 'viridis', viewOption: 'Viridis' },
@@ -52,12 +54,15 @@ export class SymbologyFormComponent implements OnInit {
   invertColormap = this.fb.control(false);
 
   constructor(
+    private router: Router,
     private fb: FormBuilder,
     private colormapService: ColormapService,
     private colormapStore: ColormapStoreService,
+    private browserHistory: BrowserHistoryService,
   ) { }
 
   ngOnInit() {
+    this.previousUrl = this.browserHistory.previousUrl;
   }
 
   onSubmit() {
@@ -81,6 +86,14 @@ export class SymbologyFormComponent implements OnInit {
 
   onRestoreDefault() {
     this.colormapStore.colormap = defaultColormap;
+  }
+
+  onClose(): void {
+    if (this.previousUrl) {
+      this.router.navigateByUrl(this.previousUrl);
+    } else {
+      this.router.navigate(['/'], { queryParamsHandling: 'merge' });
+    }
   }
 
 }

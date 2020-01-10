@@ -9,11 +9,12 @@ import { IBridgeFeature } from 'src/app/shared/models/bridges.model';
 import { SearchMarker } from 'src/app/shared/models/markers.model';
 import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 import { IMapView, TExtent } from 'src/app/shared/models/open-layers-map.model';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NavbarService } from 'src/app/shared/services/navbar.service';
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
 import { IColormap } from 'src/app/shared/models/map-settings.model';
+import { BrowserHistoryService } from 'src/app/shared/services/browser-history.service';
 
 
 @Component({
@@ -33,6 +34,7 @@ export class MapSettingsComponent implements OnInit, OnDestroy {
   position$: Observable<IGeoPosition>;
   colormap$: Observable<IColormap>;
 
+  previousUrl: string;
   subscriptions = new Subscription();
 
   constructor(
