@@ -7,6 +7,7 @@ import { IColormapQueryParams } from 'src/app/shared/models/map-settings.model';
 import { defaultColormap } from 'src/app/shared/components/open-layers-map/default-colormap';
 import { BrowserHistoryService } from 'src/app/shared/services/browser-history.service';
 import { Router } from '@angular/router';
+import { NotificationsService } from 'angular2-notifications';
 
 @Component({
   selector: 'app-symbology-form',
@@ -59,6 +60,7 @@ export class SymbologyFormComponent implements OnInit {
     private colormapService: ColormapService,
     private colormapStore: ColormapStoreService,
     private browserHistory: BrowserHistoryService,
+    private notifications: NotificationsService,
   ) { }
 
   ngOnInit() {
@@ -78,7 +80,15 @@ export class SymbologyFormComponent implements OnInit {
 
     this.colormapService.getColormap(queryParams).subscribe(
       colormapData => this.colormapStore.colormap = colormapData,
-      err => { console.error('getColormap error', err); this.loading = false; },
+      err => {
+        console.error('getColormap error', err);
+        this.loading = false;
+        this.notifications.error(
+          'Unhandled error',
+          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`
+          );
+
+      },
       () => this.loading = false
     );
 

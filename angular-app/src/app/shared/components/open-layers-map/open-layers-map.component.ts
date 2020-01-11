@@ -407,7 +407,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.legend.addRow();
     this.legend.addRow({
-      title: `${field} < ${smallestInterval[1]}`,
+      title: `${field} <= ${smallestInterval[1]}`,
       style: this.styleFactory.styles[0],
       typeGeom: 'Point',
     });

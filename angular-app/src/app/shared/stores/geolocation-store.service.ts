@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IGeoPosition } from '../models/geolocation.model';
+import { NotificationsService } from 'angular2-notifications';
 
 
 @Injectable({
@@ -20,7 +21,7 @@ export class GeolocationStoreService {
     return this._position.getValue();
   }
 
-  constructor() { }
+  constructor( private notifications: NotificationsService ) { }
 
   public fetchPosition(): void {
     navigator.geolocation.getCurrentPosition(
@@ -37,7 +38,10 @@ export class GeolocationStoreService {
         };
       },
       (err) => {
-        console.error('TODO: Do something with this error', err);
+        this.notifications.error(
+          'Geolocation Error',
+          err.message
+        );
         this._position.error(err);
       }
     );

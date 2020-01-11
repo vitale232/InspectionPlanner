@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { TExtent } from '../models/open-layers-map.model';
 import { IBridgesApiResponse, IBridgeFeature } from '../models/bridges.model';
 
-import { map, expand, reduce, take } from 'rxjs/operators';
-import { EMPTY, Observable } from 'rxjs';
+import { map, expand, reduce, take, retry, retryWhen, delay, mergeMap } from 'rxjs/operators';
+import { EMPTY, Observable, of, throwError } from 'rxjs';
 
 
 @Injectable({
@@ -22,20 +22,32 @@ export class BridgesService {
   }
 
   getAllBridgesInBbox(extent: TExtent): Observable<IBridgeFeature[]> {
+    let retries = 3;
     return this.http.get<IBridgesApiResponse>(this.bridgesUri, { params: { in_bbox: extent.join(',') } }).pipe(
       expand(data => data.next ? this.http.get<IBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),
       map(d => d.results.features),
       reduce((x, acc) => acc.concat(x)),
-      take(1)
+      take(1),
+      retryWhen(((errors: Observable<any>) => {
+        return errors.pipe(
+          delay(1500),
+          mergeMap(error => retries-- > 0 ? of(error) : throwError(error)));
+      }))
     );
   }
 
   getDriveTimeBridges(driveTimeID: number): Observable<IBridgeFeature[]> {
+    let retries = 3;
     return this.http.get<IBridgesApiResponse>(`${this.driveTimeBridgesUri}${driveTimeID}/`).pipe(
       expand(data => data.next ? this.http.get<IBridgesApiResponse>(data.next.replace(/https?:\/\/[^\/]+/i, '')) : EMPTY),
       map(d => d.results.features),
       reduce((x, acc) => acc.concat(x)),
-      take(1)
+      take(1),
+      retryWhen(((errors: Observable<any>) => {
+        return errors.pipe(
+          delay(1500),
+          mergeMap(error => retries-- > 0 ? of(error) : throwError(error)));
+      }))
     );
   }
 }
