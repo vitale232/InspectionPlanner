@@ -75,7 +75,7 @@ export class DriveTimePolygon {
   }
 }
 
-export class StyleFactory {
+export class NumericStyleFactory {
 
   public inputParams: IColormapQueryParams;
   public stats: IColormapStats;
@@ -101,12 +101,7 @@ export class StyleFactory {
       );
     });
 
-    const noDataFill = new Fill({ color: 'rgba(0, 0, 0, 1)' });
-    const noDataStroke = new Stroke({ color: 'rgba(0, 0, 0, 1)', width: 1.25 });
-    this.noDataStyle = new Style(
-      { image: new Circle({ noDataFill, noDataStroke, radius: 4 }),
-      noDataFill, noDataStroke
-    });
+    this.noDataStyle = new Style({ });
   }
 
   public styleFeature(feature) {
@@ -123,3 +118,7 @@ export class StyleFactory {
   }
 
 }
+
+// export class CategoricalStyleFactory {
+
+// }

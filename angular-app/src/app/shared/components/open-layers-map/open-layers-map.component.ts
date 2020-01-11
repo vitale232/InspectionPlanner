@@ -22,7 +22,7 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { IMapView, TExtent, DriveTimePolygon, StyleFactory } from 'src/app/shared/models/open-layers-map.model';
+import { IMapView, TExtent, DriveTimePolygon, NumericStyleFactory } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
 import { SearchMarker, GeolocationMarker, DriveTimeQueryMarker } from '../../models/markers.model';
 
@@ -91,7 +91,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   private driveTimeQueryLayer: VectorLayer;
   private bridgeSubscription: Subscription;
   private subscriptions = new Subscription();
-  private styleFactory: StyleFactory;
+  private styleFactory: NumericStyleFactory;
   private legend: Legend;
 
   constructor(
@@ -151,7 +151,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       },
     });
 
-    this.styleFactory = new StyleFactory(defaultColormap);
+    this.styleFactory = new NumericStyleFactory(defaultColormap);
     const styleFactoryFunction = this.getStyleFactoryFunction();
     this.vectorLayer = new VectorLayer({
       source: vectorSource,
@@ -386,7 +386,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
   updateStyle(colormap: IColormap) {
     if (this.map) {
-      this.styleFactory = new StyleFactory(colormap);
+      this.styleFactory = new NumericStyleFactory(colormap);
       const styleFactoryFunction = this.getStyleFactoryFunction();
       this.vectorLayer.setStyle(styleFactoryFunction);
       this.updateLegend(colormap);

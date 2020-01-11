@@ -1,0 +1,11 @@
+  <mat-form-field color="accent" style="width: 300px; padding-top: 10px;">
+    <mat-label> Bridge Attribute for Symbology</mat-label>
+    <mat-select [formControl]="fieldControl">
+      <mat-option *ngFor="let field of fieldOptions"
+                  [value]="field.value"
+      > {{ field.viewOption }} </mat-option>
+    </mat-select>
+    <mat-error *ngIf="fieldControl.invalid">
+      A field is required
+    </mat-error>
+  </mat-form-field>

@@ -7,6 +7,7 @@ import { DriveTimeQueriesService } from 'src/app/shared/services/drive-time-quer
 import { Router } from '@angular/router';
 import { SidenavService } from 'src/app/shared/services/sidenav.service';
 import { NotificationsService } from 'angular2-notifications';
+import { DriveTimeQueriesStoreService } from 'src/app/shared/stores/drive-time-queries-store.service';
 
 @Component({
   selector: 'app-drive-time-form',
@@ -44,10 +45,10 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
 
   constructor(
     private driveTimeQueriesService: DriveTimeQueriesService,
+    private driveTimeQueriesStore: DriveTimeQueriesStoreService,
     private fb: FormBuilder,
     private notifications: NotificationsService,
     private router: Router,
-    private sidenav: SidenavService,
     ) { }
 
   ngOnInit() {
@@ -114,12 +115,17 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
       .filter(q => q.properties.display_name === this.driveTimeForm.value.searchText)
       .filter(q => q.properties.drive_time_hours === this.timeIntervalToNumber( this.driveTimeForm.value.hours ));
 
+    console.log('selectedQuery', selectedQuery);
     let querySearchText;
     if (selectedQuery.length === 1) {
       querySearchText = selectedQuery[0].properties.search_text;
+      // If the selected query is of length 1, let's just navigate to the dtq
+      this.onExistingDriveTimeQuery(selectedQuery[0], selectedQuery[0].properties.drive_time_hours.toString());
+      return null;
     } else {
       querySearchText = this.driveTimeForm.value.searchText;
     }
+    console.log('querySearchText', querySearchText);
 
     const driveTimeQueryParams: INewDriveTimeParms = {
       q: querySearchText,
@@ -202,7 +208,11 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
         this.loading = false;
         console.error('pollDriveTimeQuery error', err);
       },
-      () => console.log('Polling complete!')
+      () => {
+        console.log('Polling complete!');
+        // Update the drive time query store when the new dtq is completed
+        this.driveTimeQueriesStore.fetchDriveTimeQueries();
+      }
     );
   }
 
