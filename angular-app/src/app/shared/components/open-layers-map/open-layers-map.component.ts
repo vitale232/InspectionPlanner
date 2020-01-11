@@ -407,7 +407,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.legend.addRow();
     this.legend.addRow({
-      title: `${field} <= ${smallestInterval[1]}`,
+      title: `${field} <= ${smallestInterval[1].toLocaleString()}`,
       style: this.styleFactory.styles[0],
       typeGeom: 'Point',
     });
@@ -418,7 +418,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       props[field] = (interval[0] + interval[1]) / 2;
 
       this.legend.addRow({
-        title: `${interval[0]} < ${field} <= ${interval[1]}`,
+        title: `${interval[0].toLocaleString()} < ${field} <= ${interval[1].toLocaleString()}`,
         style: this.styleFactory.styles[i + 1],
         typeGeom: 'Point',
       });
