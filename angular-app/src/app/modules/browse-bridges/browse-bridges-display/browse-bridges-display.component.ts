@@ -26,7 +26,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
 
   @ViewChild(OpenLayersMapComponent, { static: false }) private openLayersMapComponent: OpenLayersMapComponent;
 
-  mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
+  mapView: IMapView = { zoom: 10, center: [ -73.8727, 42.6532 ]};
 
   loading$: Observable<boolean>;
   bridges$: Observable<IBridgeFeature[]>;
