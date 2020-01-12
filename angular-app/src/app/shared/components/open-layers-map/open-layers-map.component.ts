@@ -396,18 +396,35 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
         this.styleFactory = new NumericStyleFactory(colormap);
         const styleFactoryFunction = this.getStyleFactoryFunction();
         this.vectorLayer.setStyle(styleFactoryFunction);
-        this.updateLegend(colormap);
+        this.updateNumericLegend(colormap);
       }
       if ('field' in colormap) {
         this.styleFactory = new CategoricalStyleFactory(colormap);
         const styleFactoryFunction = this.getStyleFactoryFunction();
         this.vectorLayer.setStyle(styleFactoryFunction);
-        // this.updateLegend(colormap);
+        this.updateCategoricalLegend(colormap);
       }
     }
   }
 
-  updateLegend(colormap: IColormap) {
+  updateCategoricalLegend(colormap: IDistinctColormap) {
+    const indices = [ ...Array(this.legend.getLength()).keys() ].reverse();
+    indices.forEach(i => this.legend.removeRow(i));
+
+    const field = colormap.field;
+
+    this.legend.addRow();
+
+    colormap.distinct.forEach((value, index) => {
+      this.legend.addRow({
+        title: value,
+        style: this.styleFactory.styles[index],
+        typeGeom: 'Point'
+      });
+    });
+  }
+
+  updateNumericLegend(colormap: IColormap) {
     // Remove each item from the legend by index, starting at the end and working to 0
     const indices = [ ...Array(this.legend.getLength()).keys() ].reverse();
     indices.forEach(i => this.legend.removeRow(i));
