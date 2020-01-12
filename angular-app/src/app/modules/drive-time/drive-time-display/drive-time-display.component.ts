@@ -18,7 +18,7 @@ import { IDriveTimePolygonFeature } from 'src/app/shared/models/drive-time-polyg
 import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store.service';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
-import { IColormap } from 'src/app/shared/models/map-settings.model';
+import { IColormap, IDistinctColormap } from 'src/app/shared/models/map-settings.model';
 
 @Component({
   selector: 'app-drive-time-display',
@@ -38,7 +38,7 @@ export class DriveTimeDisplayComponent implements OnInit {
   selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>;
   driveTimePolygon$: Observable<IDriveTimePolygonFeature>;
   position$: Observable<IGeoPosition>;
-  colormap$: Observable<IColormap>;
+  colormap$: Observable<IColormap|IDistinctColormap>;
 
   subscriptions = new Subscription();
 

@@ -22,7 +22,13 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { IMapView, TExtent, DriveTimePolygon, NumericStyleFactory } from 'src/app/shared/models/open-layers-map.model';
+import {
+  IMapView,
+  TExtent,
+  DriveTimePolygon,
+  NumericStyleFactory,
+  CategoricalStyleFactory
+} from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
 import { SearchMarker, GeolocationMarker, DriveTimeQueryMarker } from '../../models/markers.model';
 
@@ -53,7 +59,7 @@ import LayerSwitcher from 'ol-ext/control/LayerSwitcher';
 import { IDriveTimePolygonFeature } from '../../models/drive-time-polygons.model';
 import { IGeoPosition } from '../../models/geolocation.model';
 import { IDriveTimeQueryFeature } from '../../models/drive-time-queries.model';
-import { IColormap } from '../../models/map-settings.model';
+import { IColormap, IDistinctColormap } from '../../models/map-settings.model';
 import { defaultColormap } from './default-colormap';
 
 
@@ -72,7 +78,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() searchMarkers$: Observable<SearchMarker[]>;
   @Input() position$: Observable<IGeoPosition>;
-  @Input() colormap$: Observable<IColormap>;
+  @Input() colormap$: Observable<IColormap|IDistinctColormap>;
   @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>;    // Optional
   @Input() selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>; // Optional
 
@@ -91,7 +97,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   private driveTimeQueryLayer: VectorLayer;
   private bridgeSubscription: Subscription;
   private subscriptions = new Subscription();
-  private styleFactory: NumericStyleFactory;
+  private styleFactory: NumericStyleFactory|CategoricalStyleFactory;
   private legend: Legend;
 
   constructor(
@@ -386,10 +392,18 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
   updateStyle(colormap: IColormap) {
     if (this.map) {
-      this.styleFactory = new NumericStyleFactory(colormap);
-      const styleFactoryFunction = this.getStyleFactoryFunction();
-      this.vectorLayer.setStyle(styleFactoryFunction);
-      this.updateLegend(colormap);
+      if ('input_params' in colormap) {
+        this.styleFactory = new NumericStyleFactory(colormap);
+        const styleFactoryFunction = this.getStyleFactoryFunction();
+        this.vectorLayer.setStyle(styleFactoryFunction);
+        this.updateLegend(colormap);
+      }
+      if ('field' in colormap) {
+        this.styleFactory = new CategoricalStyleFactory(colormap);
+        const styleFactoryFunction = this.getStyleFactoryFunction();
+        this.vectorLayer.setStyle(styleFactoryFunction);
+        // this.updateLegend(colormap);
+      }
     }
   }
 

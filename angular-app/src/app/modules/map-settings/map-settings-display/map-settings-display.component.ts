@@ -13,7 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NavbarService } from 'src/app/shared/services/navbar.service';
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
-import { IColormap } from 'src/app/shared/models/map-settings.model';
+import { IColormap, IDistinctColormap } from 'src/app/shared/models/map-settings.model';
 
 
 @Component({
@@ -31,7 +31,7 @@ export class MapSettingsDisplayComponent implements OnInit, OnDestroy {
   loading$: Observable<boolean>;
   searchMarkers$: Observable<SearchMarker[]>;
   position$: Observable<IGeoPosition>;
-  colormap$: Observable<IColormap>;
+  colormap$: Observable<IColormap|IDistinctColormap>;
 
   previousUrl: string;
   subscriptions = new Subscription();

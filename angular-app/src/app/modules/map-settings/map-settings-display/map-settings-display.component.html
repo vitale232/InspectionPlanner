@@ -23,11 +23,11 @@
       <mat-tab-group color="accent">
 
         <mat-tab label="Numeric Fields">
-          <div class="content"
-              fxLayout="row"
-              fxLayout.xs="column"
-              fxLayoutGap="25px"
-              style="padding: 15px;"
+          <div class="content-numeric"
+               fxLayout="row"
+               fxLayout.xs="column"
+               fxLayoutGap="25px"
+               style="padding: 15px;"
               >
             <div fxFlex="50" class="content-column">
               <app-symbology-form></app-symbology-form>
@@ -39,8 +39,15 @@
         </mat-tab>
 
         <mat-tab label="Categorical Fields">
-          <div class="content" fxLayout="row" fxLayoutAlign="center center">
-            <app-categorical-colors></app-categorical-colors>
+          <div class="content-categorical"
+               fxLayout="row"
+               fxLayoutGap="25px"
+               style="padding: 15px;"
+               fxLayoutAlign="center center"
+              >
+            <div fxFlex="100" class="content-column">
+              <app-categorical-colors></app-categorical-colors>
+            </div>
           </div>
         </mat-tab>
       </mat-tab-group>

@@ -1,0 +1,103 @@
+<div fxLayout="row" style="width: 100%;">
+  <mat-form-field color="accent" style="width: 100%;">
+    <mat-label> Bridge Attribute for Symbology</mat-label>
+    <mat-select [formControl]="fieldControl">
+      <mat-option *ngFor="let field of fieldOptions"
+                  [value]="field.value"
+                  > {{ field.viewOption }} </mat-option>
+    </mat-select>
+    <mat-error *ngIf="fieldControl.invalid">
+      A field is required
+    </mat-error>
+  </mat-form-field>
+  <div fxLayoutAlign="center center">
+    <button mat-button
+            *ngIf="!loading"
+            color="accent"
+            matTooltip="Generate symbology for selected field"
+            [disabled]="fieldControl.invalid"
+            (click)="onPreview()"
+          > Preview </button>
+    <mat-spinner *ngIf="loading" color="accent" diameter="30"></mat-spinner>
+  </div>
+</div>
+
+<div *ngIf="tableDataSource" fxLayoutAlign="center center">
+  <table mat-table [dataSource]="tableDataSource">
+
+    <ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef style="width: 50px; text-align: center;">
+        <mat-checkbox (change)="$event ? masterToggle() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()"
+                     >
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row" style="width: 50px; text-align: center;">
+        <mat-checkbox (click)="$event.stopPropagation()"
+                      (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)"
+                     >
+        </mat-checkbox>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="rgb">
+      <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Colormap </th>
+      <td mat-cell *matCellDef="let row"
+          [style.background-color]="row.rgb"
+          style="cursor: pointer;"
+          matTooltip="Click to change color"
+         >
+         <mat-form-field matLine>
+          <input matInput
+                 [(colorPicker)]="row.rgb"
+                 [style.background]="row.rgb"
+                 [cpPosition]="'auto'"
+                 [cpOKButton]="true"
+                 [cpCancelButton]="true"
+                 placeholder="{{row.rgb}}"/>
+        </mat-form-field>
+        </td>
+    </ng-container>
+
+    <ng-container matColumnDef="value">
+      <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Value </th>
+      <td mat-cell *matCellDef="let row" style="padding-left: 8px;"> {{row.value}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+  </table>
+</div>
+
+<div fxLayout="row"
+     fxLayoutGap="10px"
+     fxLayoutAlign="center center"
+     class="button-container"
+    >
+  <button mat-button
+          type="button"
+          color="accent"
+          matTooltip="Return to last map"
+          matTooltipShowDelay="250"
+          (click)="onClose()"
+        > Close </button>
+  <button mat-button
+          type="button"
+          color="accent"
+          matTooltip="Restore default colormap"
+          matTooltipShowDelay="250"
+          (click)="onRestoreDefault()"
+        > Restore Default </button>
+  <button mat-flat-button
+          type="submit"
+          color="accent"
+          matTooltip="Apply the colormap"
+          matTooltipShowDelay="250"
+          [disabled]="!tableDataSource"
+          (click)="onApply()"
+          > Apply </button>
+  <mat-spinner *ngIf="loading" color="accent" diameter="30"></mat-spinner>
+</div>
