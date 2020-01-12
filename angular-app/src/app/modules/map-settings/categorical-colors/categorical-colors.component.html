@@ -51,9 +51,10 @@
          >
          <mat-form-field matLine>
           <input matInput
+                 readonly="readonly"
                  [(colorPicker)]="row.rgb"
                  [style.background]="row.rgb"
-                 [cpPosition]="'auto'"
+                 [cpPosition]="'bottom'"
                  [cpOKButton]="true"
                  [cpCancelButton]="true"
                  placeholder="{{row.rgb}}"/>
@@ -62,7 +63,7 @@
     </ng-container>
 
     <ng-container matColumnDef="value">
-      <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Value </th>
+      <th mat-header-cell *matHeaderCellDef style="text-align: center;"> {{fieldControl.value ? fieldControl.value : "Value"}} </th>
       <td mat-cell *matCellDef="let row" style="padding-left: 8px;"> {{row.value}} </td>
     </ng-container>
 
@@ -83,14 +84,14 @@
           matTooltip="Return to last map"
           matTooltipShowDelay="250"
           (click)="onClose()"
-        > Close </button>
+         > Close </button>
   <button mat-button
           type="button"
           color="accent"
           matTooltip="Restore default colormap"
           matTooltipShowDelay="250"
           (click)="onRestoreDefault()"
-        > Restore Default </button>
+         > Restore Default </button>
   <button mat-flat-button
           type="submit"
           color="accent"

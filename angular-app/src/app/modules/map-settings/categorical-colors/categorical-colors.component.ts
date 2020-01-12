@@ -9,7 +9,6 @@ import { MatTableDataSource } from '@angular/material';
 import { defaultColormap } from 'src/app/shared/components/open-layers-map/default-colormap';
 import { BrowserHistoryService } from 'src/app/shared/services/browser-history.service';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 
 
 @Component({
@@ -33,7 +32,6 @@ export class CategoricalColorsComponent implements OnInit {
   loading = false;
   fieldControl = this.fb.control('', Validators.required);
   previousUrl: string;
-  subscriptions: Subscription;
 
   tableData: IDistinctFieldPreview[];
   tableDataSource: MatTableDataSource<IDistinctFieldPreview>;
@@ -49,10 +47,21 @@ export class CategoricalColorsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log('CAT  ON INIT')
     this.previousUrl = this.browserHistory.previousUrl;
-    this.subscriptions.add(this.colormapStore.colormap$.subscribe(
-      data => console.log('colormap$ from categorical component', data)
-    ))
+
+    if (this.colormapStore.colormap && 'field' in this.colormapStore.colormap) {
+      this.tableData = [];
+      (this.colormapStore.colormap as IDistinctColormap).rgbColors.forEach((rgb, index) => {
+        this.tableData.push({
+          value: (this.colormapStore.colormap as IDistinctColormap).distinct[index],
+          rgb
+        });
+      });
+      this.tableData.sort((a, b) => a.value > b.value ? 1 : -1);
+      this.tableDataSource = new MatTableDataSource(this.tableData);
+      // console
+    }
   }
 
   randomRGBArray(count, alpha: number = 0.95) {
