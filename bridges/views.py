@@ -78,9 +78,12 @@ class NewYorkBridgeDistinct(APIView):
             field_name, flat=True
         ).distinct()
 
+        distinct_values = list(queryset)
+
         payload = {
             'field': field_name,
-            'distinct': list(queryset)
+            'distinct': distinct_values,
+            'count': len(distinct_values)
         }
 
         return Response(payload, status=status.HTTP_200_OK)

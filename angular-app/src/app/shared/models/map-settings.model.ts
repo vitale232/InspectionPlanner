@@ -34,3 +34,21 @@ export interface IColormapPreview {
   maxValue: number;
   rgb: string;
 }
+
+export interface IDistinctField {
+  field: string;
+  distinct: string[];
+  count: number;
+}
+
+export interface IDistinctColormap {
+  field: string;
+  distinct: string[];
+  count: number;
+  rgbColors: string[];
+}
+
+export interface IDistinctFieldPreview {
+  value: string;
+  rgb: string;
+}

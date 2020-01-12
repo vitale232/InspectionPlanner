@@ -1,22 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { IDriveTimePolygonFeature } from '../models/drive-time-polygons.model';
 import { Observable, of, throwError } from 'rxjs';
 import { retryWhen, delay, mergeMap } from 'rxjs/operators';
-
+import { IDistinctField } from '../models/map-settings.model';
 
 @Injectable({
   providedIn: 'root'
 })
-export class DriveTimePolygonService {
+export class DistinctFieldsService {
 
-  driveTimePolygonUrl = 'routing/drive-time-polygons/drive-time-queries/';
+  distinctUrl = 'bridges/new-york-bridges/distinct/';
 
   constructor( private http: HttpClient ) { }
 
-  getDriveTimePolygon(driveTimeID: number): Observable<IDriveTimePolygonFeature> {
+  getFieldValues(field: string): Observable<IDistinctField> {
     let retries = 3;
-    return this.http.get<IDriveTimePolygonFeature>(`${this.driveTimePolygonUrl}${driveTimeID}`).pipe(
+    return this.http.get<IDistinctField>(`${this.distinctUrl}${field}`).pipe(
       retryWhen(((errors: Observable<any>) => {
         return errors.pipe(
           delay(1500),

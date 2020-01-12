@@ -22,7 +22,13 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
-import { IMapView, TExtent, DriveTimePolygon, StyleFactory } from 'src/app/shared/models/open-layers-map.model';
+import {
+  IMapView,
+  TExtent,
+  DriveTimePolygon,
+  NumericStyleFactory,
+  CategoricalStyleFactory
+} from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from '../../models/bridges.model';
 import { SearchMarker, GeolocationMarker, DriveTimeQueryMarker } from '../../models/markers.model';
 
@@ -53,7 +59,7 @@ import LayerSwitcher from 'ol-ext/control/LayerSwitcher';
 import { IDriveTimePolygonFeature } from '../../models/drive-time-polygons.model';
 import { IGeoPosition } from '../../models/geolocation.model';
 import { IDriveTimeQueryFeature } from '../../models/drive-time-queries.model';
-import { IColormap } from '../../models/map-settings.model';
+import { IColormap, IDistinctColormap } from '../../models/map-settings.model';
 import { defaultColormap } from './default-colormap';
 
 
@@ -72,7 +78,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() searchMarkers$: Observable<SearchMarker[]>;
   @Input() position$: Observable<IGeoPosition>;
-  @Input() colormap$: Observable<IColormap>;
+  @Input() colormap$: Observable<IColormap|IDistinctColormap>;
   @Input() driveTimePolygons$: Observable<IDriveTimePolygonFeature>;    // Optional
   @Input() selectedDriveTimeQuery$: Observable<IDriveTimeQueryFeature>; // Optional
 
@@ -91,7 +97,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   private driveTimeQueryLayer: VectorLayer;
   private bridgeSubscription: Subscription;
   private subscriptions = new Subscription();
-  private styleFactory: StyleFactory;
+  private styleFactory: NumericStyleFactory|CategoricalStyleFactory;
   private legend: Legend;
 
   constructor(
@@ -151,7 +157,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       },
     });
 
-    this.styleFactory = new StyleFactory(defaultColormap);
+    this.styleFactory = new NumericStyleFactory(defaultColormap);
     const styleFactoryFunction = this.getStyleFactoryFunction();
     this.vectorLayer = new VectorLayer({
       source: vectorSource,
@@ -386,14 +392,39 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
   updateStyle(colormap: IColormap) {
     if (this.map) {
-      this.styleFactory = new StyleFactory(colormap);
-      const styleFactoryFunction = this.getStyleFactoryFunction();
-      this.vectorLayer.setStyle(styleFactoryFunction);
-      this.updateLegend(colormap);
+      if ('input_params' in colormap) {
+        this.styleFactory = new NumericStyleFactory(colormap);
+        const styleFactoryFunction = this.getStyleFactoryFunction();
+        this.vectorLayer.setStyle(styleFactoryFunction);
+        this.updateNumericLegend(colormap);
+      }
+      if ('field' in colormap) {
+        this.styleFactory = new CategoricalStyleFactory(colormap);
+        const styleFactoryFunction = this.getStyleFactoryFunction();
+        this.vectorLayer.setStyle(styleFactoryFunction);
+        this.updateCategoricalLegend(colormap);
+      }
     }
   }
 
-  updateLegend(colormap: IColormap) {
+  updateCategoricalLegend(colormap: IDistinctColormap) {
+    const indices = [ ...Array(this.legend.getLength()).keys() ].reverse();
+    indices.forEach(i => this.legend.removeRow(i));
+
+    const field = colormap.field;
+
+    this.legend.addRow();
+
+    colormap.distinct.forEach((value, index) => {
+      this.legend.addRow({
+        title: value,
+        style: this.styleFactory.styles[index],
+        typeGeom: 'Point'
+      });
+    });
+  }
+
+  updateNumericLegend(colormap: IColormap) {
     // Remove each item from the legend by index, starting at the end and working to 0
     const indices = [ ...Array(this.legend.getLength()).keys() ].reverse();
     indices.forEach(i => this.legend.removeRow(i));
@@ -407,7 +438,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
     this.legend.addRow();
     this.legend.addRow({
-      title: `${field} < ${smallestInterval[1]}`,
+      title: `${field} <= ${smallestInterval[1].toLocaleString()}`,
       style: this.styleFactory.styles[0],
       typeGeom: 'Point',
     });
@@ -418,7 +449,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
       props[field] = (interval[0] + interval[1]) / 2;
 
       this.legend.addRow({
-        title: `${interval[0]} < ${field} <= ${interval[1]}`,
+        title: `${interval[0].toLocaleString()} < ${field} <= ${interval[1].toLocaleString()}`,
         style: this.styleFactory.styles[i + 1],
         typeGeom: 'Point',
       });

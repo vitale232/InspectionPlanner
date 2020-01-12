@@ -3,6 +3,7 @@ import { IDriveTimePolygonFeature } from '../models/drive-time-polygons.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { BridgesStoreService } from './bridges-store.service';
 import { DriveTimePolygonService } from '../services/drive-time-polygon.service';
+import { NotificationsService } from 'angular2-notifications';
 
 @Injectable({
   providedIn: 'root'
@@ -25,6 +26,7 @@ export class DriveTimePolygonStoreService {
   constructor(
     private bridgesStore: BridgesStoreService,
     private driveTimePolygonService: DriveTimePolygonService,
+    private notifications: NotificationsService,
   ) {
     this.bridgesStore.driveTimeID$.subscribe(
       () => this.fetchDriveTimePolygon(),
@@ -36,7 +38,13 @@ export class DriveTimePolygonStoreService {
     if (!this.bridgesStore.driveTimeID) { return; } // Don't fetch when not a number
     this.driveTimePolygonService.getDriveTimePolygon(this.bridgesStore.driveTimeID).subscribe(
       polygon => this.driveTimePolygon = polygon,
-      err => console.error(err)
+      err => {
+        console.error('DriveTimePolygonStore', err);
+        this.notifications.error(
+          'Unhandled error',
+          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`
+        );
+      }
     );
   }
 }

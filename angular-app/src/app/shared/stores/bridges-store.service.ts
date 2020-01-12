@@ -4,6 +4,7 @@ import { IBridgeFeature } from '../models/bridges.model';
 import { BridgesService } from '../services/bridges.service';
 import { LoadingIndicatorService } from '../services/loading-indicator.service';
 import { TExtent } from '../models/open-layers-map.model';
+import { NotificationsService } from 'angular2-notifications';
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +51,7 @@ export class BridgesStoreService {
   constructor(
     private bridgesService: BridgesService,
     private loadingIndicatorService: LoadingIndicatorService,
+    private notifications: NotificationsService,
   ) { }
 
   fetchBridges(bbox: TExtent) {
@@ -59,6 +61,10 @@ export class BridgesStoreService {
       bridges => this.bridges = bridges,
       err => {
         console.error('error in fetchBridges()', err);
+        this.notifications.error(
+          'Unhandled error',
+          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`
+        );
         this.loadingIndicatorService.loading = false;
       },
       () => this.loadingIndicatorService.loading = false
@@ -72,6 +78,10 @@ export class BridgesStoreService {
       err => {
         console.error('error in fetchBridges()', err);
         this.loadingIndicatorService.loading = false;
+        this.notifications.error(
+          'Unhandled error',
+          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`
+        );
       },
       () => {
         this.loadingIndicatorService.loading = false;

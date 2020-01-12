@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { INominatimApiResponse, IFilterSearch } from '../models/nominatim-api.model';
+import { retryWhen, delay, mergeMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -17,10 +18,18 @@ export class NominatimSearchService {
       q,
       format: 'json'
     };
-    return this.http.get<INominatimApiResponse[]>(this.nominatimUrl, { params } );
+    let retries = 3;
+    return this.http.get<INominatimApiResponse[]>(this.nominatimUrl, { params } ).pipe(
+      retryWhen(((errors: Observable<any>) => {
+        return errors.pipe(
+          delay(1500),
+          mergeMap(error => retries-- > 0 ? of(error) : throwError(error)));
+      }))
+    );
   }
 
   paramQuery(query: IFilterSearch): Observable<INominatimApiResponse[]> {
+    let retries = 3;
     const params = {
       street: query.streetAddress,
       city: query.city,
@@ -28,7 +37,13 @@ export class NominatimSearchService {
       country: query.country,
       format: 'json'
     };
-    return this.http.get<INominatimApiResponse[]>(this.nominatimUrl, { params } );
+    return this.http.get<INominatimApiResponse[]>(this.nominatimUrl, { params } ).pipe(
+      retryWhen(((errors: Observable<any>) => {
+        return errors.pipe(
+          delay(1500),
+          mergeMap(error => retries-- > 0 ? of(error) : throwError(error)));
+      }))
+    );
   }
 
 }

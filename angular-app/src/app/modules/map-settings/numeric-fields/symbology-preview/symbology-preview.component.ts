@@ -27,7 +27,7 @@ export class SymbologyPreviewComponent implements OnInit {
 
   ngOnInit() {
     this.subscriptions.add(this.colormapStore.colormap$.subscribe(
-      data => {
+      (data: IColormap) => {
         if (data && data.cuts) {
           this.tableData = data.cuts.rgb_colors.map((rgbColors, i) => {
             return {
@@ -41,8 +41,11 @@ export class SymbologyPreviewComponent implements OnInit {
           this.desiredBinCount = data.input_params.bins;
           this.binCountCorrect = this.desiredBinCount === this.binCount;
           this.field = data.input_params.field;
+          this.tableDataSource = new MatTableDataSource(this.tableData);
+        } else {
+          this.tableData = null;
+          this.tableDataSource = null;
         }
-        this.tableDataSource = new MatTableDataSource(this.tableData);
       },
       err => console.error(err)
     ));

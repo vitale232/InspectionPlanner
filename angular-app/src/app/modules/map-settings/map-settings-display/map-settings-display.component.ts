@@ -9,20 +9,19 @@ import { IBridgeFeature } from 'src/app/shared/models/bridges.model';
 import { SearchMarker } from 'src/app/shared/models/markers.model';
 import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 import { IMapView, TExtent } from 'src/app/shared/models/open-layers-map.model';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { NavbarService } from 'src/app/shared/services/navbar.service';
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
-import { IColormap } from 'src/app/shared/models/map-settings.model';
-import { BrowserHistoryService } from 'src/app/shared/services/browser-history.service';
+import { IColormap, IDistinctColormap } from 'src/app/shared/models/map-settings.model';
 
 
 @Component({
-  selector: 'app-map-settings',
-  templateUrl: './map-settings.component.html',
-  styleUrls: ['./map-settings.component.scss']
+  selector: 'app-map-settings-display',
+  templateUrl: './map-settings-display.component.html',
+  styleUrls: ['./map-settings-display.component.scss']
 })
-export class MapSettingsComponent implements OnInit, OnDestroy {
+export class MapSettingsDisplayComponent implements OnInit, OnDestroy {
 
   @ViewChild(OpenLayersMapComponent, { static: false }) openLayersMapComponent: OpenLayersMapComponent;
 
@@ -32,7 +31,7 @@ export class MapSettingsComponent implements OnInit, OnDestroy {
   loading$: Observable<boolean>;
   searchMarkers$: Observable<SearchMarker[]>;
   position$: Observable<IGeoPosition>;
-  colormap$: Observable<IColormap>;
+  colormap$: Observable<IColormap|IDistinctColormap>;
 
   previousUrl: string;
   subscriptions = new Subscription();

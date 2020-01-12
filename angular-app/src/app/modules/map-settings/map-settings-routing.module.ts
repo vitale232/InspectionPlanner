@@ -1,10 +1,10 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { MapSettingsComponent } from './map-settings/map-settings.component';
+import { MapSettingsDisplayComponent } from './map-settings-display/map-settings-display.component';
 
 
 const routes: Routes = [
-  { path: '', component: MapSettingsComponent },
+  { path: '', component: MapSettingsDisplayComponent },
 ];
 
 @NgModule({

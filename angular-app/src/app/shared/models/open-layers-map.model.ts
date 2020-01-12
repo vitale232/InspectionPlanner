@@ -10,7 +10,7 @@ import { get as getProjection } from 'ol/proj';
 import { Circle, Fill, Stroke, Style } from 'ol/style';
 
 import { IDriveTimePolygonFeature } from './drive-time-polygons.model';
-import { IColormapQueryParams, IColormapStats, IColormapCuts, IColormap } from './map-settings.model';
+import { IColormapQueryParams, IColormapStats, IColormapCuts, IColormap, IDistinctColormap } from './map-settings.model';
 
 
 export interface IMapView {
@@ -75,7 +75,7 @@ export class DriveTimePolygon {
   }
 }
 
-export class StyleFactory {
+export class NumericStyleFactory {
 
   public inputParams: IColormapQueryParams;
   public stats: IColormapStats;
@@ -101,12 +101,7 @@ export class StyleFactory {
       );
     });
 
-    const noDataFill = new Fill({ color: 'rgba(0, 0, 0, 1)' });
-    const noDataStroke = new Stroke({ color: 'rgba(0, 0, 0, 1)', width: 1.25 });
-    this.noDataStyle = new Style(
-      { image: new Circle({ noDataFill, noDataStroke, radius: 4 }),
-      noDataFill, noDataStroke
-    });
+    this.noDataStyle = new Style({ });
   }
 
   public styleFeature(feature) {
@@ -122,4 +117,44 @@ export class StyleFactory {
     return this.styles[index];
   }
 
+}
+
+export class CategoricalStyleFactory {
+
+  public field: string;
+  public distinctValues: string[];
+  public count: number;
+  public rgbColors: string[];
+  public styles: Style[];
+  public noDataStyle: Style;
+
+  constructor(colormap: IDistinctColormap, alpha: number = 0.9) {
+    this.field = colormap.field;
+    this.distinctValues = colormap.distinct;
+    this.count = colormap.count;
+    this.rgbColors = colormap.rgbColors;
+
+    this.styles = [];
+    this.rgbColors.forEach(rgba => {
+      const fill = new Fill({ color: rgba });
+      const stroke = new Stroke({ color: 'rgba(0, 0, 0, 1)', width: 1.25 });
+      this.styles.push(
+        new Style({ image: new Circle({ fill, stroke, radius: 4}), fill, stroke })
+      );
+    });
+
+    this.noDataStyle = new Style({ });
+  }
+
+  public styleFeature(feature) {
+    const dataValue = feature.get(this.field);
+    if (!dataValue) {
+      return this.noDataStyle;
+    }
+
+    const index = this.distinctValues.findIndex((value) => dataValue === value);
+
+    return this.styles[index];
+
+  }
 }

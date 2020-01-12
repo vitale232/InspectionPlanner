@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { IDriveTimeQueryFeature } from '../models/drive-time-queries.model';
 import { DriveTimeQueriesService } from '../services/drive-time-queries.service';
 import { BridgesStoreService } from './bridges-store.service';
+import { NotificationsService } from 'angular2-notifications';
 
 @Injectable({
   providedIn: 'root'
@@ -35,6 +36,7 @@ export class DriveTimeQueriesStoreService {
   constructor(
       private driveTimeQueryService: DriveTimeQueriesService,
       private bridgesStore: BridgesStoreService,
+      private notifications: NotificationsService,
     ) {
     this.fetchDriveTimeQueries();
 
@@ -55,7 +57,14 @@ export class DriveTimeQueriesStoreService {
     if (!this.bridgesStore.driveTimeID) { return; } // Don't fetch when not a number
     this.driveTimeQueryService.getDriveTimeQuery(this.bridgesStore.driveTimeID).subscribe(
       query => this.selectedDriveTimeQuery = query,
-      err => console.error(err),
+      err => {
+        console.error('DriveTimeQueriesStore', err);
+        this.notifications.error(
+          'Unhandled error',
+          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`
+        );
+
+      }
     );
   }
 

@@ -23,11 +23,11 @@
       <mat-tab-group color="accent">
 
         <mat-tab label="Numeric Fields">
-          <div class="content"
-              fxLayout="row"
-              fxLayout.xs="column"
-              fxLayoutGap="25px"
-              style="padding: 15px;"
+          <div class="content-numeric"
+               fxLayout="row"
+               fxLayout.xs="column"
+               fxLayoutGap="25px"
+               style="padding: 15px;"
               >
             <div fxFlex="50" class="content-column">
               <app-symbology-form></app-symbology-form>
@@ -39,16 +39,14 @@
         </mat-tab>
 
         <mat-tab label="Categorical Fields">
-          <div class="content"
-              fxLayout="row"
-              fxLayout.xs="column"
-              fxLayoutGap="25px"
+          <div class="content-categorical"
+               fxLayout="row"
+               fxLayoutGap="25px"
+               style="padding: 15px;"
+               fxLayoutAlign="center center"
               >
-            <div fxFlex="50" class="content-column">
-              <app-symbology-form></app-symbology-form>
-            </div>
-            <div fxFlex="50" class="content-column">
-              Does this actually require a new preview component?
+            <div fxFlex="100" class="content-column">
+              <app-categorical-colors></app-categorical-colors>
             </div>
           </div>
         </mat-tab>

@@ -14,7 +14,7 @@ import { SearchMarkersStoreService } from 'src/app/shared/stores/search-markers-
 import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store.service';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
-import { IColormap } from 'src/app/shared/models/map-settings.model';
+import { IColormap, IDistinctColormap } from 'src/app/shared/models/map-settings.model';
 
 
 @Component({
@@ -26,13 +26,13 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
 
   @ViewChild(OpenLayersMapComponent, { static: false }) private openLayersMapComponent: OpenLayersMapComponent;
 
-  mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
+  mapView: IMapView = { zoom: 10, center: [ -73.8727, 42.6532 ]};
 
   loading$: Observable<boolean>;
   bridges$: Observable<IBridgeFeature[]>;
   searchMarkers$: Observable<SearchMarker[]>;
   position$: Observable<IGeoPosition>;
-  colormap$: Observable<IColormap>;
+  colormap$: Observable<IColormap|IDistinctColormap>;
 
   subscriptions = new Subscription();
 
