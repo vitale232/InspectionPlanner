@@ -1,5 +1,5 @@
-<div fxLayout="row" style="width: 100%;">
-  <mat-form-field color="accent" style="width: 100%;">
+<div fxLayout="row" class="full-width">
+  <mat-form-field color="accent" class="full-width">
     <mat-label> Bridge Attribute for Symbology</mat-label>
     <mat-select [formControl]="fieldControl">
       <mat-option *ngFor="let field of fieldOptions"
@@ -26,14 +26,14 @@
   <table mat-table [dataSource]="tableDataSource">
 
     <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef style="width: 50px; text-align: center;">
+      <th mat-header-cell *matHeaderCellDef class="selection-column">
         <mat-checkbox (change)="$event ? masterToggle() : null"
                       [checked]="selection.hasValue() && isAllSelected()"
                       [indeterminate]="selection.hasValue() && !isAllSelected()"
                      >
         </mat-checkbox>
       </th>
-      <td mat-cell *matCellDef="let row" style="width: 50px; text-align: center;">
+      <td mat-cell *matCellDef="let row" class="selection-column">
         <mat-checkbox (click)="$event.stopPropagation()"
                       (change)="$event ? selection.toggle(row) : null"
                       [checked]="selection.isSelected(row)"
@@ -43,10 +43,9 @@
     </ng-container>
 
     <ng-container matColumnDef="rgb">
-      <th mat-header-cell *matHeaderCellDef style="text-align: center;"> Colormap </th>
-      <td mat-cell *matCellDef="let row"
+      <th mat-header-cell *matHeaderCellDef class="center-text"> Colormap </th>
+      <td mat-cell *matCellDef="let row" class="pointer-cursor"
           [style.background-color]="row.rgb"
-          style="cursor: pointer;"
           matTooltip="Click to change color"
          >
          <mat-form-field matLine>
@@ -63,8 +62,8 @@
     </ng-container>
 
     <ng-container matColumnDef="value">
-      <th mat-header-cell *matHeaderCellDef style="text-align: center;"> {{fieldControl.value ? fieldControl.value : "Value"}} </th>
-      <td mat-cell *matCellDef="let row" style="padding-left: 8px;"> {{row.value}} </td>
+      <th mat-header-cell *matHeaderCellDef class="center-text"> {{fieldControl.value ? fieldControl.value : "Value"}} </th>
+      <td mat-cell *matCellDef="let row" class="value-cell"> {{row.value}} </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
