@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ISelectOption } from 'src/app/shared/models/bridges.model';
 import { FormBuilder, Validators } from '@angular/forms';
 import { DistinctFieldsService } from 'src/app/shared/services/distinct-fields.service';
 import { IDistinctColormap, IDistinctField, IDistinctFieldPreview } from 'src/app/shared/models/map-settings.model';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { defaultColormap } from 'src/app/shared/components/open-layers-map/default-colormap';
 import { BrowserHistoryService } from 'src/app/shared/services/browser-history.service';
 import { Router } from '@angular/router';
@@ -33,6 +33,9 @@ export class CategoricalColorsComponent implements OnInit {
   fieldControl = this.fb.control('', Validators.required);
   previousUrl: string;
 
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  hidePaginator = true;
+
   tableData: IDistinctFieldPreview[];
   tableDataSource: MatTableDataSource<IDistinctFieldPreview>;
   selection = new SelectionModel<IDistinctFieldPreview>(true, []);
@@ -48,6 +51,7 @@ export class CategoricalColorsComponent implements OnInit {
 
   ngOnInit() {
     console.log('CAT  ON INIT');
+    console.log(this.tableData);
     this.previousUrl = this.browserHistory.previousUrl;
 
     if (this.colormapStore.colormap && 'field' in this.colormapStore.colormap) {
@@ -60,6 +64,12 @@ export class CategoricalColorsComponent implements OnInit {
       });
       this.tableData.sort((a, b) => a.value > b.value ? 1 : -1);
       this.tableDataSource = new MatTableDataSource(this.tableData);
+      this.tableDataSource.paginator = this.paginator;
+      if (this.tableData.length <= 10) {
+        this.hidePaginator = true;
+      } else {
+        this.hidePaginator = false;
+      }
       // console
     }
   }
@@ -89,6 +99,12 @@ export class CategoricalColorsComponent implements OnInit {
         });
         this.tableData.sort((a, b) => a.value > b.value ? 1 : -1);
         this.tableDataSource = new MatTableDataSource(this.tableData);
+        this.tableDataSource.paginator = this.paginator;
+        if (this.tableData.length <= 10) {
+          this.hidePaginator = true;
+        } else {
+          this.hidePaginator = false;
+        }
       },
       err => {
         console.error(err);

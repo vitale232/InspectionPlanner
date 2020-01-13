@@ -32,6 +32,21 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   display: block;
 }
 
+.warning {
+  color: rgb(244,68,62);
+}
+
+.warning-container {
+  outline-style: dotted;
+  outline-width: 2px;
+  outline-color: rgb(244,68,62);
+  border-radius: 40px;
+}
+
+.warning-content {
+  padding: 7px;
+}
+
 .center-button {
 	text-align: center;
 }

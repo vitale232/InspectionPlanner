@@ -14,6 +14,7 @@ import {
   MatTabsModule,
   MatCheckboxModule,
   MatTooltipModule,
+  MatPaginatorModule,
 } from '@angular/material';
 import { SymbologyFormComponent } from './numeric-fields/symbology-form/symbology-form.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -45,6 +46,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
     MatSelectModule,
     MatProgressSpinnerModule,
     MatTableModule,
+    MatPaginatorModule,
     MatSlideToggleModule,
     MatTabsModule,
     MatCheckboxModule,

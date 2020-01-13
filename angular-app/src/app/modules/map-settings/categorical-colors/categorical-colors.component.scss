@@ -1,5 +1,6 @@
 .button-container {
     padding-top: 15px;
+    padding-bottom: 15px;
     width: 100%;
 }
 
@@ -30,9 +31,20 @@
 
 .content-categorical {
     min-width: 250px;
+    padding: 15px;
 }
 
 .center-text {
     text-align: center;
-    min-height: 200px;
+    min-height: 90px;
+    padding-bottom: 80px;
+}
+
+.pad-top {
+    padding-top: 10px;
+}
+
+.pad-top-bottom {
+    padding-top: 10px;
+    padding-bottom: 10px;
 }

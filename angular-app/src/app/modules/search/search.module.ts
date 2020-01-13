@@ -15,7 +15,8 @@ import {
   MatSelectModule,
   MatTabsModule,
   MatProgressBarModule,
-  MatTableModule
+  MatTableModule,
+  MatPaginatorModule
 } from '@angular/material';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { OsmFiltersFormComponent } from './forms/osm-filters-form/osm-filters-form.component';
@@ -49,6 +50,7 @@ import { SearchHistoryComponent } from './search-history/search-history.componen
     MatSelectModule,
     MatTabsModule,
     MatTableModule,
+    MatPaginatorModule,
   ],
   exports: [
     SearchDisplayComponent,

@@ -2,7 +2,6 @@
       fxLayout="row"
       fxLayout.xs="column"
       fxLayoutGap="25px"
-      style="padding: 15px;"
     >
   <div fxFlex="50" class="content-column">
     <div fxLayoutAlign="center center">
@@ -18,13 +17,11 @@
         </mat-error>
       </mat-form-field>
       <button mat-button
-              *ngIf="!loading"
               color="accent"
               matTooltip="Generate symbology for selected field"
               [disabled]="fieldControl.invalid"
               (click)="onPreview()"
             > Preview </button>
-      <mat-spinner *ngIf="loading" color="accent" diameter="30"></mat-spinner>
     </div>
 
     <div *ngIf="tableDataSource"
@@ -55,7 +52,21 @@
               [disabled]="!tableDataSource"
               (click)="onApply()"
               > Apply </button>
-      <mat-spinner *ngIf="loading" color="accent" diameter="30"></mat-spinner>
+    </div>
+
+    <div *ngIf="loading" fxLayout="row" fxLayoutAlign="center cetner" class="pad-top-bottom">
+      <mat-spinner color="accent" diameter="50"></mat-spinner>
+    </div>
+    <div *ngIf="fieldControl.value === 'political_field'" class="warning-container pad-top">
+      <section class="mat-typography warning-content">
+        <h2 class="warning">Warning</h2>
+        <p>
+          Do not attempt to symbolize all municipalities at once. There are almost 1400 
+          municipalities in this dataset, and applying that many styles to the map will 
+          result in <strong>performance issues</strong> and may result in a 
+          <strong>browser crash</strong>.
+        </p>
+      </section>
     </div>
   </div>
   <div fxFlex="50" class="content-column">
@@ -106,6 +117,13 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
 
     </table>
+
+    <!-- Use hidden instead of ngIf on the paginator. Hidden allows the paginator to instantiate
+         at the same time as the rest of the view and adds it to the DOM, but hides it from the user.
+         If you try to use ngIf for this purpose, the paginator will be null at creation, thus it will
+         not attach to the MatTableDataSource correctly. -->
+    <mat-paginator [style.visibility]="hidePaginator ? 'hidden': 'visible'" [pageSize]="25" [pageSizeOptions]="[5, 10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+    <!-- <mat-paginator *ngIf="tableDataSource" [pageSize]="25" [pageSizeOptions]="[5, 10, 25, 50, 100]" showFirstLastButtons></mat-paginator> -->
 
     <div fxShow fxHide.xs *ngIf="!tableDataSource" fxLayoutAlign="center center" class="center-text">
       No preview available.

@@ -1,7 +1,7 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy, ViewChild } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { IDriveTimeQueryFeature } from 'src/app/shared/models/drive-time-queries.model';
-import { MatTableDataSource } from '@angular/material';
+import { MatTableDataSource, MatPaginator } from '@angular/material';
 import { Router } from '@angular/router';
 
 @Component({
@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class SearchHistoryComponent implements OnInit, OnDestroy {
 
   @Input() driveTimeQueries$: Observable<IDriveTimeQueryFeature[]>;
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
   displayedColumns: string[] = ['display_name', 'drive_time_hours'];
 
@@ -22,9 +23,12 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.driveTimeQueriesSubscription = this.driveTimeQueries$.subscribe(
-      queryFeatures => this.dataSource = new MatTableDataSource(queryFeatures.slice().sort(
-        (a, b) => (a.properties.created_time < b.properties.created_time) ? 1 : -1)
-      ),
+      queryFeatures => {
+        this.dataSource = new MatTableDataSource(queryFeatures.slice().sort(
+          (a, b) => (a.properties.created_time < b.properties.created_time) ? 1 : -1)
+        );
+        this.dataSource.paginator = this.paginator;
+      },
       err => console.log(err),
     );
   }
