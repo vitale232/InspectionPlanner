@@ -4,6 +4,7 @@ import { SidenavService } from './shared/services/sidenav.service';
 import { NgcCookieConsentService } from 'ngx-cookieconsent';
 import { Subscription, Observable } from 'rxjs';
 import { BrowserHistoryService } from './shared/services/browser-history.service';
+import { ColormapStoreService } from './shared/stores/colormap-store.service';
 
 @Component({
   selector: 'app-root',
@@ -23,8 +24,12 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private ccService: NgcCookieConsentService,
     private sidenavService: SidenavService,
     private browserHistory: BrowserHistoryService,
+    private colormapStore: ColormapStoreService,
   ) {
     this.sidenavState$ = this.sidenavService.sidenavState$;
+    if (localStorage.getItem('colormap')) {
+      this.colormapStore.colormap = JSON.parse(localStorage.getItem('colormap'));
+    }
     // Call the BrowserHistoryService so that it starts creating a route history
     let browserHistoryInit = this.browserHistory.currentUrl;
     browserHistoryInit = 'thanks!';

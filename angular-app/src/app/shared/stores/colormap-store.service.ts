@@ -16,6 +16,7 @@ export class ColormapStoreService {
   }
 
   set colormap(val: IColormap|IDistinctColormap) {
+    localStorage.setItem('colormap', JSON.stringify(val));
     this._colormap.next(val);
   }
 

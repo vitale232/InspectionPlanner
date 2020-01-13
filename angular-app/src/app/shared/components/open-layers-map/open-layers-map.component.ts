@@ -411,8 +411,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     const indices = [ ...Array(this.legend.getLength()).keys() ].reverse();
     indices.forEach(i => this.legend.removeRow(i));
 
-    const field = colormap.field;
-
     this.legend.addRow();
 
     colormap.distinct.forEach((value, index) => {
