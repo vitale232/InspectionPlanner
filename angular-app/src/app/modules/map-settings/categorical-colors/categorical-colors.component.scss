@@ -1,5 +1,6 @@
 .button-container {
     padding-top: 15px;
+    width: 100%;
 }
 
 .full-width {
@@ -21,4 +22,17 @@
 
 .value-cell {
     padding-left: 8px;
+}
+
+.content-column {
+    min-width: 200px;
+}
+
+.content-categorical {
+    min-width: 250px;
+}
+
+.center-text {
+    text-align: center;
+    min-height: 200px;
 }

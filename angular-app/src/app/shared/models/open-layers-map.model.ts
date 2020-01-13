@@ -127,12 +127,14 @@ export class CategoricalStyleFactory {
   public rgbColors: string[];
   public styles: Style[];
   public noDataStyle: Style;
+  public alpha: number;
 
   constructor(colormap: IDistinctColormap, alpha: number = 0.9) {
     this.field = colormap.field;
     this.distinctValues = colormap.distinct;
     this.count = colormap.count;
     this.rgbColors = colormap.rgbColors;
+    this.alpha = alpha;
 
     this.styles = [];
     this.rgbColors.forEach(rgba => {

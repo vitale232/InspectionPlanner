@@ -47,7 +47,7 @@ export class CategoricalColorsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log('CAT  ON INIT')
+    console.log('CAT  ON INIT');
     this.previousUrl = this.browserHistory.previousUrl;
 
     if (this.colormapStore.colormap && 'field' in this.colormapStore.colormap) {
@@ -64,7 +64,7 @@ export class CategoricalColorsComponent implements OnInit {
     }
   }
 
-  randomRGBArray(count, alpha: number = 0.95) {
+  randomRGBArray(count, alpha: number = 0.9) {
     const randomInt = () => Math.floor(Math.random() * 255);
     const rgbArray = [];
     for (let i = 0; i < count; i++) {
