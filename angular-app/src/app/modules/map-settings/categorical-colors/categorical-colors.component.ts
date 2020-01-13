@@ -112,9 +112,7 @@ export class CategoricalColorsComponent implements OnInit {
   }
 
   onApply() {
-    console.log('APPLY!');
-    console.log(this.selection);
-    console.log('selected', this.selection.selected);
+    this.loading = true;
     const colormap: IDistinctColormap = {
       field: this.fieldControl.value,
       distinct: this.selection.selected.map((row: IDistinctFieldPreview) => row.value),
@@ -123,6 +121,7 @@ export class CategoricalColorsComponent implements OnInit {
     };
     console.log('colormap', colormap);
     this.colormapStore.colormap = colormap;
+    setTimeout(() => this.loading = false, 777);
   }
 
   onRestoreDefault(): void {
