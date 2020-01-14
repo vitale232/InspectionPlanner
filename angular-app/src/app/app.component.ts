@@ -46,12 +46,24 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     this.subscriptions.add(this.loadingIndicator.loading$.subscribe(
       (loading: boolean) => this.mapLoading = loading,
     ));
+
     this.subscriptions.add(this.router.events.pipe(
       filter((e) => e instanceof NavigationStart || e instanceof NavigationEnd)
     ).subscribe(
       (event) => {
-        if (event instanceof NavigationStart && this.mapLoading === false) { this.routeLoading = true; }
-        if (event instanceof NavigationEnd) { setTimeout(() => this.routeLoading = false, 1000); }
+        console.log('nav event', event);
+        if (event instanceof NavigationStart && this.mapLoading === false) {
+          if (!this.browserHistory.currentUrl) {
+            this.routeLoading = true;
+          } else {
+            if (this.browserHistory.currentUrl.includes('drive-time') && event.url.includes('drive-time')) {
+              this.routeLoading = false;
+            } else {
+              this.routeLoading = true;
+            }
+          }
+        }
+        if (event instanceof NavigationEnd) { setTimeout(() => this.routeLoading = false, 1200); }
       })
     );
   }
