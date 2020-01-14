@@ -54,7 +54,7 @@
               > Apply </button>
     </div>
 
-    <div *ngIf="loading" fxLayout="row" fxLayoutAlign="center cetner" class="pad-top-bottom">
+    <div *ngIf="loading" fxLayout="row" fxLayoutAlign="center center" class="pad-top-bottom">
       <mat-spinner color="accent" diameter="50"></mat-spinner>
     </div>
     <div *ngIf="fieldControl.value === 'political_field'" class="warning-container pad-top">
@@ -90,7 +90,7 @@
       </ng-container>
 
       <ng-container matColumnDef="rgb">
-        <th mat-header-cell *matHeaderCellDef class="center-text"> Colormap </th>
+        <th mat-header-cell *matHeaderCellDef> Colormap </th>
         <td mat-cell *matCellDef="let row" class="pointer-cursor"
             [style.background-color]="row.rgb"
             matTooltip="Click to change color"
@@ -109,7 +109,7 @@
       </ng-container>
 
       <ng-container matColumnDef="value">
-        <th mat-header-cell *matHeaderCellDef class="center-text"> {{fieldControl.value ? fieldControl.value : "Value"}} </th>
+        <th mat-header-cell *matHeaderCellDef> {{fieldControl.value ? fieldControl.value : "Value"}} </th>
         <td mat-cell *matCellDef="let row" class="value-cell"> {{row.value}} </td>
       </ng-container>
 
