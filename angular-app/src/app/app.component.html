@@ -2,6 +2,9 @@
      fxLayout="column"
      fxLayoutAlign="start none"
      >
+  <div style="position: absolute; left: 0; right: 0; top: 0; bottom: 0;">
+    <mat-progress-bar *ngIf="routeLoading" mode="indeterminate"></mat-progress-bar>
+  </div>
   <app-navbar [sidenavState$]="sidenavState$"
               (sidenavAction)="onSidenavAction($event)"
               ></app-navbar>

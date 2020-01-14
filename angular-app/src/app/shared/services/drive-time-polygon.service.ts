@@ -16,7 +16,7 @@ export class DriveTimePolygonService {
 
   getDriveTimePolygon(driveTimeID: number): Observable<IDriveTimePolygonFeature> {
     let retries = 3;
-    return this.http.get<IDriveTimePolygonFeature>(`${this.driveTimePolygonUrl}${driveTimeID}`).pipe(
+    return this.http.get<IDriveTimePolygonFeature>(`${this.driveTimePolygonUrl}${driveTimeID}/`).pipe(
       retryWhen(((errors: Observable<any>) => {
         return errors.pipe(
           delay(1500),

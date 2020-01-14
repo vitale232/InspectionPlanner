@@ -5,6 +5,9 @@ import { NgcCookieConsentService } from 'ngx-cookieconsent';
 import { Subscription, Observable } from 'rxjs';
 import { BrowserHistoryService } from './shared/services/browser-history.service';
 import { ColormapStoreService } from './shared/stores/colormap-store.service';
+import { Router, NavigationStart, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { LoadingIndicatorService } from './shared/services/loading-indicator.service';
 
 @Component({
   selector: 'app-root',
@@ -13,10 +16,11 @@ import { ColormapStoreService } from './shared/stores/colormap-store.service';
 })
 export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  routeLoading = false;
+  mapLoading = false;
+
   private subscriptions = new Subscription();
   sidenavState$: Observable<boolean>;
-
-  @Output() TABLE_CLOSED = new EventEmitter<boolean>();
 
   @ViewChild('sidenav', { static: false }) public sidenav: MatSidenav;
 
@@ -25,6 +29,8 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     private sidenavService: SidenavService,
     private browserHistory: BrowserHistoryService,
     private colormapStore: ColormapStoreService,
+    private loadingIndicator: LoadingIndicatorService,
+    private router: Router,
   ) {
     this.sidenavState$ = this.sidenavService.sidenavState$;
     if (localStorage.getItem('colormap')) {
@@ -37,6 +43,17 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnInit() {
     this.subscriptions.add(this.ccService.popupOpen$.subscribe());
+    this.subscriptions.add(this.loadingIndicator.loading$.subscribe(
+      (loading: boolean) => this.mapLoading = loading,
+    ));
+    this.subscriptions.add(this.router.events.pipe(
+      filter((e) => e instanceof NavigationStart || e instanceof NavigationEnd)
+    ).subscribe(
+      (event) => {
+        if (event instanceof NavigationStart && this.mapLoading === false) { this.routeLoading = true; }
+        if (event instanceof NavigationEnd) { setTimeout(() => this.routeLoading = false, 1000); }
+      })
+    );
   }
 
   ngAfterViewInit() {
