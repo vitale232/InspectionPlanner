@@ -37,13 +37,12 @@
     </ng-template>
 
     <div *ngIf="longTitle !== 'Inspection Planner Application'">
-      <button mat-button
+      <button mat-icon-button
               color="accent"
               matTooltip="Return to browsable map"
-              matTooltipShowDelay="250"
               routerLink="/"
               queryParamsHandling="merge"
-              > <mat-icon>cancel</mat-icon> Clear Results </button>
+             > <mat-icon>home</mat-icon> </button>
     </div>
 
     <span fxHide fxShow.gt-xs class="fill-remaining-space">
