@@ -71,9 +71,14 @@ export class DriveTimeDisplayComponent implements OnInit {
 
   ngOnInit() {
     this.getSplitterOrientation();
-    this.tableSize = 50;
-    this.mapSize = 50;
-    this.navbarService.tableOpen = true;
+
+    if (this.navbarService.tableOpen) {
+      this.mapSize = 50;
+      this.tableSize = 50;
+    } else {
+      this.mapSize = 100;
+      this.tableSize = 0;
+    }
 
     this.subscriptions.add(this.activatedRoute.params.subscribe(
       params => {
@@ -81,11 +86,8 @@ export class DriveTimeDisplayComponent implements OnInit {
 
         this.titleService.setTitle(`IPA - Drive Time ${this.driveTimeID}`);
         this.checkAndFetchDriveTime();
-        console.log('params data', params);
-        // this.bridgesStore.driveTimeID = this.driveTimeID;
       },
       err => console.error(err),
-      () => console.log('activatedRouter sub complete!')
     ));
 
     this.subscriptions.add(this.activatedRoute.queryParamMap.subscribe(

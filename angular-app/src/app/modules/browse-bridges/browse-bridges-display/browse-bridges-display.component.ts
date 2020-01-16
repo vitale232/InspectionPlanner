@@ -63,9 +63,15 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.getSplitterOrientation();
-    this.tableSize = 50;
-    this.mapSize = 50;
-    this.navbarService.tableOpen = true;
+
+    if (this.navbarService.tableOpen) {
+      this.tableSize = 50;
+      this.mapSize = 50;
+    } else {
+      this.tableSize = 0;
+      this.mapSize = 100;
+    }
+
     this.subscriptions.add(this.activatedRoute.queryParamMap.subscribe(
       (params) => {
         const lon = parseFloat(params.get('lon'));
