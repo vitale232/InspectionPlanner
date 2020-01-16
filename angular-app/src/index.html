@@ -52,6 +52,19 @@
         stroke-dashoffset: -124px;
       }
     }
+    .no-js {
+      color: white;
+      
+    }
+    .no-js-a:link {
+      color: #a5e4cb;
+    }
+    .no-js-a:hover {
+      color: #FFC23D;
+    }
+    .no-js-a:visited {
+      color: #ff54aa;
+    }
   </style>
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-145095903-2"></script>
   <script>
@@ -70,6 +83,11 @@
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body mat-app-background>
+  <noscript>
+    <section class="no-js">
+      This application relies on JavaScript, and your current execution environment does not support it. Please enable JavaScript and reload the <a href="https://ipa.timelinetamer.com" class="no-js-a">Inspection Planner Application</a>.
+    </section>
+  </noscript>
   <app-root>
     <div class="app-loading">
       <div class="logo"></div>
