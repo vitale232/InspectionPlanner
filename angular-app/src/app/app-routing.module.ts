@@ -17,6 +17,10 @@ const routes: Routes = [
     loadChildren: () => import('./modules/map-settings/map-settings.module').then( m => m.MapSettingsModule )
   },
   {
+    path: 'marker-cluster',
+    loadChildren: () => import('./modules/marker-cluster/marker-cluster.module').then( m => m.MarkerClusterModule )
+  },
+  {
     path: '**',
     component: NotFoundComponent
   }
