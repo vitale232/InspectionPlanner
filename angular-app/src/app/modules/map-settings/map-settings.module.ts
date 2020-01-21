@@ -15,6 +15,7 @@ import {
   MatCheckboxModule,
   MatTooltipModule,
   MatPaginatorModule,
+  MatGridListModule,
 } from '@angular/material';
 import { SymbologyFormComponent } from './numeric-fields/symbology-form/symbology-form.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
@@ -23,6 +24,7 @@ import { SymbologyPreviewComponent } from './numeric-fields/symbology-preview/sy
 import { MapSettingsDisplayComponent } from './map-settings-display/map-settings-display.component';
 import { CategoricalColorsComponent } from './categorical-colors/categorical-colors.component';
 import { ColorPickerModule } from 'ngx-color-picker';
+import { MapGalleryComponent } from './map-gallery/map-gallery.component';
 
 
 @NgModule({
@@ -31,6 +33,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
     SymbologyFormComponent,
     SymbologyPreviewComponent,
     CategoricalColorsComponent,
+    MapGalleryComponent,
   ],
   imports: [
     CommonModule,
@@ -51,6 +54,7 @@ import { ColorPickerModule } from 'ngx-color-picker';
     MatTabsModule,
     MatCheckboxModule,
     MatTooltipModule,
+    MatGridListModule,
     ColorPickerModule,
   ],
   exports: [ MapSettingsDisplayComponent ],

@@ -49,6 +49,15 @@
     </span>
     <span fxHide fxShow.lt-sm class="fill-remaining-space"></span>
 
+    <div>
+      <button mat-icon-button
+              matTooltip="Change map type"
+              aria-label="Map gallery"
+              routerLink="/map-settings/gallery"
+            >
+        <mat-icon>map</mat-icon> 
+      </button>
+    </div>
     <div *ngIf="tableOpen$ | async as tableOpen; else tableClosed">
       <button mat-icon-button
               matTooltip="Close attribute table of bridge features"
