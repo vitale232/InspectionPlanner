@@ -44,11 +44,6 @@
              > <mat-icon>home</mat-icon> </button>
     </div>
 
-    <span fxHide fxShow.gt-xs class="fill-remaining-space">
-      {{ longTitle }}
-    </span>
-    <span fxHide fxShow.lt-sm class="fill-remaining-space"></span>
-
     <div>
       <button mat-icon-button
               matTooltip="Change map type"
@@ -58,6 +53,12 @@
         <mat-icon>map</mat-icon> 
       </button>
     </div>
+
+    <span fxHide fxShow.gt-xs class="fill-remaining-space">
+      {{ longTitle }}
+    </span>
+    <span fxHide fxShow.lt-sm class="fill-remaining-space"></span>
+
     <div *ngIf="tableOpen$ | async as tableOpen; else tableClosed">
       <button mat-icon-button
               matTooltip="Close attribute table of bridge features"
