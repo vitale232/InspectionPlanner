@@ -46,12 +46,11 @@ export class MapGalleryComponent implements OnInit {
   }
 
   onResize(event) {
-    console.log('event', event);
     this.getColumnsFromBreakpoint();
   }
 
   getColumnsFromBreakpoint(): void {
-    if (window.innerWidth <= 599) {
+    if (window.innerWidth <= 740) {
       this.nColumns = 1;
     } else {
       this.nColumns = 2;

@@ -1,6 +1,11 @@
 <mat-card class="content-card">
   <mat-card-header>
-    <img mat-card-avatar src="{{avatarImgSrc}}" alt="{{subtitle}}">
+    <img mat-card-avatar
+         class="link-image"
+         src="{{avatarImgSrc}}"
+         alt="{{subtitle}}"
+         (click)="onClick()"
+        >
     <mat-card-title>{{ title }}</mat-card-title>
     <mat-card-subtitle>{{ subtitle }}</mat-card-subtitle>
   </mat-card-header>
