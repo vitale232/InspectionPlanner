@@ -16,10 +16,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
   settingsOpen$: Observable<boolean>;
 
   @Input() sidenavState$: Observable<boolean>;
-  @Output() sidenavAction = new EventEmitter< 'open' | 'close' >();
+  @Output() sidenavAction = new EventEmitter<'open'|'close'>();
 
   subscriptions = new Subscription();
   longTitle = 'Inspection Planner Application';
+  markerClusterShowing = false;
 
   constructor(
     private router: Router,
@@ -47,6 +48,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
           } else {
             this.navbarService.settingsOpen = false;
           }
+          if (urlParts.includes('marker-cluster')) {
+            this.markerClusterShowing = true;
+          } else {
+            this.markerClusterShowing = false;
+          }
+          console.log('markerClusterShowing', this.markerClusterShowing);
         }
       )
     );
