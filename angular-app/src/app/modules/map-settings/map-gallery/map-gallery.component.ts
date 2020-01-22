@@ -19,7 +19,8 @@ export class MapGalleryComponent implements OnInit {
         'This map provides a classical interface to interact with geospatial data. NYSDOT bridge locations are represented as ' +
         'points on the map. The appearance of the points can be customized with ease! You can use any of the bridges\'s attributes ' +
         'to apply styles using color ramps or customizable colors. There is also a collapsible, feature rich attribute table that ' +
-        'syncs with the data on the map. This map is built using OpenLayers, and the table is built with nGrid.',
+        'syncs with the data on the map. This map is built using OpenLayers, and the table is built on top of the Angular CDK using ' +
+        'the free and open-source nGrid package.',
       buttonText: 'Explore',
       link: '/'
     },

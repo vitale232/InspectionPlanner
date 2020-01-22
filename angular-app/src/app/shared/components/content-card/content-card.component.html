@@ -9,9 +9,12 @@
     <mat-card-title>{{ title }}</mat-card-title>
     <mat-card-subtitle>{{ subtitle }}</mat-card-subtitle>
   </mat-card-header>
-  <a (click)="onClick()">
-    <img mat-card-image class="link-image" src="{{imgSrc}}" alt="{{subtitle}}">
-  </a>
+    <img mat-card-image
+         class="link-image"
+         src="{{imgSrc}}"
+         alt="{{subtitle}}"
+         (click)="onClick()"
+        >
   <mat-card-content>
     <p>
       {{ paragraph }}
