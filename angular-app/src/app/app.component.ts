@@ -51,7 +51,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
       filter((e) => e instanceof NavigationStart || e instanceof NavigationEnd)
     ).subscribe(
       (event) => {
-        console.log('nav event', event);
         if (event instanceof NavigationStart && this.mapLoading === false) {
           if (!this.browserHistory.currentUrl) {
             this.routeLoading = true;

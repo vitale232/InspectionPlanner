@@ -14,6 +14,8 @@ import { PblNgridMaterialModule } from '@pebula/ngrid-material';
 import { MaterialModule } from '../../material.module';
 import { PblNgridStatePluginModule } from '@pebula/ngrid/state';
 import { TemplateGridModule } from './grid-components/template-grid/template-grid.module';
+import { ContentCardComponent } from './content-card/content-card.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 
 
@@ -21,10 +23,12 @@ import { TemplateGridModule } from './grid-components/template-grid/template-gri
   declarations: [
     AttributeGridComponent,
     OpenLayersMapComponent,
+    ContentCardComponent,
   ],
   imports: [
     CommonModule,
     MaterialModule,
+    FlexLayoutModule,
     TemplateGridModule,
     PblNgridModule.withCommon([ { component: TemplateGridComponent } ]),
     PblNgridDragModule,
@@ -40,6 +44,7 @@ import { TemplateGridModule } from './grid-components/template-grid/template-gri
     TemplateGridModule,
     AttributeGridComponent,
     OpenLayersMapComponent,
+    ContentCardComponent,
   ]
 })
 export class SharedModule { }

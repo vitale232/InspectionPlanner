@@ -1,0 +1,10 @@
+<div leaflet class="full-height"
+     *ngIf="markerClusterData"
+     [leafletOptions]="options"
+     [leafletMarkerCluster]="markerClusterData"
+    >
+</div>
+
+<div *ngIf="!markerClusterData" class="full-height" fxLayout="row" fxLayoutAlign="center center">
+    <mat-spinner color="accent"></mat-spinner>
+</div>

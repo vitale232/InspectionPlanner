@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { TExtent } from '../models/open-layers-map.model';
-import { IBridgesApiResponse, IBridgeFeature } from '../models/bridges.model';
+import { IBridgesApiResponse, IBridgeFeature, IBridgeFeatureCollection } from '../models/bridges.model';
 
 import { map, expand, reduce, take, retry, retryWhen, delay, mergeMap } from 'rxjs/operators';
 import { EMPTY, Observable, of, throwError } from 'rxjs';
@@ -14,6 +14,7 @@ export class BridgesService {
 
   bridgesUri = 'bridges/new-york-bridges/';
   driveTimeBridgesUri = 'bridges/new-york-bridges/drive-time-query/';
+  allBridgesUri = 'assets/all_bridges_mini.json';
 
   constructor( private http: HttpClient ) { }
 
@@ -49,5 +50,9 @@ export class BridgesService {
           mergeMap(error => retries-- > 0 ? of(error) : throwError(error)));
       }))
     );
+  }
+
+  getAllBridges(): Observable<IBridgeFeatureCollection> {
+    return this.http.get<IBridgeFeatureCollection>(this.allBridgesUri);
   }
 }

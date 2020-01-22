@@ -2,10 +2,12 @@ export interface IBridgesApiResponse {
   count: number;
   next: string|null;
   previous: string|null;
-  results: {
-    type: string;
-    features: Array<IBridgeFeature>
-  };
+  results: IBridgeFeatureCollection;
+}
+
+export interface IBridgeFeatureCollection {
+  type: string;
+  features: IBridgeFeature[];
 }
 
 export interface IBridgeFeature {
