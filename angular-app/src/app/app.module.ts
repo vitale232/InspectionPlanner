@@ -29,7 +29,10 @@ const cookieConfig: NgcCookieConsentConfig = {
     }
   },
   theme: 'edgeless',
-  type: 'info'
+  type: 'info',
+  content: {
+    message: 'This website uses cookies to ensure you get the best experience.'
+  }
 };
 
 @NgModule({
