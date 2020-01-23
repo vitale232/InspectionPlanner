@@ -55,7 +55,7 @@
                > <mat-icon>home</mat-icon> </button>
       </div>
   
-      <div>
+      <div *ngIf="!markerGalleryShowing">
         <button mat-icon-button
                 matTooltip="Change map type"
                 aria-label="Map gallery"

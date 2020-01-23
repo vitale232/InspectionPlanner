@@ -21,6 +21,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   subscriptions = new Subscription();
   longTitle = 'Inspection Planner Application';
   markerClusterShowing = false;
+  markerGalleryShowing = false;
 
   constructor(
     private router: Router,
@@ -53,7 +54,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
           } else {
             this.markerClusterShowing = false;
           }
-          console.log('markerClusterShowing', this.markerClusterShowing);
+          if (urlParts.includes('map-settings') && urlParts.includes('gallery')) {
+            this.markerGalleryShowing = true;
+          } else {
+            this.markerGalleryShowing = false;
+          }
         }
       )
     );
