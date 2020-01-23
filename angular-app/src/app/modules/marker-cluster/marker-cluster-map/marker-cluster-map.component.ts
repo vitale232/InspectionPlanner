@@ -6,6 +6,7 @@ import { IBridgeFeatureCollection, IBridgeFeature } from 'src/app/shared/models/
 import { SidenavService } from 'src/app/shared/services/sidenav.service';
 import { Subscription, Observable } from 'rxjs';
 import { IDriveTimePolygonFeature } from 'src/app/shared/models/drive-time-polygons.model';
+import { LoadingIndicatorService } from 'src/app/shared/services/loading-indicator.service';
 
 
 @Component({
@@ -17,6 +18,7 @@ export class MarkerClusterMapComponent implements OnInit, OnDestroy {
 
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() driveTimePolygon$: null | Observable<IDriveTimePolygonFeature> = null;
+  loading$: Observable<boolean>;
 
   map: L.Map;
   markerClusterData: L.Marker[];
@@ -42,7 +44,12 @@ export class MarkerClusterMapComponent implements OnInit, OnDestroy {
     center: this.mapCenter,
   };
 
-  constructor( private sidenav: SidenavService, ) { }
+  constructor(
+    private loadingIndicatorService: LoadingIndicatorService,
+    private sidenav: SidenavService,
+  ) {
+    this.loading$ = this.loadingIndicatorService.loading$;
+  }
 
   ngOnInit() {
     this.subscriptions.add(this.bridges$.subscribe(
@@ -63,6 +70,10 @@ export class MarkerClusterMapComponent implements OnInit, OnDestroy {
         }}
       ));
     }
+
+    this.subscriptions.add(this.loadingIndicatorService.loading$.subscribe(
+      data => console.log('loading', data)
+    ));
   }
 
   ngOnDestroy() {

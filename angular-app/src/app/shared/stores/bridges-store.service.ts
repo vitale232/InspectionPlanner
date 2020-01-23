@@ -112,7 +112,8 @@ export class BridgesStoreService {
           'Unhandled Error',
           `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`
         );
-      }
+      },
+      () => this.loadingIndicatorService.loading = false
     );
   }
 }
