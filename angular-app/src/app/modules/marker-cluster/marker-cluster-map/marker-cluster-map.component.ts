@@ -1,17 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { BridgesService } from 'src/app/shared/services/bridges.service';
 
 import * as L from 'leaflet';
 import { IBridgeFeatureCollection, IBridgeFeature } from 'src/app/shared/models/bridges.model';
+import { SidenavService } from 'src/app/shared/services/sidenav.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-marker-cluster-map',
   templateUrl: './marker-cluster-map.component.html',
   styleUrls: ['./marker-cluster-map.component.scss']
 })
-export class MarkerClusterMapComponent implements OnInit {
+export class MarkerClusterMapComponent implements OnInit, OnDestroy {
 
   markerClusterData: L.Marker[];
+  map: L.Map;
+  subscriptions = new Subscription();
 
   mapZoom = 7;
   mapCenter = L.latLng(43.0, -75.3);
@@ -32,13 +36,39 @@ export class MarkerClusterMapComponent implements OnInit {
     center: this.mapCenter,
   };
 
-  constructor( private bridgeService: BridgesService ) { }
+  constructor(
+    private bridgeService: BridgesService,
+    private sidenav: SidenavService,
+    ) { }
 
   ngOnInit() {
     this.bridgeService.getAllBridges().subscribe(
       data => this.markerClusterData = this.generateMarkerCluster(data),
       err => console.error(err)
     );
+    this.subscriptions.add(this.sidenav.sidenavState$.subscribe(
+      () => this.invalidateMapSize(),
+      err => console.error(err),
+      () => this.invalidateMapSize()
+    ));
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
+  }
+
+  onMapReady(map: L.Map): void {
+    this.map = map;
+  }
+
+  onResize(event: Event): void {
+    this.invalidateMapSize();
+  }
+
+  invalidateMapSize(): void {
+    if (this.map) {
+      setTimeout(() => this.map.invalidateSize(), 50);
+    }
   }
 
   generateMarkerCluster(data: IBridgeFeatureCollection): L.Marker[] {
