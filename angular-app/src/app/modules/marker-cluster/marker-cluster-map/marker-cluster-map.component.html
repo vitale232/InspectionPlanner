@@ -1,4 +1,4 @@
-<div *ngIf="loading$ | async as loading" class="overlay">
+<div *ngIf="markerClusterData && loading$ | async as loading" class="overlay">
   <mat-progress-bar mode="query" color="accent"></mat-progress-bar>
 </div>
 
