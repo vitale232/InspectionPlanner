@@ -46,12 +46,12 @@
               > <mat-icon> home </mat-icon> </button>
       </ng-template>
   
-      <div *ngIf="longTitle !== 'Inspection Planner Application'">
+      <div *ngIf="!markerClusterShowing && longTitle !== 'Inspection Planner Application'">
         <button mat-icon-button
                 matTooltip="Return to browsable map"
                 routerLink="/"
                 queryParamsHandling="merge"
-               > <mat-icon>home</mat-icon> </button>
+               > <mat-icon> home </mat-icon> </button>
       </div>
   
       <div *ngIf="!markerGalleryShowing">

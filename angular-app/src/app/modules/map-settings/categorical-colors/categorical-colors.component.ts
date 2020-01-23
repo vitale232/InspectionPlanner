@@ -50,8 +50,6 @@ export class CategoricalColorsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    console.log('CAT  ON INIT');
-    console.log(this.tableData);
     this.previousUrl = this.browserHistory.previousUrl;
 
     if (this.colormapStore.colormap && 'field' in this.colormapStore.colormap) {

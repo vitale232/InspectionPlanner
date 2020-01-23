@@ -39,7 +39,6 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
   }
 
   onClick(row: IDriveTimeQueryFeature): void {
-    console.log('row', row);
     let zoom = 18;
     const hours = row.properties.drive_time_hours;
     if (hours <= 1.0) {

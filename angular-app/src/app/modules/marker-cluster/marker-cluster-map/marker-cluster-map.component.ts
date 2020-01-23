@@ -70,10 +70,6 @@ export class MarkerClusterMapComponent implements OnInit, OnDestroy {
         }}
       ));
     }
-
-    this.subscriptions.add(this.loadingIndicatorService.loading$.subscribe(
-      data => console.log('loading', data)
-    ));
   }
 
   ngOnDestroy() {

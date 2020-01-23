@@ -160,7 +160,6 @@ export class DriveTimeDisplayComponent implements OnInit {
 
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
-      console.log('update map size');
       this.openLayersMapComponent.map.getView().setCenter(
         this.openLayersMapComponent.map.getView().getCenter()
       );
