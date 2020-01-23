@@ -9,7 +9,7 @@ import { BehaviorSubject } from 'rxjs';
 export class BrowserHistoryService {
 
   private readonly _currentUrl = new BehaviorSubject<string>( null );
-  readonly _currentUrl$ = this._currentUrl.asObservable();
+  readonly currentUrl$ = this._currentUrl.asObservable();
 
   get currentUrl(): string {
     return this._currentUrl.getValue();

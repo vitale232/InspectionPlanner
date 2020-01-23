@@ -5,7 +5,6 @@ import { IDriveTimeQueryFeature, INewDriveTimeParms, ISubmittedDriveTimeQuery } 
 import { startWith, map } from 'rxjs/operators';
 import { DriveTimeQueriesService } from 'src/app/shared/services/drive-time-queries.service';
 import { Router } from '@angular/router';
-import { SidenavService } from 'src/app/shared/services/sidenav.service';
 import { NotificationsService } from 'angular2-notifications';
 import { DriveTimeQueriesStoreService } from 'src/app/shared/stores/drive-time-queries-store.service';
 
@@ -20,6 +19,7 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
 
   // Component inputs
   @Input() driveTimeQueries$: Observable<IDriveTimeQueryFeature[]>;
+  @Input() markerClusterRoutes: boolean;
 
   // Reactive form setup.
   timeIntervals = [
@@ -182,11 +182,13 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     };
 
     this.loading = false;
-    this.router.navigate([`drive-time/${driveTimeQuery.id}`], { queryParams: routerQueryParams });
-    // this.sidenav.close();
-    // setTimeout( () => {
-    //   this.router.navigate([`drive-time/${driveTimeQuery.id}`], { queryParams: routerQueryParams });
-    // }, 1200);
+
+    // Use different routes if this component has the markerClusterRoutes flag
+    if (this.markerClusterRoutes) {
+      this.router.navigate([`marker-cluster/drive-time/${driveTimeQuery.id}`]);
+    } else {
+      this.router.navigate([`drive-time/${driveTimeQuery.id}`], { queryParams: routerQueryParams });
+    }
   }
 
   onNewDriveTimeQuery(driveTimeQueryParams: INewDriveTimeParms): void {

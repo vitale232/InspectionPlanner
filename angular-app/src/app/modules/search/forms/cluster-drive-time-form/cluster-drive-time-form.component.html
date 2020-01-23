@@ -1,0 +1,27 @@
+<div class="accordion-container">
+  <mat-accordion>
+
+    <mat-expansion-panel [expanded]="true">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Drive Time Search
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-drive-time-form [driveTimeQueries$]="driveTimeQueries$"
+                           [markerClusterRoutes]="true"
+                          ></app-drive-time-form>
+    </mat-expansion-panel>
+
+    <mat-expansion-panel>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Drive Time Search History
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <app-search-history [driveTimeQueries$]="driveTimeQueries$"
+                          [markerClusterRoutes]="true"
+                         ></app-search-history>
+    </mat-expansion-panel>
+
+  </mat-accordion>
+</div>

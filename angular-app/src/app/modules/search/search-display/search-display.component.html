@@ -1,4 +1,4 @@
-<div class="search-panel">
+<div class="search-panel" *ngIf="defaultSearch; else markerClusterSearch">
   <div class="tools"
        fxLayout="row"
        fxLayoutAlign="center center"
@@ -67,7 +67,9 @@
             Drive Time Search
           </mat-panel-title>
         </mat-expansion-panel-header>
-        <app-drive-time-form [driveTimeQueries$]="driveTimeQueries$"></app-drive-time-form>
+        <app-drive-time-form [driveTimeQueries$]="driveTimeQueries$"
+                            [markerClusterRoutes]="false"
+                            ></app-drive-time-form>
       </mat-expansion-panel>
 
       <mat-expansion-panel>
@@ -96,3 +98,9 @@
     </mat-accordion>
   </div>
 </div>
+
+<ng-template #markerClusterSearch>
+  <div class="search-panel">
+    <app-cluster-drive-time-form></app-cluster-drive-time-form>
+  </div>
+</ng-template>
