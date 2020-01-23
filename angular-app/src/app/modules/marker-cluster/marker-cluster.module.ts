@@ -6,7 +6,7 @@ import { MarkerClusterMapComponent } from './marker-cluster-map/marker-cluster-m
 
 import { LeafletModule } from '@asymmetrik/ngx-leaflet';
 import { LeafletMarkerClusterModule } from '@asymmetrik/ngx-leaflet-markercluster';
-import { MatButtonModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatButtonModule, MatProgressSpinnerModule, MatProgressBarModule } from '@angular/material';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MarkerClusterBrowseComponent } from './marker-cluster-browse/marker-cluster-browse.component';
 import { MarkerClusterDriveTimeComponent } from './marker-cluster-drive-time/marker-cluster-drive-time.component';
@@ -21,6 +21,7 @@ import { MarkerClusterDriveTimeComponent } from './marker-cluster-drive-time/mar
     FlexLayoutModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatProgressBarModule,
   ],
   exports: [MarkerClusterMapComponent, MarkerClusterBrowseComponent]
 })

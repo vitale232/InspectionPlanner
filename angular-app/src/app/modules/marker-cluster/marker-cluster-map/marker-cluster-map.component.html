@@ -1,8 +1,7 @@
-<div *ngIf="loading$ | async as loading; else showMap" class="full-height" fxLayout="row" fxLayoutAlign="center center">
-    <mat-spinner color="accent"></mat-spinner>
+<div *ngIf="loading$ | async as loading" class="overlay">
+  <mat-progress-bar mode="query" color="accent"></mat-progress-bar>
 </div>
 
-<ng-template #showMap>
 <div leaflet class="full-height"
      *ngIf="markerClusterData"
      [leafletOptions]="options"
@@ -12,4 +11,7 @@
     >
   <div *ngIf="polygonLayer" [leafletLayer]="polygonLayer"></div>
 </div>
-</ng-template>
+
+<div *ngIf="!markerClusterData" class="full-height" fxLayout="row" fxLayoutAlign="center center">
+    <mat-spinner color="accent"></mat-spinner>
+</div>
