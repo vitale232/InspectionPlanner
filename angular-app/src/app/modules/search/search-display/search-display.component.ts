@@ -7,7 +7,7 @@ import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store
 
 import { Router, ActivatedRoute } from '@angular/router';
 import { BrowserHistoryService } from 'src/app/shared/services/browser-history.service';
-import { url } from 'inspector';
+
 
 @Component({
   selector: 'app-search-display',
