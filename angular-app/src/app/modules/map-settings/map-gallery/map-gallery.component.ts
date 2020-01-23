@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IContentCard } from 'src/app/shared/models/content-card.model';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-map-gallery',
@@ -40,9 +41,10 @@ export class MapGalleryComponent implements OnInit {
     }
   ];
 
-  constructor() { }
+  constructor( private titleService: Title ) { }
 
   ngOnInit() {
+    this.titleService.setTitle('IPA - Map Gallery');
     this.getColumnsFromBreakpoint();
   }
 

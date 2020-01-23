@@ -5,6 +5,7 @@ import * as L from 'leaflet';
 import { IBridgeFeatureCollection, IBridgeFeature } from 'src/app/shared/models/bridges.model';
 import { SidenavService } from 'src/app/shared/services/sidenav.service';
 import { Subscription } from 'rxjs';
+import { Title } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-marker-cluster-map',
@@ -39,9 +40,11 @@ export class MarkerClusterMapComponent implements OnInit, OnDestroy {
   constructor(
     private bridgeService: BridgesService,
     private sidenav: SidenavService,
+    private titleService: Title,
     ) { }
 
   ngOnInit() {
+    this.titleService.setTitle('IPA - Marker Cluster');
     this.bridgeService.getAllBridges().subscribe(
       data => this.markerClusterData = this.generateMarkerCluster(data),
       err => console.error(err)
