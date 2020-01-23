@@ -1,3 +1,7 @@
+<div *ngIf="loading$ | async as loading" class="overlay">
+  <mat-progress-bar mode="query" color="accent"></mat-progress-bar>
+</div>
+
 <div leaflet class="full-height"
      *ngIf="markerClusterData"
      [leafletOptions]="options"
@@ -5,6 +9,7 @@
      (leafletMapReady)="onMapReady($event)"
      (window:resize)="onResize($event)"
     >
+  <div *ngIf="polygonLayer" [leafletLayer]="polygonLayer"></div>
 </div>
 
 <div *ngIf="!markerClusterData" class="full-height" fxLayout="row" fxLayoutAlign="center center">

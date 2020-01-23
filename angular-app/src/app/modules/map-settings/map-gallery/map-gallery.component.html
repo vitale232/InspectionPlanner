@@ -1,8 +1,8 @@
 <div class="gallery-container">
   <mat-grid-list [cols]="nColumns"
-                rowHeight="540px"
-                gutterSize="20px"
-                (window:resize)="onResize($event)"
+                 rowHeight="540px"
+                 gutterSize="20px"
+                 (window:resize)="onResize($event)"
                 >
     <mat-grid-tile *ngFor="let card of cardsContent">
       <app-content-card [title]="card.title"
@@ -12,7 +12,7 @@
                         [paragraph]="card.paragraph"
                         [buttonText]="card.buttonText"
                         [link]="card.link"
-                      > </app-content-card>
+                       > </app-content-card>
     </mat-grid-tile>
   </mat-grid-list>
 </div>

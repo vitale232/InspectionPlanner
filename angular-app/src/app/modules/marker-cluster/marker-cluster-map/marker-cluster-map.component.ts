@@ -1,11 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { BridgesService } from 'src/app/shared/services/bridges.service';
 
 import * as L from 'leaflet';
 import { IBridgeFeatureCollection, IBridgeFeature } from 'src/app/shared/models/bridges.model';
 import { SidenavService } from 'src/app/shared/services/sidenav.service';
-import { Subscription } from 'rxjs';
-import { Title } from '@angular/platform-browser';
+import { Subscription, Observable } from 'rxjs';
+import { IDriveTimePolygonFeature } from 'src/app/shared/models/drive-time-polygons.model';
+import { LoadingIndicatorService } from 'src/app/shared/services/loading-indicator.service';
+
 
 @Component({
   selector: 'app-marker-cluster-map',
@@ -14,8 +16,13 @@ import { Title } from '@angular/platform-browser';
 })
 export class MarkerClusterMapComponent implements OnInit, OnDestroy {
 
-  markerClusterData: L.Marker[];
+  @Input() bridges$: Observable<IBridgeFeature[]>;
+  @Input() driveTimePolygon$: null | Observable<IDriveTimePolygonFeature> = null;
+  loading$: Observable<boolean>;
+
   map: L.Map;
+  markerClusterData: L.Marker[];
+  polygonLayer: null | L.Layer = null;
   subscriptions = new Subscription();
 
   mapZoom = 7;
@@ -38,21 +45,34 @@ export class MarkerClusterMapComponent implements OnInit, OnDestroy {
   };
 
   constructor(
-    private bridgeService: BridgesService,
+    private loadingIndicatorService: LoadingIndicatorService,
     private sidenav: SidenavService,
-    private titleService: Title,
-    ) { }
+  ) {
+    this.loading$ = this.loadingIndicatorService.loading$;
+  }
 
   ngOnInit() {
-    this.titleService.setTitle('IPA - Marker Cluster');
-    this.bridgeService.getAllBridges().subscribe(
-      data => this.markerClusterData = this.generateMarkerCluster(data),
+    this.subscriptions.add(this.bridges$.subscribe(
+      data => { if (data) { this.markerClusterData = this.generateMarkerCluster(data); }},
       err => console.error(err)
-    );
+    ));
+
     this.subscriptions.add(this.sidenav.sidenavState$.subscribe(
       () => this.invalidateMapSize(),
       err => console.error(err),
       () => this.invalidateMapSize()
+    ));
+
+    if (this.driveTimePolygon$) {
+      this.subscriptions.add(this.driveTimePolygon$.subscribe(
+        data => { if (data) {
+          this.polygonLayer = this.generatePolygonLayer(data);
+        }}
+      ));
+    }
+
+    this.subscriptions.add(this.loadingIndicatorService.loading$.subscribe(
+      data => console.log('loading', data)
     ));
   }
 
@@ -74,7 +94,7 @@ export class MarkerClusterMapComponent implements OnInit, OnDestroy {
     }
   }
 
-  generateMarkerCluster(data: IBridgeFeatureCollection): L.Marker[] {
+  generateMarkerCluster(data: IBridgeFeature[]): L.Marker[] {
     const icon = L.icon({
       iconUrl: 'leaflet/marker-icon.png',
       shadowUrl: 'leaflet/marker-shadow.png',
@@ -82,10 +102,20 @@ export class MarkerClusterMapComponent implements OnInit, OnDestroy {
       iconAnchor: [12.5, 41],
       popupAnchor: [0, -20.5]
     });
-    return data.features.map(feature => L.marker([
+    return data.map(feature => L.marker([
       feature.geometry.coordinates[1],
       feature.geometry.coordinates[0]
     ], { icon }).bindPopup(this.bridgePopupHtml(feature)));
+  }
+
+  generatePolygonLayer(data: IDriveTimePolygonFeature): L.Layer {
+    const style = {
+      color: 'red',
+      fillOpacity: 0.0,
+    };
+    return L.geoJSON((data as any), {
+      style: () => style,
+    });
   }
 
   bridgePopupHtml(feature: IBridgeFeature) {

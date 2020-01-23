@@ -24,6 +24,7 @@ import { DriveTimeFormComponent } from './forms/drive-time-form/drive-time-form.
 import { BridgeFiltersFormComponent } from './forms/bridge-filters-form/bridge-filters-form.component';
 import { SearchHistoryComponent } from './search-history/search-history.component';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { ClusterDriveTimeFormComponent } from './forms/cluster-drive-time-form/cluster-drive-time-form.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { FlexLayoutModule } from '@angular/flex-layout';
     OsmFiltersFormComponent,
     DriveTimeFormComponent,
     BridgeFiltersFormComponent,
-    SearchHistoryComponent
+    SearchHistoryComponent,
+    ClusterDriveTimeFormComponent
   ],
   imports: [
     CommonModule,

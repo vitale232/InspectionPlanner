@@ -12,6 +12,7 @@ import { Router } from '@angular/router';
 export class SearchHistoryComponent implements OnInit, OnDestroy {
 
   @Input() driveTimeQueries$: Observable<IDriveTimeQueryFeature[]>;
+  @Input() markerClusterRoutes = false;
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
 
   displayedColumns: string[] = ['display_name', 'drive_time_hours'];
@@ -52,7 +53,11 @@ export class SearchHistoryComponent implements OnInit, OnDestroy {
       z: zoom
     };
 
-    this.router.navigate([`drive-time/${row.id}`], { queryParams: routerQueryParams });
+    if (this.markerClusterRoutes) {
+      this.router.navigate([`marker-cluster/drive-time/${row.id}`]);
+    } else {
+      this.router.navigate([`drive-time/${row.id}`], { queryParams: routerQueryParams });
+    }
 
   }
 
