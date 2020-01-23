@@ -101,7 +101,6 @@ export class DriveTimeDisplayComponent implements OnInit {
           this.titleService.setTitle(`IPA - Drive Time ${this.driveTimeID} @${lon},${lat},${zoom}z`);
 
         } else {
-          // this.mapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
           console.log('DRIVE TIME PARAMS ELSE!');
         }
       }
@@ -117,12 +116,6 @@ export class DriveTimeDisplayComponent implements OnInit {
       () => this.updateMapSize(),
       err => console.error(err),
     ));
-
-    // this.subscriptions.add(this.selectedDriveTimeQuery$.subscribe(
-    //   data => console.log('selected from dtd comp', data),
-    //   err => console.error('from drive-time-display', err),
-    //   () => console.log('selectedDriveTimeQuery$ complete.')
-    // ));
 
   }
 
@@ -165,13 +158,10 @@ export class DriveTimeDisplayComponent implements OnInit {
       );
       this.openLayersMapComponent.updateUrl();
       setTimeout(() => this.openLayersMapComponent.map.updateSize(), 200);
-      // setTimeout(() => console.log('updateMapSize end', this.mapView), 200);
-
     }
   }
 
   onMapMove(event) {
-    // console.log('dt onMapMove event', event);
   }
 
   checkAndFetchDriveTime() {
