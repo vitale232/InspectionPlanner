@@ -53,4 +53,7 @@ export class SearchDisplayComponent implements OnInit {
     this.router.navigate(['/map-settings'], { queryParamsHandling: 'merge' });
   }
 
+  onMapGallery() {
+    this.router.navigate(['/map-settings/gallery'], { queryParamsHandling: 'merge' });
+  }
 }

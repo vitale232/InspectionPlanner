@@ -23,6 +23,7 @@ import { OsmFiltersFormComponent } from './forms/osm-filters-form/osm-filters-fo
 import { DriveTimeFormComponent } from './forms/drive-time-form/drive-time-form.component';
 import { BridgeFiltersFormComponent } from './forms/bridge-filters-form/bridge-filters-form.component';
 import { SearchHistoryComponent } from './search-history/search-history.component';
+import { FlexLayoutModule } from '@angular/flex-layout';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { SearchHistoryComponent } from './search-history/search-history.componen
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
+    FlexLayoutModule,
 
     MatInputModule,
     MatIconModule,
