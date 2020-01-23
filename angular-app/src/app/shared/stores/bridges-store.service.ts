@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Subscription, BehaviorSubject } from 'rxjs';
-import { IBridgeFeature } from '../models/bridges.model';
+import { IBridgeFeature, IBridgeFeatureCollection } from '../models/bridges.model';
 import { BridgesService } from '../services/bridges.service';
 import { LoadingIndicatorService } from '../services/loading-indicator.service';
 import { TExtent } from '../models/open-layers-map.model';
@@ -48,13 +48,24 @@ export class BridgesStoreService {
     this._driveTimeID.next(val);
   }
 
+  private readonly _allBridges = new BehaviorSubject<IBridgeFeatureCollection>( null );
+  readonly allBridges$ = this._allBridges.asObservable();
+
+  get allBridges(): IBridgeFeatureCollection {
+    return this._allBridges.getValue();
+  }
+
+  set allBridges(val: IBridgeFeatureCollection) {
+    this._allBridges.next(val);
+  }
+
   constructor(
     private bridgesService: BridgesService,
     private loadingIndicatorService: LoadingIndicatorService,
     private notifications: NotificationsService,
   ) { }
 
-  fetchBridges(bbox: TExtent) {
+  fetchBridges(bbox: TExtent): void {
     this.loadingIndicatorService.loading = true;
     if (this.bridgeSubscription) { this.bridgeSubscription.unsubscribe(); }
     this.bridgeSubscription = this.bridgesService.getAllBridgesInBbox(bbox).subscribe(
@@ -71,7 +82,7 @@ export class BridgesStoreService {
     );
   }
 
-  fetchDriveTimeBridges(driveTimeID: number) {
+  fetchDriveTimeBridges(driveTimeID: number): void {
     this.loadingIndicatorService.loading = true;
     this.bridgesService.getDriveTimeBridges(driveTimeID).subscribe(
       bridges => this.driveTimeBridges = bridges,
@@ -86,6 +97,21 @@ export class BridgesStoreService {
       () => {
         this.loadingIndicatorService.loading = false;
         this.driveTimeID = driveTimeID;
+      }
+    );
+  }
+
+  fetchAllBridges(): void {
+    this.loadingIndicatorService.loading = true;
+    this.bridgesService.getAllBridges().subscribe(
+      bridges => this.allBridges = bridges,
+      err => {
+        console.error('error in fetchAllBridges()', err);
+        this.loadingIndicatorService.loading = false;
+        this.notifications.error(
+          'Unhandled Error',
+          `ERROR: "${err.error}"\nMESSAGE: "${err.message}"`
+        );
       }
     );
   }

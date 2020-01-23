@@ -5,6 +5,7 @@
      (leafletMapReady)="onMapReady($event)"
      (window:resize)="onResize($event)"
     >
+  <div *ngIf="polygonLayer" [leafletLayer]="polygonLayer"></div>
 </div>
 
 <div *ngIf="!markerClusterData" class="full-height" fxLayout="row" fxLayoutAlign="center center">

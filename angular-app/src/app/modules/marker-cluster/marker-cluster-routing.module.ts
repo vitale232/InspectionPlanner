@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { MarkerClusterMapComponent } from './marker-cluster-map/marker-cluster-map.component';
+import { MarkerClusterBrowseComponent } from './marker-cluster-browse/marker-cluster-browse.component';
+import { MarkerClusterDriveTimeComponent } from './marker-cluster-drive-time/marker-cluster-drive-time.component';
 
 
 const routes: Routes = [
-  { path: '', component: MarkerClusterMapComponent },
+  { path: '', component: MarkerClusterBrowseComponent },
+  { path: 'drive-time/:driveTimeID', component: MarkerClusterDriveTimeComponent },
 ];
 
 @NgModule({
