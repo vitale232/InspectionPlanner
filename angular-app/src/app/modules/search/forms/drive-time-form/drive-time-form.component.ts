@@ -174,10 +174,10 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     } else if (hours > 1.0) {
       zoom = 7;
     }
-    console.log('driveTimeQuery', driveTimeQuery);
+
     const routerQueryParams = {
-      lon: driveTimeQuery.geometry.coordinates[0].toFixed(4),
-      lat: driveTimeQuery.geometry.coordinates[1].toFixed(4),
+      lon: driveTimeQuery.geometry.coordinates[0].toFixed(6),
+      lat: driveTimeQuery.geometry.coordinates[1].toFixed(6),
       z: zoom
     };
 

@@ -26,7 +26,6 @@ export class OsmFiltersFormComponent implements OnInit {
     private nominatimSearchService: NominatimSearchService,
     private notifications: NotificationsService,
     private searchMarkersStore: SearchMarkersStoreService,
-    private sidenav: SidenavService,
   ) { }
 
   ngOnInit() {
@@ -69,7 +68,6 @@ export class OsmFiltersFormComponent implements OnInit {
       },
       () => {
         this.loading = false;
-        // setTimeout( () => this.sidenav.close(), 500 );
       }
     );
   }

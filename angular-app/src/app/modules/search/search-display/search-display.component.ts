@@ -57,8 +57,8 @@ export class SearchDisplayComponent implements OnInit {
       relativeTo: this.activatedRoute,
       queryParamsHandling: 'merge',
       queryParams: {
-        lon: -75.8095,
-        lat: 42.7757,
+        lon: -75.809500,
+        lat: 42.775700,
         z: 6
       }
     });

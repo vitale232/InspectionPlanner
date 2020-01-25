@@ -467,8 +467,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
     const zoom = Math.round(view.getZoom()); // Round zoom to an integer
 
     const queryParams = {
-      lon: center[0].toFixed(4),
-      lat: center[1].toFixed(4),
+      lon: center[0].toFixed(6),
+      lat: center[1].toFixed(6),
       z: zoom.toString()
     };
 

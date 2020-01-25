@@ -36,7 +36,6 @@ export class OmniSearchFormComponent implements OnInit {
     this.nominatimSearchService.query(this.omniSearchForm.value.searchText).subscribe(
       resultArray => {
         if (resultArray.length === 0) {
-          console.log('hi');
           this.notifications.error(
             'No Results',
             `The search text "${this.omniSearchForm.value.searchText}" did not return valid results.`
@@ -61,7 +60,6 @@ export class OmniSearchFormComponent implements OnInit {
       },
       () => {
         this.loading = false;
-        // setTimeout( () => this.sidenav.close(), 500 );
       }
     );
   }
