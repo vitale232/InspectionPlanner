@@ -9,3 +9,5 @@ angular-app/node_modules*
 angular-app/src/assets*
 
 /lambda-drive-time-polygons*
+
+**/*.yml
