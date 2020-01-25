@@ -69,7 +69,7 @@ export class BridgesStoreService {
     this.loadingIndicatorService.loading = true;
     if (this.bridgeSubscription) { this.bridgeSubscription.unsubscribe(); }
     this.bridgeSubscription = this.bridgesService.getAllBridgesInBbox(bbox).subscribe(
-      bridges => this.bridges = bridges,
+      bridges => {console.log(bridges); this.bridges = bridges;},
       err => {
         console.error('error in fetchBridges()', err);
         this.notifications.error(

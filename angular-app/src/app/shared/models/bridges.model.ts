@@ -44,7 +44,7 @@ export interface IBridgeProperties {
     deck_area_field: number;
     aadt: number;
     year_of_aadt: number;
-    gtms_mater: string;
+    gtms_material: string;
     gtms_structure: string;
     year_built: number;
     posted_load: number;

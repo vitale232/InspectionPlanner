@@ -12,10 +12,12 @@
 
 <!-- Data type specific default cell definitions -->
 <div *pblNgridCellDef="'*'; value as value;">{{ value }}</div>
-<div *pblNgridCellTypeDef="'date'; value as value;">{{value | date: 'MMM dd, yyyy'}}</div>
-<div *pblNgridCellTypeDef="'condition_field'; value as value;">{{ value | number: '1.2-2' }}</div>
+<div *pblNgridCellTypeDef="'date'; value as value;">{{value | date: 'yyyy-MM-dd'}}</div>
+<div *pblNgridCellTypeDef="'number_hundredths'; value as value;">{{ value | number: '1.2-2' }}</div>
 <div *pblNgridCellTypeDef="'datetime'; value as value;">{{ value | date: 'yyyy-MM-dd  HH:mm:ss' }}</div>
-
+<div *pblNgridCellTypeDef="'aadt'; value as value;">{{ value | number: '1.0-0' }}</div>
+<div *pblNgridCellTypeDef="'region'; value as value;">{{ value | number: '1.0-0' }}</div>
+<div *pblNgridCellTypeDef="'latLon'; value as value;">{{ value | number: '1.6-6' }}</div>
 <!-- Header and footer definitions -->
 <div *pblNgridHeaderCellDef="'*'; col as col;">{{ col.label }}</div>
 <div *pblNgridFooterCellDef="'*'; col as col;">{{ col.label }}</div>
