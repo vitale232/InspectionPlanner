@@ -39,7 +39,6 @@ export class AppComponent implements OnInit, AfterViewInit, OnDestroy {
     // Call the BrowserHistoryService so that it starts creating a route history
     let browserHistoryInit = this.browserHistory.currentUrl;
     browserHistoryInit = 'thanks!';
-    console.log('cache test');
   }
 
   ngOnInit() {
