@@ -15,11 +15,14 @@ cli_args = sys.argv[1:]
 
 require_input = True
 use_cache = True
+load_test = False
 for arg in cli_args:
     if arg == '--no-input':
         require_input = False
     if arg == '--no-cache':
         use_cache = False
+    if arg == '--load-test':
+        load_test = True
 
 
 start_time = datetime.datetime.now()
@@ -97,7 +100,7 @@ ecr_output = subprocess.run(
     stderr=subprocess.PIPE
 )
 # The bash output is saved to a CompletedProcess object.
-#  CompletedProcess.stdout is a byte string for some reason,
+#  CompletedProcess.stdout is a byte string,
 #  so convert it to a python string then strip formatting characters
 #  from the bash output
 stdout = str(ecr_output.stdout)
@@ -151,6 +154,27 @@ if launch_ecs:
         '--cluster-config', 'ipa-config-small',
         '--ecs-profile', 'ipa-profile',
     ])
+
+if load_test:
+    print('\nSleeping 10 seconds then testing the server (ctr+c to cancel)...')
+    for second in tqdm(range(10)):
+        time.sleep(1)
+
+    print('HEAD request to root domain')
+    print_and_check_call([
+        'http', 'HEAD', 'https://ipa.timelinetamer.com',
+    ])
+    print('\nLoad test the API with about 2 requests per second')
+    print_and_check_call([
+            'wrk', '-t2', '-c2', '-d30s', '-R2', '--latency',
+            'https://ipa.timelinetamer.com/bridges/new-york-bridges/?page=12&format=json'
+    ])
+    print('\nLoad test root domain with about 100 requests per second')
+    print_and_check_call([
+        'wrk', '-t4', '-c100', '-d30s', '-R100', '--latency',
+        'https://ipa.timelinetamer.com'
+    ])
+
 
 end_time = datetime.datetime.now()
 print(f'\nScript completed at: {end_time}')
