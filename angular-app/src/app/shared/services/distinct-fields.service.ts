@@ -15,7 +15,7 @@ export class DistinctFieldsService {
 
   getFieldValues(field: string): Observable<IDistinctField> {
     let retries = 3;
-    return this.http.get<IDistinctField>(`${this.distinctUrl}${field}`).pipe(
+    return this.http.get<IDistinctField>(`${this.distinctUrl}${field}/`).pipe(
       retryWhen(((errors: Observable<any>) => {
         return errors.pipe(
           delay(1500),
