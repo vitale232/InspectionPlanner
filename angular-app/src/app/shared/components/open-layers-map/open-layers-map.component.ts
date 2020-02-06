@@ -203,7 +203,7 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
             new TileLayer({
                 title: 'Wikimedia',
                 type: 'base',
-                visible: true,
+                visible: false,
                 source: new XYZ({
                     url: 'https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png',
                     attributions: '&copy; <a href="https://www.openstreetmap.org/copyright">' +
@@ -216,6 +216,17 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
                 visible: false,
                 source : new OSM()
               }),
+            new TileLayer({
+              title: 'Esri World Streets',
+              type: 'base',
+              visible: true,
+              source: new XYZ({
+                url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+                attributions: '<a href="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/">' +
+                'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, ' +
+                'iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012</a>'
+              })
+            }),
             new TileLayer({
               title: 'Esri World Topo',
               type: 'base',
