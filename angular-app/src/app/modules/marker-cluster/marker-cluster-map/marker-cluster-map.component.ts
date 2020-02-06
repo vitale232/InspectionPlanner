@@ -27,19 +27,19 @@ export class MarkerClusterMapComponent implements OnInit, OnDestroy {
 
   mapZoom = 7;
   mapCenter = L.latLng(43.0, -75.3);
-  wikimediaMap = {
-    id: 'wikimediamap',
-    name: 'Wikimedia Map',
+  esriStreets = {
+    id: 'esriStreets',
+    name: 'Esri World Streets',
     detectRetina: true,
     enabled: true,
-    layer: L.tileLayer('https://maps.wikimedia.org/osm-intl/{z}/{x}/{y}.png', {
+    layer: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
     maxZoom: 18,
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">' +
-        'OpenStreetMap</a> contributors'
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, ' +
+                 'Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
     })
   };
   options = {
-    layers: [ this.wikimediaMap.layer ],
+    layers: [ this.esriStreets.layer ],
     zoom: this.mapZoom,
     center: this.mapCenter,
   };
