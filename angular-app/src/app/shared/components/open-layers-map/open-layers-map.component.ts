@@ -217,14 +217,15 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
                 source : new OSM()
               }),
             new TileLayer({
-              title: 'Esri World Streets',
+              title: 'Esri World Street Map',
               type: 'base',
               visible: true,
               source: new XYZ({
                 url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
-                attributions: '<a href="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/">' +
-                'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, ' +
-                'iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012</a>'
+                attributions: 'Tiles &copy; Esri &mdash; ' +
+                              '<a href="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/">Source</a>: ' +
+                              'Esri, DeLorme, NAVTEQ, USGS, Intermap, ' +
+                              'iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
               })
             }),
             new TileLayer({
