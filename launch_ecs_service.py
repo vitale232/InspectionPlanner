@@ -7,7 +7,7 @@ import time
 from tqdm import tqdm
 
 
-def print_and_check_call(cmd):
+def subprocess_run_verbose(cmd):
     print('  {command}'.format(command=' '.join(cmd)))
     subprocess.check_call(cmd)
 
@@ -64,7 +64,7 @@ else:
 if build_angular:
     print('\nBuilding angular app with production flag')
     os.chdir(os.path.join(BASE_DIR, 'angular-app'))
-    print_and_check_call([
+    subprocess_run_verbose([
         'ng', 'build', '--prod',
     ])
 
@@ -77,14 +77,14 @@ docker_build_command = [
 ]
 if not use_cache:
     docker_build_command += ['--no-cache']
-print_and_check_call(docker_build_command)
+subprocess_run_verbose(docker_build_command)
 
 print('\nTagging Docker images')
 time.sleep(2)
-print_and_check_call([
+subprocess_run_verbose([
     'docker', 'tag', 'inspection_planner_django:latest', env['DJANGO_ECR_REPOSITORY']
 ])
-print_and_check_call([
+subprocess_run_verbose([
     'docker', 'tag', 'inspection_planner_nginx:latest', env['NGINX_ECR_REPOSITORY']
 ])
 
@@ -113,10 +113,10 @@ subprocess.run(docker_login)
 
 print('\nPushing Docker images')
 time.sleep(2)
-print_and_check_call([
+subprocess_run_verbose([
     'docker', 'push', env['DJANGO_ECR_REPOSITORY']
 ])
-print_and_check_call([
+subprocess_run_verbose([
     'docker', 'push', env['NGINX_ECR_REPOSITORY']
 ])
 
@@ -145,7 +145,7 @@ if launch_ecs:
         time.sleep(1)
 
     print('')
-    print_and_check_call([
+    subprocess_run_verbose([
         'ecs-cli', 'compose',
         '--file', 'docker-compose.ecs.yml',
         '--ecs-params', 'ecs-params.yml',
@@ -161,16 +161,16 @@ if load_test:
         time.sleep(1)
 
     print('HEAD request to root domain')
-    print_and_check_call([
+    subprocess_run_verbose([
         'http', 'HEAD', 'https://ipa.timelinetamer.com',
     ])
     print('\nLoad test the API with about 2 requests per second')
-    print_and_check_call([
+    subprocess_run_verbose([
             'wrk', '-t2', '-c2', '-d30s', '-R2', '--latency',
             'https://ipa.timelinetamer.com/bridges/new-york-bridges/?page=12&format=json'
     ])
     print('\nLoad test root domain with about 100 requests per second')
-    print_and_check_call([
+    subprocess_run_verbose([
         'wrk', '-t4', '-c100', '-d30s', '-R100', '--latency',
         'https://ipa.timelinetamer.com'
     ])

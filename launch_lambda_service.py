@@ -6,7 +6,7 @@ import sys
 import time
 
 
-def print_and_check_call(cmd):
+def subprocess_run_verbose(cmd):
     print('  {command}\n'.format(command=' '.join(cmd)))
     subprocess.check_call(cmd)
 
@@ -64,7 +64,7 @@ with open(os.path.join(BASE_DIR, 'serverless.yml'), 'w') as out_yaml:
     out_yaml.write(output_yml)
 
 print('\nDeploying the lambda function')
-print_and_check_call(['serverless', 'deploy'])
+subprocess_run_verbose(['serverless', 'deploy'])
 
 end_time = datetime.datetime.now()
 print(f'\nScript completed at: {end_time}')
