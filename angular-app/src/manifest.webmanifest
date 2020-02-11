@@ -1,7 +1,7 @@
 {
   "name": "Inspection Planner Application",
   "short_name": "IPA",
-  "theme_color": "#FFC23D",
+  "theme_color": "#212121",
   "background_color": "#212121",
   "display": "standalone",
   "scope": "/",
