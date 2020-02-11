@@ -12,6 +12,7 @@
   <div *ngIf="polygonLayer" [leafletLayer]="polygonLayer"></div>
 </div>
 
-<div *ngIf="!markerClusterData" class="full-height" fxLayout="row" fxLayoutAlign="center center">
-    <mat-spinner color="accent"></mat-spinner>
+<div *ngIf="!markerClusterData" class="full-height" fxLayout="column" fxLayoutAlign="center center">
+    <div><mat-spinner color="accent"></mat-spinner></div>
+    <div><p>Loading all the things...</p></div>
 </div>

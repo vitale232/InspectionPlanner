@@ -14,6 +14,8 @@ import { NotFoundComponent } from './shared/components/not-found/not-found.compo
 import { HttpClientModule } from '@angular/common/http';
 import { SearchModule } from './modules/search/search.module';
 import { SimpleNotificationsModule } from 'angular2-notifications';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
 
 
 const cookieConfig: NgcCookieConsentConfig = {
@@ -58,6 +60,8 @@ const cookieConfig: NgcCookieConsentConfig = {
     }),
 
     SearchModule,
+
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
   ],
   providers: [],
   bootstrap: [AppComponent],
