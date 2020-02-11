@@ -150,7 +150,7 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
             'The search location is not within the extent of the routable network. ' +
             'Search for a place that lies within the blue box on the map.'
             );
-          } else if (err.status === 404) {
+          } else if (err.status === 400) {
             this.notifications.error(
               'Search error',
               `No results found for query: ${this.driveTimeForm.value.searchText}`

@@ -185,8 +185,11 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                     data = nominatim_request.json()[0]
                 except IndexError:
                     return Response(
-                        {'msg': 'No OSM results found for this address'},
-                        status=status.HTTP_404_NOT_FOUND
+                        {
+                            'msg': 'No OSM results found for this address',
+                            'type': 'geocoder',
+                        },
+                        status=status.HTTP_400_BAD_REQUEST
                     )
 
                 # Check for previous searches on this address. If exists, reuse the objects
@@ -240,7 +243,8 @@ class QueryDriveTime(APIView, DriveTimePaginationMixin):
                         'inspection_years': inspection_years,
                         'lat': data['lat'],
                         'lon': data['lon'],
-                        'display_name': data['display_name']
+                        'display_name': data['display_name'],
+                        'type': 'extent',
                     }
                     print(f'[{datetime.now()}] rejected_palyload: {rejected_payload}')
                     return Response(rejected_payload, status=status.HTTP_400_BAD_REQUEST)
