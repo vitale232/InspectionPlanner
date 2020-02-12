@@ -7,6 +7,7 @@ import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store
 
 import { Router, ActivatedRoute } from '@angular/router';
 import { BrowserHistoryService } from 'src/app/shared/services/browser-history.service';
+import { NotificationStoreService } from 'src/app/shared/stores/notification-store.service';
 
 
 @Component({
@@ -28,6 +29,7 @@ export class SearchDisplayComponent implements OnInit {
     private searchMarkersStore: SearchMarkersStoreService,
     private geolocationStore: GeolocationStoreService,
     private browserHistory: BrowserHistoryService,
+    private notificationStore: NotificationStoreService,
   ) { }
 
   ngOnInit() {
@@ -46,6 +48,10 @@ export class SearchDisplayComponent implements OnInit {
         }
       }
     ));
+  }
+
+  onHistoryClick() {
+    this.notificationStore.clearNotificationCount();
   }
 
   onClearMarkers() {
