@@ -45,7 +45,6 @@ export class DriveTimeQueriesService {
   pollDriveTimeQuery(queryParams: INewDriveTimeParms) {
     return timer(0, 25000).pipe(
       mergeMap(() => this.getDriveTime(queryParams) ),
-      tap(x => console.log('from polling', x)),
       filter((response: HttpResponse<any>) => response.status === 200 ),
       take(1)
     );

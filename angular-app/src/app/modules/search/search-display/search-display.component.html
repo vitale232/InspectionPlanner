@@ -86,7 +86,7 @@
         </div>
       </mat-expansion-panel>
 
-      <mat-expansion-panel>
+      <mat-expansion-panel (afterExpand)="onHistoryClick()">
         <mat-expansion-panel-header>
           <mat-panel-title>
             Drive Time Search History

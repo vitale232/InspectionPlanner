@@ -4,6 +4,7 @@ import { Observable, Subscription } from 'rxjs';
 import { NavbarService } from '../../services/navbar.service';
 import { ActivatedRoute, Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { NotificationStoreService } from '../../stores/notification-store.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,6 +15,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   tableOpen$: Observable<boolean>;
   settingsOpen$: Observable<boolean>;
+  notificationCount$: Observable<number>;
 
   @Input() sidenavState$: Observable<boolean>;
   @Output() sidenavAction = new EventEmitter<'open'|'close'>();
@@ -26,10 +28,20 @@ export class NavbarComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private navbarService: NavbarService,
+    private notificationStore: NotificationStoreService,
   ) {
     this.tableOpen$ = this.navbarService.tableOpen$;
     this.settingsOpen$ = this.navbarService.settingsOpen$;
+    this.notificationCount$ = this.notificationStore.notificationCount$;
     if (!this.longTitle) { this.longTitle = 'Inspection Planner Application'; }
+  }
+
+  increment() {
+    this.notificationStore.incrementNotificationCount();
+  }
+
+  reset() {
+    this.notificationStore.clearNotificationCount();
   }
 
   ngOnInit() {

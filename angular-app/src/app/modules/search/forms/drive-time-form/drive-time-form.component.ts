@@ -7,6 +7,7 @@ import { DriveTimeQueriesService } from 'src/app/shared/services/drive-time-quer
 import { Router } from '@angular/router';
 import { NotificationsService } from 'angular2-notifications';
 import { DriveTimeQueriesStoreService } from 'src/app/shared/stores/drive-time-queries-store.service';
+import { NotificationStoreService } from 'src/app/shared/stores/notification-store.service';
 
 @Component({
   selector: 'app-drive-time-form',
@@ -46,6 +47,7 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
   constructor(
     private driveTimeQueriesService: DriveTimeQueriesService,
     private driveTimeQueriesStore: DriveTimeQueriesStoreService,
+    private notificationStore: NotificationStoreService,
     private fb: FormBuilder,
     private notifications: NotificationsService,
     private router: Router,
@@ -115,7 +117,6 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
       .filter(q => q.properties.display_name === this.driveTimeForm.value.searchText)
       .filter(q => q.properties.drive_time_hours === this.timeIntervalToNumber( this.driveTimeForm.value.hours ));
 
-    console.log('selectedQuery', selectedQuery);
     let querySearchText;
     if (selectedQuery.length === 1) {
       querySearchText = selectedQuery[0].properties.search_text;
@@ -125,7 +126,6 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
     } else {
       querySearchText = this.driveTimeForm.value.searchText;
     }
-    console.log('querySearchText', querySearchText);
 
     const driveTimeQueryParams: INewDriveTimeParms = {
       q: querySearchText,
@@ -212,8 +212,9 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
       },
       () => {
         console.log('Polling complete!');
-        // Update the drive time query store when the new dtq is completed
+        // Update the drive time query store when the new dtq is completed and notify user
         this.driveTimeQueriesStore.fetchDriveTimeQueries();
+        this.notificationStore.incrementNotificationCount();
       }
     );
   }

@@ -2,23 +2,50 @@
   <mat-toolbar color="primary">
     <div class="button-container" fxLayout="row" fxLayoutAlign="start center">
       <div *ngIf="sidenavState$ | async as sidenavVisible; else sidenavClosed">
-        <button mat-icon-button
-                (click)="closeSidenav()"
-                aria-label="Toggle search panel"
-                matTooltip="Close search panel (try using 'esc' key)"
-                matTooltipShowDelay="250"
-                matBadgeColor="accent"
-              > <mat-icon>close</mat-icon> </button>
+        <div *ngIf="(notificationCount$ | async) as notificationCount; else zeroNotificationsClosedSidenav">
+          <button mat-icon-button
+                  (click)="closeSidenav()"
+                  aria-label="Toggle search panel"
+                  matTooltip="Close search panel (try using 'esc' key)"
+                  matTooltipShowDelay="250"
+                  matBadgeColor="accent"
+                  [matBadge]="notificationCount"
+                  matBadgePosition="before"
+                > <mat-icon>close</mat-icon> </button>
+        </div>
+        <ng-template #zeroNotificationsClosedSidenav>
+          <button mat-icon-button
+                  (click)="closeSidenav()"
+                  aria-label="Toggle search panel"
+                  matTooltip="Close search panel (try using 'esc' key)"
+                  matTooltipShowDelay="250"
+                  matBadgeColor="accent"
+                > <mat-icon>close</mat-icon> </button>
+        </ng-template>
       </div>
       <ng-template #sidenavClosed>
-        <button mat-icon-button
-                (click)="openSidenav()"
-                aria-label="Toggle search panel"
-                matTooltip="Open search panel (try using 'f' key)"
-                matTooltipShowDelay="250"
-                matBadgeColor="accent"
-              > <mat-icon>search</mat-icon> </button>
+        <div *ngIf="(notificationCount$ | async) as notificationCount; else zeroNotifications">
+          <button mat-icon-button
+                  (click)="openSidenav()"
+                  aria-label="Toggle search panel"
+                  matTooltip="Open search panel (try using 'f' key)"
+                  matTooltipShowDelay="250"
+                  matBadgeColor="accent"
+                  [matBadge]="notificationCount"
+                  matBadgePosition="before"
+                > <mat-icon>search</mat-icon> </button>
+        </div>
+        <ng-template #zeroNotifications>
+          <button mat-icon-button
+                  (click)="openSidenav()"
+                  aria-label="Toggle search panel"
+                  matTooltip="Open search panel (try using 'f' key)"
+                  matTooltipShowDelay="250"
+                  matBadgeColor="accent"
+                > <mat-icon>search</mat-icon> </button>
+        </ng-template>
       </ng-template>  
+
       <div *ngIf="!markerClusterShowing; else markerCluster">
         <div *ngIf="settingsOpen$ | async as settingsVisible; else settingsClosed">
           <button mat-icon-button
