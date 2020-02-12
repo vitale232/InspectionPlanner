@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Observable, timer, of, throwError } from 'rxjs';
 import { IDriveTimeQueryFeature, IDriveTimeQueryApiResponse, INewDriveTimeParms } from '../models/drive-time-queries.model';
-import { filter, map, mergeMap, take, retryWhen, delay } from 'rxjs/operators';
+import { filter, map, mergeMap, take, retryWhen, delay, tap } from 'rxjs/operators';
 
 
 @Injectable({
@@ -33,7 +33,7 @@ export class DriveTimeQueriesService {
       .set('q', queryParams.q)
       .set('drive_time_hours', queryParams.drive_time_hours)
       .set('return_bridges', queryParams.return_bridges.toString());
-    return this.http.get(this.driveTimeUri, { params }).pipe(
+    return this.http.get(this.driveTimeUri, { params, observe: 'response' }).pipe(
       retryWhen(((errors: Observable<any>) => {
         return errors.pipe(
           delay(1500),
@@ -45,6 +45,7 @@ export class DriveTimeQueriesService {
   pollDriveTimeQuery(queryParams: INewDriveTimeParms) {
     return timer(0, 25000).pipe(
       mergeMap(() => this.getDriveTime(queryParams) ),
+      tap(x => console.log('from polling', x)),
       filter((response: HttpResponse<any>) => response.status === 200 ),
       take(1)
     );
