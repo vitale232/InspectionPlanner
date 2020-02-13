@@ -90,6 +90,9 @@
         <mat-expansion-panel-header>
           <mat-panel-title>
             Drive Time Search History
+            <div *ngIf="(notificationCount$ | async) as notificationCount;" class="notification-text">
+              {{notificationCount}} new!
+            </div>
           </mat-panel-title>
         </mat-expansion-panel-header>
         <app-search-history [driveTimeQueries$]="driveTimeQueries$"></app-search-history>

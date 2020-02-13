@@ -18,6 +18,7 @@ import { NotificationStoreService } from 'src/app/shared/stores/notification-sto
 export class SearchDisplayComponent implements OnInit {
 
   loading: boolean;
+  notificationCount$: Observable<number>;
   driveTimeQueries$: Observable<IDriveTimeQueryFeature[]>;
   defaultSearch = true;
   subscriptions = new Subscription();
@@ -34,6 +35,7 @@ export class SearchDisplayComponent implements OnInit {
 
   ngOnInit() {
     this.driveTimeQueries$ = this.driveTimeQueriesStore.driveTimeQueries$;
+    this.notificationCount$ = this.notificationStore.notificationCount$;
     this.subscriptions.add(this.browserHistory.currentUrl$.subscribe(
       data => {
         if (data) {
@@ -48,6 +50,14 @@ export class SearchDisplayComponent implements OnInit {
         }
       }
     ));
+  }
+
+  increment() {
+    this.notificationStore.incrementNotificationCount();
+  }
+
+  clear() {
+    this.notificationStore.clearNotificationCount();
   }
 
   onHistoryClick() {
