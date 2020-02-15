@@ -64,7 +64,7 @@ export class MapSettingsDisplayComponent implements OnInit, OnDestroy {
         const lat = parseFloat(params.get('lat'));
         const zoom = parseInt(params.get('z'), 10);
         if (lon && lat && zoom) {
-          this.mapView =  { zoom, center: [ lon, lat ] };
+          this.mapViewStore.mapView =  { zoom, center: [ lon, lat ] };
           this.titleService.setTitle(`IPA - Map Settings @${lon},${lat},${zoom}z`);
         }
       }
