@@ -126,10 +126,8 @@ export class DriveTimeDisplayComponent implements OnInit {
 
   suspendNavigation() {
     this.noNavigate = true;
-    console.log(this.noNavigate);
     setTimeout(() => this.noNavigate = false, 500);
     this.updateMapSize();
-    console.log(this.noNavigate);
   }
 
   closeTable() {
