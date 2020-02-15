@@ -1,7 +1,7 @@
 import { Component, OnInit, Output, EventEmitter, OnDestroy, ViewChild } from '@angular/core';
 import { NavbarService } from 'src/app/shared/services/navbar.service';
 import { Subscription, Observable } from 'rxjs';
-import { IMapView, IMarker, TExtent } from 'src/app/shared/models/open-layers-map.model';
+import { IMapView, TExtent } from 'src/app/shared/models/open-layers-map.model';
 import { IBridgeFeature } from 'src/app/shared/models/bridges.model';
 import { BridgesStoreService } from 'src/app/shared/stores/bridges-store.service';
 import { LoadingIndicatorService } from 'src/app/shared/services/loading-indicator.service';
@@ -15,6 +15,7 @@ import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store.service';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
 import { IColormap, IDistinctColormap } from 'src/app/shared/models/map-settings.model';
+import { MapViewStoreService } from 'src/app/shared/stores/map-view-store.service';
 
 
 @Component({
@@ -26,8 +27,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
 
   @ViewChild(OpenLayersMapComponent, { static: false }) private openLayersMapComponent: OpenLayersMapComponent;
 
-  mapView: IMapView = { zoom: 10, center: [ -73.8727, 42.6532 ]};
-
+  mapView$: Observable<IMapView>;
   loading$: Observable<boolean>;
   bridges$: Observable<IBridgeFeature[]>;
   searchMarkers$: Observable<SearchMarker[]>;
@@ -41,17 +41,21 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   tableSize = 50;
   minTableSize = 5;
 
+  noNavigate = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private navbarService: NavbarService,
     private bridgesStore: BridgesStoreService,
     private loadingIndicatorService: LoadingIndicatorService,
+    private mapViewStore: MapViewStoreService,
     private titleService: Title,
     private sidenavService: SidenavService,
     private searchMarkerStore: SearchMarkersStoreService,
     private geolocationStore: GeolocationStoreService,
     private colormapStore: ColormapStoreService,
   ) {
+    this.mapView$ = this.mapViewStore.mapView$;
     this.bridges$ = this.bridgesStore.bridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
     this.searchMarkers$ = this.searchMarkerStore.searchMarker$;
@@ -78,8 +82,10 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
         const lat = parseFloat(params.get('lat'));
         const zoom = parseInt(params.get('z'), 10);
         if (lon && lat && zoom) {
-          this.mapView =  { zoom, center: [ lon, lat ] };
-          this.titleService.setTitle(`IPA - Browse Bridges @${lon},${lat},${zoom}z`);
+          if (!this.noNavigate) {
+            this.mapViewStore.mapView =  { zoom, center: [ lon, lat ] };
+            this.titleService.setTitle(`IPA - Browse Bridges @${lon},${lat},${zoom}z`);
+          }
         } else {
           // this.mapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
           console.log('BROWSE BRIDGES PARAMS ELSE!!!!');
@@ -94,11 +100,15 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
     ));
 
     this.subscriptions.add(this.sidenavService.sidenavState$.subscribe(
-      () => this.updateMapSize(),
+      () => this.suspendNavigation(),
       err => console.error(err),
-      () => this.updateMapSize()
     ));
+  }
 
+  suspendNavigation() {
+    this.noNavigate = true;
+    setTimeout(() => this.noNavigate = false, 500);
+    this.updateMapSize();
   }
 
   ngOnDestroy() {
@@ -130,7 +140,6 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   }
 
   splitDragEnd(event: { gutterNum: number, sizes: number[] }) {
-    console.log('drag');
     this.mapSize = event.sizes[0];
     this.tableSize = event.sizes[1];
     if (this.tableSize <= this.minTableSize) {
@@ -152,11 +161,6 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
 
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
-      this.openLayersMapComponent.map.getView().setCenter(
-        this.openLayersMapComponent.map.getView().getCenter()
-      );
-
-      this.openLayersMapComponent.updateUrl();
       setTimeout(() => this.openLayersMapComponent.map.updateSize(), 200);
     }
   }

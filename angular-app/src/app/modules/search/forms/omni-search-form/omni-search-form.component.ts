@@ -5,6 +5,7 @@ import { Marker, SearchMarker } from 'src/app/shared/models/markers.model';
 import { SearchMarkersStoreService } from 'src/app/shared/stores/search-markers-store.service';
 import { NotificationsService } from 'angular2-notifications';
 import { SidenavService } from 'src/app/shared/services/sidenav.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-omni-search-form',
@@ -25,7 +26,7 @@ export class OmniSearchFormComponent implements OnInit {
     private nominatimSearchService: NominatimSearchService,
     private searchMarkersStore: SearchMarkersStoreService,
     private notifications: NotificationsService,
-    private sidenav: SidenavService,
+    private router: Router,
   ) { }
 
   ngOnInit() {
@@ -48,6 +49,13 @@ export class OmniSearchFormComponent implements OnInit {
             this.omniSearchForm.value.searchText
           );
           this.searchMarkersStore.searchMarkers = this.searchMarkersStore.searchMarkers.concat(searchMarker);
+          this.router.navigate(['.'], {
+            queryParams: {
+              lon: searchResult.lon,
+              lat: searchResult.lat,
+              z: 14
+            }
+          });
         }
       },
       err => {

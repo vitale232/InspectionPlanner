@@ -6,7 +6,7 @@ import { SearchMarker } from 'src/app/shared/models/markers.model';
 import { LoadingIndicatorService } from 'src/app/shared/services/loading-indicator.service';
 import { SearchMarkersStoreService } from 'src/app/shared/stores/search-markers-store.service';
 import { Title } from '@angular/platform-browser';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
 import { IMapView } from 'src/app/shared/models/open-layers-map.model';
 import { NavbarService } from 'src/app/shared/services/navbar.service';
@@ -19,6 +19,7 @@ import { IGeoPosition } from 'src/app/shared/models/geolocation.model';
 import { GeolocationStoreService } from 'src/app/shared/stores/geolocation-store.service';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
 import { IColormap, IDistinctColormap } from 'src/app/shared/models/map-settings.model';
+import { MapViewStoreService } from 'src/app/shared/stores/map-view-store.service';
 
 @Component({
   selector: 'app-drive-time-display',
@@ -30,8 +31,8 @@ export class DriveTimeDisplayComponent implements OnInit {
   @ViewChild(OpenLayersMapComponent, { static: false }) private openLayersMapComponent: OpenLayersMapComponent;
 
   driveTimeID: number;
-  mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
 
+  mapView$: Observable<IMapView>;
   loading$: Observable<boolean>;
   driveTimeBridges$: Observable<IBridgeFeature[]>;
   searchMarkers$: Observable<SearchMarker[]>;
@@ -47,6 +48,8 @@ export class DriveTimeDisplayComponent implements OnInit {
   tableSize = 50;
   minTableSize = 5;
 
+  noNavigate = false;
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private bridgesStore: BridgesStoreService,
@@ -59,7 +62,9 @@ export class DriveTimeDisplayComponent implements OnInit {
     private driveTimePolygonStore: DriveTimePolygonStoreService,
     private geolocationStore: GeolocationStoreService,
     private colormapStore: ColormapStoreService,
+    private mapViewStore: MapViewStoreService,
   ) {
+    this.mapView$ = this.mapViewStore.mapView$;
     this.driveTimeBridges$ = this.bridgesStore.driveTimeBridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
     this.searchMarkers$ = this.searchMarkerStore.searchMarker$;
@@ -97,7 +102,7 @@ export class DriveTimeDisplayComponent implements OnInit {
         const zoom = parseInt(params.get('z'), 10);
 
         if (lon && lat && zoom) {
-          this.mapView =  { zoom, center: [ lon, lat ] };
+          this.mapViewStore.mapView =  { zoom, center: [ lon, lat ] };
           this.titleService.setTitle(`IPA - Drive Time ${this.driveTimeID} @${lon},${lat},${zoom}z`);
 
         } else {
@@ -113,10 +118,15 @@ export class DriveTimeDisplayComponent implements OnInit {
     ));
 
     this.subscriptions.add(this.sidenavService.sidenavState$.subscribe(
-      () => this.updateMapSize(),
+      () => this.suspendNavigation(),
       err => console.error(err),
     ));
+  }
 
+  suspendNavigation() {
+    this.noNavigate = true;
+    setTimeout(() => this.noNavigate = false, 500);
+    this.updateMapSize();
   }
 
   closeTable() {
@@ -153,10 +163,6 @@ export class DriveTimeDisplayComponent implements OnInit {
 
   updateMapSize() {
     if (this.openLayersMapComponent && this.openLayersMapComponent.map) {
-      this.openLayersMapComponent.map.getView().setCenter(
-        this.openLayersMapComponent.map.getView().getCenter()
-      );
-      this.openLayersMapComponent.updateUrl();
       setTimeout(() => this.openLayersMapComponent.map.updateSize(), 200);
     }
   }
