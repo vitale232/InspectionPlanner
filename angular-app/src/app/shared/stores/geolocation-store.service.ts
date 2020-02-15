@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { IGeoPosition } from '../models/geolocation.model';
 import { NotificationsService } from 'angular2-notifications';
+import { Router } from '@angular/router';
 
 
 @Injectable({
@@ -13,6 +14,11 @@ export class GeolocationStoreService {
   readonly position$ = this._position.asObservable();
 
   set position(val: IGeoPosition) {
+    this.router.navigate(['.'], { queryParams: {
+      lon: val.lon,
+      lat: val.lat,
+      z: 14
+    }});
     this._position.next(val);
   }
 
@@ -21,7 +27,10 @@ export class GeolocationStoreService {
     return this._position.getValue();
   }
 
-  constructor( private notifications: NotificationsService ) { }
+  constructor(
+    private notifications: NotificationsService,
+    private router: Router,
+    ) { }
 
   public fetchPosition(): void {
     navigator.geolocation.getCurrentPosition(

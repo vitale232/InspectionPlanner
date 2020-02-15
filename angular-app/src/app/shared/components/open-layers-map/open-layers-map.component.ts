@@ -14,8 +14,6 @@ import {
   Component,
   OnInit,
   Input,
-  OnChanges,
-  SimpleChanges,
   OnDestroy,
   Output,
   EventEmitter,
@@ -69,11 +67,11 @@ import { defaultColormap } from './default-colormap';
   styleUrls: ['./open-layers-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
+export class OpenLayersMapComponent implements OnInit, OnDestroy {
 
   // Component inputs
   // driveTimePolygon$ is optional. If there is data, it will draw the polygon
-  @Input() mapView: IMapView;
+  @Input() mapView$: Observable<IMapView>;
   @Input() loading$: Observable<boolean>;
   @Input() bridges$: Observable<IBridgeFeature[]>;
   @Input() searchMarkers$: Observable<SearchMarker[]>;
@@ -106,17 +104,30 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
   ) { }
 
   ngOnInit() {
-    // this.updateUrl gets called during init, so if no mapView was passed in, the URL params
-    // will include NaN values, which breaks the map until they're deleted from the URL. Let's
-    // test for NaNs, and force the map to Albany if there are any
-    if (!this.mapView || [ this.mapView.zoom, ...this.mapView.center ].some(x => Number.isNaN(x))) {
-      this.mapView = { zoom: 10, center: [ -74.0234, 42.8337 ] };
-    }
-    this.zoom = this.mapView.zoom;
-    this.view = new View({
-      center: fromLonLat(this.mapView.center),
-      zoom: this.zoom,
-    });
+    this.subscriptions.add(this.mapView$.subscribe(
+      // this.updateUrl gets called during init, so if no mapView was passed in, the URL params
+      // will include NaN values, which breaks the map until they're deleted from the URL. Let's
+      // test for NaNs, and force the map to Albany if there are any
+      mapView => {
+        if (!mapView || [ mapView.zoom, ...mapView.center ].some(x => Number.isNaN(x))) {
+          mapView = { zoom: 10, center: [ -74.0234, 42.8337 ] };
+        }
+        if (this.map) {
+          // Handle updates to mapView when OpenLayersMapComponent is already initialized
+          this.updateView(mapView);
+          setTimeout(() => this.map.updateSize(), 100);
+        } else {
+          // Handle mapView on initialization of OpenLayersMapComponent
+          this.zoom = mapView.zoom;
+          this.view = new View({
+            center: fromLonLat(mapView.center),
+            zoom: this.zoom,
+          });
+        }
+      },
+      err => console.error('mapView$ error', err)
+    ));
+
 
     const vectorSource = new VectorSource({
       format: new GeoJSON({
@@ -379,15 +390,6 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  ngOnChanges(changes: SimpleChanges) {
-    if (this.map) {
-      if (changes.mapView) {
-        this.updateView(changes.mapView.currentValue);
-        setTimeout(() => this.map.updateSize(), 100);
-      }
-    }
-  }
-
   ngOnDestroy() {
     if (this.bridgeSubscription) {
       this.bridgeSubscription.unsubscribe();
@@ -532,8 +534,8 @@ export class OpenLayersMapComponent implements OnInit, OnChanges, OnDestroy {
 
     // Center on the last search marker in the input array
     if (zoomTo && markersIn.length > 0) {
-      this.map.getView().setCenter( fromLonLat(markersIn[markersIn.length - 1].lonLat) );
-      this.map.getView().setZoom( 14 );
+      // this.map.getView().setCenter( fromLonLat(markersIn[markersIn.length - 1].lonLat) );
+      // this.map.getView().setZoom( 14 );
     }
 
   }
