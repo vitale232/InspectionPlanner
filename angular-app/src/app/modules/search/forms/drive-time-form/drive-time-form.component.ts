@@ -213,8 +213,8 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
       () => {
         console.log('Polling complete!');
         // Update the drive time query store when the new dtq is completed and notify user
-        this.driveTimeQueriesStore.fetchDriveTimeQueries();
         this.notificationStore.incrementNotificationCount();
+        this.driveTimeQueriesStore.fetchDriveTimeQueries();
       }
     );
   }
