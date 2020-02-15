@@ -118,7 +118,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
   closeTable() {
     this.mapSize = 100;
     this.tableSize = 0;
-    this.updateMapSize();
+    this.suspendNavigation();
   }
 
   openTable() {
@@ -128,7 +128,7 @@ export class BrowseBridgesDisplayComponent implements OnInit, OnDestroy {
       this.mapSize = 50;
       this.tableSize = 50;
     }
-    this.updateMapSize();
+    this.suspendNavigation();
   }
 
   getSplitterOrientation() {

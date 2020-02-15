@@ -102,9 +102,10 @@ export class DriveTimeDisplayComponent implements OnInit {
         const zoom = parseInt(params.get('z'), 10);
 
         if (lon && lat && zoom) {
-          this.mapViewStore.mapView =  { zoom, center: [ lon, lat ] };
-          this.titleService.setTitle(`IPA - Drive Time ${this.driveTimeID} @${lon},${lat},${zoom}z`);
-
+          if (!this.noNavigate) {
+            this.mapViewStore.mapView =  { zoom, center: [ lon, lat ] };
+            this.titleService.setTitle(`IPA - Browse Bridges @${lon},${lat},${zoom}z`);
+          }
         } else {
           console.log('DRIVE TIME PARAMS ELSE!');
         }
@@ -125,14 +126,16 @@ export class DriveTimeDisplayComponent implements OnInit {
 
   suspendNavigation() {
     this.noNavigate = true;
+    console.log(this.noNavigate);
     setTimeout(() => this.noNavigate = false, 500);
     this.updateMapSize();
+    console.log(this.noNavigate);
   }
 
   closeTable() {
     this.mapSize = 100;
     this.tableSize = 0;
-    this.updateMapSize();
+    this.suspendNavigation();
   }
 
   openTable() {
@@ -142,7 +145,7 @@ export class DriveTimeDisplayComponent implements OnInit {
       this.mapSize = 50;
       this.tableSize = 50;
     }
-    this.updateMapSize();
+    this.suspendNavigation();
   }
 
   splitDragEnd(event: { gutterNum: number, sizes: number[] }) {
@@ -153,7 +156,7 @@ export class DriveTimeDisplayComponent implements OnInit {
     } else {
       this.navbarService.tableOpen = true;
     }
-    this.updateMapSize();
+    this.suspendNavigation();
   }
 
   onResize(event: Event) {
