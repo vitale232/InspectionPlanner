@@ -14,6 +14,7 @@ import { NavbarService } from 'src/app/shared/services/navbar.service';
 import { OpenLayersMapComponent } from 'src/app/shared/components/open-layers-map/open-layers-map.component';
 import { ColormapStoreService } from 'src/app/shared/stores/colormap-store.service';
 import { IColormap, IDistinctColormap } from 'src/app/shared/models/map-settings.model';
+import { MapViewStoreService } from 'src/app/shared/stores/map-view-store.service';
 
 
 @Component({
@@ -25,8 +26,7 @@ export class MapSettingsDisplayComponent implements OnInit, OnDestroy {
 
   @ViewChild(OpenLayersMapComponent, { static: false }) openLayersMapComponent: OpenLayersMapComponent;
 
-  mapView: IMapView = { zoom: 11, center: [ -76.1322, 43.0985 ]};
-
+  mapView$: Observable<IMapView>;
   bridges$: Observable<IBridgeFeature[]>;
   loading$: Observable<boolean>;
   searchMarkers$: Observable<SearchMarker[]>;
@@ -45,7 +45,9 @@ export class MapSettingsDisplayComponent implements OnInit, OnDestroy {
     private geolocationStore: GeolocationStoreService,
     private navbarService: NavbarService,
     private colormapStore: ColormapStoreService,
+    private mapViewStore: MapViewStoreService,
   ) {
+    this.mapView$ = this.mapViewStore.mapView$;
     this.bridges$ = this.bridgesStore.bridges$;
     this.loading$ = this.loadingIndicatorService.loading$;
     this.searchMarkers$ = this.searchMarkerStore.searchMarker$;
