@@ -46,6 +46,14 @@
         </ng-template>
       </ng-template>  
 
+      <div *ngIf="!markerClusterShowing && longTitle !== 'Inspection Planner Application'">
+        <button mat-icon-button
+                matTooltip="Return to browsable map"
+                routerLink="/"
+                queryParamsHandling="merge"
+               > <mat-icon> home </mat-icon> </button>
+      </div>
+
       <div *ngIf="!markerClusterShowing; else markerCluster">
         <div *ngIf="settingsOpen$ | async as settingsVisible; else settingsClosed">
           <button mat-icon-button
@@ -72,14 +80,6 @@
                 queryParamsHandling="preserve"
               > <mat-icon> home </mat-icon> </button>
       </ng-template>
-  
-      <div *ngIf="!markerClusterShowing && longTitle !== 'Inspection Planner Application'">
-        <button mat-icon-button
-                matTooltip="Return to browsable map"
-                routerLink="/"
-                queryParamsHandling="merge"
-               > <mat-icon> home </mat-icon> </button>
-      </div>
   
       <div *ngIf="!markerGalleryShowing">
         <button mat-icon-button
