@@ -36,6 +36,7 @@ export class DriveTimeQueriesService {
     return this.http.get(this.driveTimeUri, { params, observe: 'response' }).pipe(
       retryWhen(((errors: Observable<any>) => {
         return errors.pipe(
+          mergeMap(err => err.status === 400 ? throwError(err) : of(err)),
           delay(1500),
           mergeMap(error => retries-- > 0 ? of(error) : throwError(error)));
       }))

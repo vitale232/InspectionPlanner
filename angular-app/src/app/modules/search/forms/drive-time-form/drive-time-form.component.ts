@@ -144,13 +144,17 @@ export class DriveTimeFormComponent implements OnInit, OnDestroy {
       },
       err => {
         console.error(err);
-        if (err.status === 400) {
+
+        const extentErrMsg = 'The search location does not line within the routable network extent. Cannot calculate a drive time query.';
+        const osmErrMsg = 'No OSM results found for this address';
+
+        if (err.status === 400 && err.error && err.error.msg === extentErrMsg) {
           this.notifications.error(
             'Search error',
             'The search location is not within the extent of the routable network. ' +
             'Search for a place that lies within the blue box on the map.'
             );
-          } else if (err.status === 400) {
+          } else if (err.status === 400 && err.error && err.error.msg === osmErrMsg) {
             this.notifications.error(
               'Search error',
               `No results found for query: ${this.driveTimeForm.value.searchText}`
