@@ -14,7 +14,7 @@ export class GeolocationStoreService {
   readonly position$ = this._position.asObservable();
 
   set position(val: IGeoPosition) {
-    this.router.navigate(['.'], { queryParams: {
+    this.router.navigate([ ], { queryParams: {
       lon: val.lon,
       lat: val.lat,
       z: 14
