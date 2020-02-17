@@ -49,7 +49,7 @@ export class OmniSearchFormComponent implements OnInit {
             this.omniSearchForm.value.searchText
           );
           this.searchMarkersStore.searchMarkers = this.searchMarkersStore.searchMarkers.concat(searchMarker);
-          this.router.navigate(['.'], {
+          this.router.navigate([ ], {
             queryParams: {
               lon: searchResult.lon,
               lat: searchResult.lat,
