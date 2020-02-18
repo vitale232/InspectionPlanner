@@ -11,6 +11,7 @@
       "cacheConfig": {
         "maxSize": 0,
         "maxAge": "0u",
+        "timeout": "5s30u",
         "strategy": "freshness"
       }
     }
@@ -22,6 +23,7 @@
       "resources": {
         "files": [
           "/favicon.ico",
+          "/favicon.png",
           "/index.html",
           "/manifest.webmanifest",
           "/*.css",
