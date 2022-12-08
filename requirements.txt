@@ -7,7 +7,7 @@ billiard==3.6.1.0
 blessed==1.16.0
 boto3==1.9.253
 botocore==1.12.253
-certifi==2019.6.16
+certifi==2022.12.7
 chardet==3.0.4
 Click==7.0
 click-plugins==1.1.1
